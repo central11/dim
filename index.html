@@ -7,197 +7,182 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --bg:#F2EFE9; --surface:#FDFCFA; --surface2:#EAE6DE; --border:#D0C9BC; --border2:#BFB7A8;
-  --text:#1C1A16; --muted:#8A8378; --faint:#B0A99E;
-  --accent:#1A4FCC; --accent-lt:#EBF0FF; --accent-md:#7A9AEE;
-  --formula:#0F7A5A; --formula-bg:#E8F7F2;
-  --mono:'IBM Plex Mono',monospace; --sans:'Instrument Sans',sans-serif;
-  --r:8px; --r-lg:12px;
-  --arch-bg:#EDF5EE; --arch-fg:#1A5230;
-  --furn-bg:#FDF3E7; --furn-fg:#7A3D0A;
-  --str-bg:#F0EEFF;  --str-fg:#38198C;
-  --mep-bg:#FFF0F0;  --mep-fg:#8C1A1A;
-  --site-bg:#FFF8E8; --site-fg:#6A4000;
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F2EFE9;--surface:#FDFCFA;--surface2:#EAE6DE;--border:#D0C9BC;--border2:#BFB7A8;
+  --text:#1C1A16;--muted:#8A8378;--faint:#B0A99E;
+  --accent:#1A4FCC;--accent-lt:#EBF0FF;--accent-md:#7A9AEE;
+  --formula:#0F7A5A;--formula-bg:#E8F7F2;
+  --mono:'IBM Plex Mono',monospace;--sans:'Instrument Sans',sans-serif;
+  --r:8px;--r-lg:12px;
+  --arch-bg:#EDF5EE;--arch-fg:#1A5230;
+  --furn-bg:#FDF3E7;--furn-fg:#7A3D0A;
+  --str-bg:#F0EEFF;--str-fg:#38198C;
+  --mep-bg:#FFF0F0;--mep-fg:#8C1A1A;
+  --site-bg:#FFF8E8;--site-fg:#6A4000;
 }
-@media (prefers-color-scheme:dark) {
-  :root {
-    --bg:#141210; --surface:#1C1A17; --surface2:#252219; --border:#38342A; --border2:#48443A;
-    --text:#F0EDE5; --muted:#8A8378; --faint:#5A5650;
-    --accent:#5A88FF; --accent-lt:#141E40; --accent-md:#3A62CC;
-    --formula:#2ECC71; --formula-bg:#0A2010;
-    --arch-bg:#162A1C; --arch-fg:#5DBF8A;
-    --furn-bg:#2A1A0A; --furn-fg:#E09050;
-    --str-bg:#1A1530;  --str-fg:#9A80FF;
-    --mep-bg:#2A0A0A;  --mep-fg:#FF8080;
-    --site-bg:#2A2000; --site-fg:#E0B040;
-  }
-}
-body { font-family:var(--sans); background:var(--bg); color:var(--text); min-height:100vh; font-size:14px; line-height:1.5; }
-
-/* SETUP */
-#setup-screen { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:2rem; }
-.setup-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:2.5rem; width:100%; max-width:480px; }
-.setup-logo { font-family:var(--mono); font-size:22px; font-weight:600; color:var(--accent); margin-bottom:.25rem; letter-spacing:-1px; }
-.setup-sub { font-size:13px; color:var(--muted); margin-bottom:2rem; }
-.setup-field { margin-bottom:1rem; }
-.setup-label { display:block; font-size:11px; font-weight:600; letter-spacing:.8px; text-transform:uppercase; color:var(--muted); margin-bottom:5px; }
-.setup-hint { font-size:11px; color:var(--faint); margin-top:4px; line-height:1.5; }
-.setup-input { width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:var(--r); background:var(--bg); color:var(--text); font-family:var(--mono); font-size:13px; outline:none; transition:border-color .15s; }
-.setup-input:focus { border-color:var(--accent); }
-.setup-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-
-.setup-btn { width:100%; padding:11px; background:var(--accent); border:none; border-radius:var(--r); color:#fff; font-family:var(--sans); font-size:14px; font-weight:600; cursor:pointer; transition:opacity .15s; }
-.setup-btn:hover{ opacity:.88; } .setup-btn:disabled{ opacity:.5; cursor:default; }
-.setup-error { font-size:12px; color:#C0392B; margin-top:10px; text-align:center; min-height:18px; }
-
-/* APP */
-#app { display:none; }
-header { background:var(--surface); border-bottom:1px solid var(--border); padding:0 1.25rem; height:52px; display:flex; align-items:center; gap:1rem; position:sticky; top:0; z-index:100; }
-.logo { font-family:var(--mono); font-size:17px; font-weight:600; color:var(--accent); letter-spacing:-1px; flex-shrink:0; }
-.sync-status { font-family:var(--mono); font-size:11px; color:var(--faint); display:flex; align-items:center; gap:5px; }
-.sync-dot { width:6px; height:6px; border-radius:50%; background:var(--faint); flex-shrink:0; transition:background .3s; }
-.sync-dot.ok{ background:#27AE60; } .sync-dot.saving{ background:#F39C12; animation:pulse .8s infinite alternate; } .sync-dot.err{ background:#E74C3C; }
-@keyframes pulse{ to{ opacity:.3; } }
-.header-right { margin-left:auto; display:flex; gap:8px; align-items:center; }
-.hbtn { padding:5px 12px; border-radius:6px; border:1px solid var(--border); background:transparent; color:var(--muted); font-family:var(--sans); font-size:12px; font-weight:500; cursor:pointer; transition:all .15s; white-space:nowrap; }
-.hbtn:hover{ background:var(--surface2); color:var(--text); }
-.hbtn-primary { background:var(--accent); border-color:var(--accent); color:#fff; font-weight:600; }
-.hbtn-primary:hover{ opacity:.88; background:var(--accent); color:#fff; }
-
-/* LAYOUT */
-.layout { display:flex; max-width:1120px; margin:0 auto; padding:1.25rem; gap:1.25rem; align-items:flex-start; }
-.sidebar { width:210px; flex-shrink:0; position:sticky; top:68px; }
-.sb-section { margin-bottom:1.5rem; }
-.sb-label { font-size:10px; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:var(--faint); margin-bottom:6px; display:block; padding:0 4px; }
-
-.search-wrap { position:relative; margin-bottom:1.5rem; }
-.search-input { width:100%; padding:7px 10px 7px 30px; border:1px solid var(--border); border-radius:var(--r); background:var(--surface); color:var(--text); font-family:var(--sans); font-size:13px; outline:none; transition:border-color .15s; }
-.search-input:focus{ border-color:var(--accent); }
-.search-input::placeholder{ color:var(--faint); }
-.search-icon { position:absolute; left:9px; top:50%; transform:translateY(-50%); color:var(--faint); font-size:13px; pointer-events:none; }
-
-.unit-toggle { display:grid; grid-template-columns:repeat(3,1fr); background:var(--surface2); border-radius:7px; padding:3px; gap:2px; margin-bottom:1.5rem; }
-.unit-btn { padding:5px 0; border:none; border-radius:5px; background:transparent; font-family:var(--mono); font-size:11px; color:var(--muted); cursor:pointer; transition:all .15s; text-align:center; }
-.unit-btn.active { background:var(--surface); color:var(--text); font-weight:600; box-shadow:0 1px 3px rgba(0,0,0,.08); }
-
-.nav-btn { display:flex; align-items:center; justify-content:space-between; width:100%; padding:6px 8px; border-radius:6px; border:none; background:transparent; color:var(--text); font-family:var(--sans); font-size:13px; cursor:pointer; text-align:left; transition:background .12s; margin-bottom:1px; }
-.nav-btn:hover{ background:var(--surface2); } .nav-btn.active{ background:var(--accent-lt); color:var(--accent); font-weight:600; }
-.nav-left { display:flex; align-items:center; gap:7px; }
-.nav-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
-.nav-count { font-family:var(--mono); font-size:10px; color:var(--faint); }
-
-/* MAIN */
-.main { flex:1; min-width:0; }
-.topbar { display:flex; align-items:center; gap:10px; margin-bottom:1rem; flex-wrap:wrap; }
-.topbar-title { font-size:15px; font-weight:600; }
-.topbar-count { font-family:var(--mono); font-size:10px; color:var(--faint); background:var(--surface2); border-radius:20px; padding:2px 8px; }
-.soft-pills { display:flex; gap:5px; margin-left:auto; }
-.pill { padding:3px 10px; border-radius:20px; border:1px solid var(--border); background:transparent; font-size:11px; font-weight:500; color:var(--muted); cursor:pointer; transition:all .12s; font-family:var(--sans); }
-.pill:hover{ background:var(--surface2); color:var(--text); }
-.pill.active{ background:var(--accent-lt); color:var(--accent); border-color:var(--accent-md); }
-
-/* CARDS */
-.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:10px; }
-.card { background:var(--surface); border:1px solid var(--border); border-radius:var(--r-lg); padding:14px; transition:box-shadow .15s,border-color .15s; }
-.card:hover{ border-color:var(--border2); box-shadow:0 2px 10px rgba(0,0,0,.06); }
-.card-head { display:flex; align-items:flex-start; gap:8px; margin-bottom:10px; }
-.card-titles { flex:1; min-width:0; }
-.card-name { font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; line-height:1.3; }
-.card-sub { font-size:11px; color:var(--muted); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.cat-pill { font-size:10px; font-weight:600; padding:2px 7px; border-radius:4px; white-space:nowrap; flex-shrink:0; }
-
-.dim-rows { display:flex; flex-direction:column; gap:4px; }
-.dim-row { display:flex; align-items:center; gap:6px; padding:4px 8px; background:var(--surface2); border-radius:5px; }
-.dim-row.fr { background:var(--formula-bg); }
-.dim-lbl { font-size:11px; color:var(--muted); flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.dim-val { font-family:var(--mono); font-size:12px; font-weight:600; color:var(--accent); white-space:nowrap; }
-.fr .dim-val { color:var(--formula); }
-.ftag { font-size:9px; background:var(--formula-bg); color:var(--formula); border-radius:3px; padding:1px 4px; border:1px solid var(--formula); flex-shrink:0; font-family:var(--mono); }
-
-.card-notes { font-size:11px; color:var(--muted); margin-top:8px; font-style:italic; line-height:1.4; }
-.card-foot { display:flex; gap:5px; margin-top:9px; padding-top:9px; border-top:1px solid var(--border); }
-.cbtn { font-size:11px; padding:4px 9px; border-radius:5px; border:1px solid var(--border); background:transparent; color:var(--muted); cursor:pointer; font-family:var(--sans); transition:all .12s; }
-.cbtn:hover{ background:var(--surface2); color:var(--text); }
-.cbtn.red:hover{ background:#FDEDEC; color:#C0392B; border-color:#C0392B; }
-.cbtn.copied{ background:#EAFAF1; color:#27AE60; border-color:#27AE60; }
-
-.add-card { background:transparent; border:1.5px dashed var(--border2); border-radius:var(--r-lg); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; padding:24px; cursor:pointer; color:var(--faint); font-size:13px; font-family:var(--sans); transition:all .15s; min-height:90px; }
-.add-card:hover{ border-color:var(--accent-md); color:var(--accent); background:var(--accent-lt); }
-.add-plus { font-size:22px; line-height:1; }
-.empty { grid-column:1/-1; text-align:center; padding:4rem 1rem; color:var(--faint); }
-.empty-icon { font-size:28px; margin-bottom:10px; font-family:var(--mono); color:var(--border2); }
-.empty p { font-size:13px; line-height:1.7; }
-
-/* MODAL */
-.overlay { position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:300; display:flex; align-items:center; justify-content:center; padding:1rem; opacity:0; pointer-events:none; transition:opacity .18s; }
-.overlay.open{ opacity:1; pointer-events:all; }
-.modal { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:1.5rem; width:100%; max-width:540px; max-height:90vh; overflow-y:auto; transform:translateY(10px) scale(.99); transition:transform .18s; }
-.overlay.open .modal{ transform:translateY(0) scale(1); }
-.modal-title { font-size:16px; font-weight:600; margin-bottom:1.25rem; }
-.fg { margin-bottom:12px; }
-.fl { display:block; font-size:10px; font-weight:600; letter-spacing:.8px; text-transform:uppercase; color:var(--muted); margin-bottom:4px; }
-.fi,.fs,.fta { width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:var(--r); background:var(--bg); color:var(--text); font-family:var(--sans); font-size:13px; outline:none; transition:border-color .12s; }
-.fi:focus,.fs:focus,.fta:focus{ border-color:var(--accent); }
-.fta { resize:vertical; min-height:56px; line-height:1.5; }
-.fs option { background:var(--surface); }
-.fg-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
-
-/* dim rows in modal */
-.dim-fields { display:flex; flex-direction:column; gap:8px; margin-bottom:6px; }
-
-.dim-fr { position:relative; background:var(--surface2); border-radius:var(--r); padding:8px 10px; }
-.dim-fr-head { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
-.dim-fr-head .fi { flex:1; padding:5px 8px; font-size:12px; }
-.dim-type-badge { font-size:9px; font-family:var(--mono); padding:2px 6px; border-radius:3px; flex-shrink:0; }
-.dim-type-badge.t-dim { background:var(--accent-lt); color:var(--accent); }
-.dim-type-badge.t-formula { background:var(--formula-bg); color:var(--formula); }
-.rm-btn { width:24px; height:24px; border:1px solid var(--border); border-radius:5px; background:var(--surface); color:var(--faint); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:14px; transition:all .12s; flex-shrink:0; }
-.rm-btn:hover{ background:#FDEDEC; color:#C0392B; border-color:#C0392B; }
-
-/* ft-in input pair */
-.ftin-wrap { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
-.ftin-col label { display:block; font-size:10px; color:var(--faint); margin-bottom:2px; text-align:center; }
-.ftin-col input { width:100%; padding:6px 8px; font-size:12px; font-family:var(--mono); border:1px solid var(--border); border-radius:var(--r); background:var(--bg); color:var(--text); outline:none; text-align:right; transition:border-color .12s; }
-.ftin-col input:focus { border-color:var(--accent); }
-
-/* formula input */
-.formula-input-wrap { display:flex; flex-direction:column; gap:4px; }
-.formula-expr { font-family:var(--mono); font-size:12px; }
-.formula-preview { font-size:11px; font-family:var(--mono); color:var(--formula); padding:3px 8px; background:var(--formula-bg); border-radius:4px; min-height:22px; }
-.formula-preview.err { color:#C0392B; background:#FDEDEC; }
-
-.row-add-btns { display:flex; gap:6px; }
-.add-row-btn { font-size:11px; padding:5px 12px; border:1px dashed var(--border2); border-radius:5px; background:transparent; color:var(--muted); cursor:pointer; font-family:var(--sans); transition:all .12s; }
-.add-row-btn:hover{ border-color:var(--accent); color:var(--accent); }
-.add-row-btn.f:hover{ border-color:var(--formula); color:var(--formula); }
-
-.formula-help { font-size:11px; color:var(--faint); line-height:1.6; padding:8px 10px; background:var(--surface2); border-radius:var(--r); margin-top:6px; }
-.formula-help code { font-family:var(--mono); font-size:10px; color:var(--formula); background:var(--formula-bg); padding:1px 4px; border-radius:3px; }
-
-.modal-foot { display:flex; gap:8px; justify-content:flex-end; margin-top:1.25rem; padding-top:1rem; border-top:1px solid var(--border); }
-.mbtn { padding:7px 16px; border-radius:var(--r); border:1px solid var(--border); background:transparent; color:var(--text); font-family:var(--sans); font-size:13px; font-weight:500; cursor:pointer; transition:all .12s; }
-.mbtn:hover{ background:var(--surface2); }
-.mbtn-p { background:var(--accent); border-color:var(--accent); color:#fff; font-weight:600; }
-.mbtn-p:hover{ opacity:.88; background:var(--accent); }
-.mbtn-p:disabled{ opacity:.5; cursor:default; }
-
-.toast { position:fixed; bottom:1.5rem; right:1.5rem; background:var(--text); color:var(--bg); padding:9px 16px; border-radius:var(--r); font-size:12px; font-weight:500; z-index:500; transform:translateY(16px); opacity:0; transition:all .22s; pointer-events:none; max-width:300px; }
-.toast.show{ transform:translateY(0); opacity:1; }
-.toast.err{ background:#C0392B; color:#fff; }
-
-@media(max-width:640px){
-  .layout{ flex-direction:column; padding:1rem; }
-  .sidebar{ width:100%; position:static; }
-  .grid{ grid-template-columns:1fr; }
-  .soft-pills{ display:none; }
-}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#141210;--surface:#1C1A17;--surface2:#252219;--border:#38342A;--border2:#48443A;
+  --text:#F0EDE5;--muted:#8A8378;--faint:#5A5650;
+  --accent:#5A88FF;--accent-lt:#141E40;--accent-md:#3A62CC;
+  --formula:#2ECC71;--formula-bg:#0A2010;
+  --arch-bg:#162A1C;--arch-fg:#5DBF8A;
+  --furn-bg:#2A1A0A;--furn-fg:#E09050;
+  --str-bg:#1A1530;--str-fg:#9A80FF;
+  --mep-bg:#2A0A0A;--mep-fg:#FF8080;
+  --site-bg:#2A2000;--site-fg:#E0B040;
+}}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.5}
+#setup-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
+.setup-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:2.5rem;width:100%;max-width:480px}
+.setup-logo{font-family:var(--mono);font-size:22px;font-weight:600;color:var(--accent);margin-bottom:.25rem;letter-spacing:-1px}
+.setup-sub{font-size:13px;color:var(--muted);margin-bottom:2rem}
+.setup-field{margin-bottom:1rem}
+.setup-label{display:block;font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.setup-input{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:var(--r);background:var(--bg);color:var(--text);font-family:var(--mono);font-size:13px;outline:none;transition:border-color .15s}
+.setup-input:focus{border-color:var(--accent)}
+.setup-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.setup-btn{width:100%;padding:11px;background:var(--accent);border:none;border-radius:var(--r);color:#fff;font-family:var(--sans);font-size:14px;font-weight:600;cursor:pointer;transition:opacity .15s}
+.setup-btn:hover{opacity:.88}.setup-btn:disabled{opacity:.5;cursor:default}
+.setup-error{font-size:12px;color:#C0392B;margin-top:10px;text-align:center;min-height:18px}
+#app{display:none}
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 1.25rem;height:52px;display:flex;align-items:center;gap:1rem;position:sticky;top:0;z-index:100}
+.logo{font-family:var(--mono);font-size:17px;font-weight:600;color:var(--accent);letter-spacing:-1px;flex-shrink:0}
+.sync-status{font-family:var(--mono);font-size:11px;color:var(--faint);display:flex;align-items:center;gap:5px}
+.sync-dot{width:6px;height:6px;border-radius:50%;background:var(--faint);flex-shrink:0;transition:background .3s}
+.sync-dot.ok{background:#27AE60}.sync-dot.saving{background:#F39C12;animation:pulse .8s infinite alternate}.sync-dot.err{background:#E74C3C}
+@keyframes pulse{to{opacity:.3}}
+.header-right{margin-left:auto;display:flex;gap:8px;align-items:center}
+.hbtn{padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:var(--sans);font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap}
+.hbtn:hover{background:var(--surface2);color:var(--text)}
+.hbtn-primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.hbtn-primary:hover{opacity:.88;background:var(--accent);color:#fff}
+.layout{display:flex;max-width:1180px;margin:0 auto;padding:1.25rem;gap:1.25rem;align-items:flex-start}
+.sidebar{width:228px;flex-shrink:0;position:sticky;top:68px;max-height:calc(100vh - 80px);overflow-y:auto}
+.sb-section{margin-bottom:1.25rem}
+.sb-label{font-size:10px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--faint);margin-bottom:6px;display:block;padding:0 4px}
+.search-wrap{position:relative;margin-bottom:1.25rem}
+.search-input{width:100%;padding:7px 10px 7px 30px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);color:var(--text);font-family:var(--sans);font-size:13px;outline:none;transition:border-color .15s}
+.search-input:focus{border-color:var(--accent)}
+.search-input::placeholder{color:var(--faint)}
+.search-icon{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--faint);font-size:13px;pointer-events:none}
+.unit-toggle{display:grid;grid-template-columns:repeat(3,1fr);background:var(--surface2);border-radius:7px;padding:3px;gap:2px;margin-bottom:1.25rem}
+.unit-btn{padding:5px 0;border:none;border-radius:5px;background:transparent;font-family:var(--mono);font-size:11px;color:var(--muted);cursor:pointer;transition:all .15s;text-align:center}
+.unit-btn.active{background:var(--surface);color:var(--text);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.nav-btn{display:flex;align-items:center;justify-content:space-between;width:100%;padding:5px 8px;border-radius:6px;border:none;background:transparent;color:var(--text);font-family:var(--sans);font-size:13px;cursor:pointer;text-align:left;transition:background .12s;margin-bottom:1px}
+.nav-btn:hover{background:var(--surface2)}.nav-btn.active{background:var(--accent-lt);color:var(--accent);font-weight:600}
+.nav-left{display:flex;align-items:center;gap:7px}
+.nav-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.nav-count{font-family:var(--mono);font-size:10px;color:var(--faint)}
+.nav-sub{padding-left:22px;font-size:12px}
+.nav-sub .nav-dot{width:5px;height:5px}
+.btype-wrap{display:flex;flex-direction:column;gap:2px}
+.btype-btn{display:flex;align-items:center;justify-content:space-between;width:100%;padding:5px 8px;border-radius:6px;border:1.5px solid transparent;background:transparent;font-family:var(--sans);font-size:12px;cursor:pointer;text-align:left;transition:all .12s;color:var(--text)}
+.btype-btn:hover{background:var(--surface2)}
+.btype-btn.active{font-weight:600}
+.btype-left{display:flex;align-items:center;gap:7px}
+.btype-swatch{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+.btype-count{font-family:var(--mono);font-size:10px;color:var(--faint)}
+.clear-filters-btn{font-size:11px;color:var(--accent);background:none;border:none;cursor:pointer;padding:2px 4px;font-family:var(--sans);text-decoration:underline;display:none}
+.clear-filters-btn.show{display:block}
+.main{flex:1;min-width:0}
+.topbar{display:flex;align-items:center;gap:10px;margin-bottom:.75rem;flex-wrap:wrap}
+.topbar-title{font-size:15px;font-weight:600}
+.topbar-count{font-family:var(--mono);font-size:10px;color:var(--faint);background:var(--surface2);border-radius:20px;padding:2px 8px}
+.filter-chips{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:.75rem}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:500;border:1px solid var(--border);background:var(--surface)}
+.chip-x{background:none;border:none;cursor:pointer;color:var(--faint);font-size:14px;line-height:1;padding:0;display:flex;align-items:center}
+.chip-x:hover{color:var(--text)}
+.soft-pills{display:flex;gap:5px;margin-left:auto}
+.pill{padding:3px 10px;border-radius:20px;border:1px solid var(--border);background:transparent;font-size:11px;font-weight:500;color:var(--muted);cursor:pointer;transition:all .12s;font-family:var(--sans)}
+.pill:hover{background:var(--surface2);color:var(--text)}
+.pill.active{background:var(--accent-lt);color:var(--accent);border-color:var(--accent-md)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px;transition:box-shadow .15s,border-color .15s}
+.card:hover{border-color:var(--border2);box-shadow:0 2px 10px rgba(0,0,0,.06)}
+.card-head{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px}
+.card-titles{flex:1;min-width:0}
+.card-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3}
+.card-sub{font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cat-pill{font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;white-space:nowrap;flex-shrink:0}
+.card-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px}
+.btag{font-size:9px;font-weight:600;padding:2px 6px;border-radius:3px;border:1px solid transparent;letter-spacing:.3px;cursor:pointer;transition:opacity .1s;user-select:none}
+.btag:hover{opacity:.7}
+.dim-rows{display:flex;flex-direction:column;gap:4px}
+.dim-row{display:flex;align-items:center;gap:6px;padding:4px 8px;background:var(--surface2);border-radius:5px}
+.dim-row.fr{background:var(--formula-bg)}
+.dim-lbl{font-size:11px;color:var(--muted);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dim-val{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--accent);white-space:nowrap}
+.fr .dim-val{color:var(--formula)}
+.ftag-badge{font-size:9px;background:var(--formula-bg);color:var(--formula);border-radius:3px;padding:1px 4px;border:1px solid var(--formula);flex-shrink:0;font-family:var(--mono)}
+.card-notes{font-size:11px;color:var(--muted);margin-top:8px;font-style:italic;line-height:1.4}
+.card-foot{display:flex;gap:5px;margin-top:9px;padding-top:9px;border-top:1px solid var(--border)}
+.cbtn{font-size:11px;padding:4px 9px;border-radius:5px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:var(--sans);transition:all .12s}
+.cbtn:hover{background:var(--surface2);color:var(--text)}
+.cbtn.red:hover{background:#FDEDEC;color:#C0392B;border-color:#C0392B}
+.cbtn.copied{background:#EAFAF1;color:#27AE60;border-color:#27AE60}
+.add-card{background:transparent;border:1.5px dashed var(--border2);border-radius:var(--r-lg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:24px;cursor:pointer;color:var(--faint);font-size:13px;font-family:var(--sans);transition:all .15s;min-height:90px}
+.add-card:hover{border-color:var(--accent-md);color:var(--accent);background:var(--accent-lt)}
+.add-plus{font-size:22px;line-height:1}
+.empty{grid-column:1/-1;text-align:center;padding:4rem 1rem;color:var(--faint)}
+.empty-icon{font-size:28px;margin-bottom:10px;font-family:var(--mono);color:var(--border2)}
+.empty p{font-size:13px;line-height:1.7}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity .18s}
+.overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.5rem;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;transform:translateY(10px) scale(.99);transition:transform .18s}
+.overlay.open .modal{transform:translateY(0) scale(1)}
+.modal-title{font-size:16px;font-weight:600;margin-bottom:1.25rem}
+.fg{margin-bottom:12px}
+.fl{display:block;font-size:10px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.fi,.fs,.fta{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--r);background:var(--bg);color:var(--text);font-family:var(--sans);font-size:13px;outline:none;transition:border-color .12s}
+.fi:focus,.fs:focus,.fta:focus{border-color:var(--accent)}
+.fta{resize:vertical;min-height:56px;line-height:1.5}
+.fs option{background:var(--surface)}
+.fg-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.fg-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px}
+.btype-selector{display:flex;flex-wrap:wrap;gap:6px}
+.btype-toggle{display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:6px;border:1.5px solid var(--border);background:transparent;font-family:var(--sans);font-size:12px;font-weight:500;cursor:pointer;transition:all .12s;color:var(--muted)}
+.btype-toggle:hover{border-color:var(--border2);color:var(--text)}
+.btype-toggle.selected{color:var(--text)}
+.btype-toggle .dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+.dim-fields{display:flex;flex-direction:column;gap:8px;margin-bottom:6px}
+.dim-fr{position:relative;background:var(--surface2);border-radius:var(--r);padding:8px 10px}
+.dim-fr-head{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.dim-fr-head .fi{flex:1;padding:5px 8px;font-size:12px}
+.dim-type-badge{font-size:9px;font-family:var(--mono);padding:2px 6px;border-radius:3px;flex-shrink:0}
+.dim-type-badge.t-dim{background:var(--accent-lt);color:var(--accent)}
+.dim-type-badge.t-formula{background:var(--formula-bg);color:var(--formula)}
+.rm-btn{width:24px;height:24px;border:1px solid var(--border);border-radius:5px;background:var(--surface);color:var(--faint);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .12s;flex-shrink:0}
+.rm-btn:hover{background:#FDEDEC;color:#C0392B;border-color:#C0392B}
+.ftin-wrap{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.ftin-col label{display:block;font-size:10px;color:var(--faint);margin-bottom:2px;text-align:center}
+.ftin-col input{width:100%;padding:6px 8px;font-size:12px;font-family:var(--mono);border:1px solid var(--border);border-radius:var(--r);background:var(--bg);color:var(--text);outline:none;text-align:right;transition:border-color .12s}
+.ftin-col input:focus{border-color:var(--accent)}
+.formula-input-wrap{display:flex;flex-direction:column;gap:4px}
+.formula-expr{font-family:var(--mono);font-size:12px}
+.formula-preview{font-size:11px;font-family:var(--mono);color:var(--formula);padding:3px 8px;background:var(--formula-bg);border-radius:4px;min-height:22px}
+.formula-preview.err{color:#C0392B;background:#FDEDEC}
+.row-add-btns{display:flex;gap:6px}
+.add-row-btn{font-size:11px;padding:5px 12px;border:1px dashed var(--border2);border-radius:5px;background:transparent;color:var(--muted);cursor:pointer;font-family:var(--sans);transition:all .12s}
+.add-row-btn:hover{border-color:var(--accent);color:var(--accent)}
+.add-row-btn.f:hover{border-color:var(--formula);color:var(--formula)}
+.formula-help{font-size:11px;color:var(--faint);line-height:1.6;padding:8px 10px;background:var(--surface2);border-radius:var(--r);margin-top:6px}
+.formula-help code{font-family:var(--mono);font-size:10px;color:var(--formula);background:var(--formula-bg);padding:1px 4px;border-radius:3px}
+.modal-foot{display:flex;gap:8px;justify-content:flex-end;margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--border)}
+.mbtn{padding:7px 16px;border-radius:var(--r);border:1px solid var(--border);background:transparent;color:var(--text);font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;transition:all .12s}
+.mbtn:hover{background:var(--surface2)}
+.mbtn-p{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.mbtn-p:hover{opacity:.88;background:var(--accent)}
+.mbtn-p:disabled{opacity:.5;cursor:default}
+.pat-hint{font-size:11px;color:var(--faint);margin-top:5px;line-height:1.5}
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--text);color:var(--bg);padding:9px 16px;border-radius:var(--r);font-size:12px;font-weight:500;z-index:500;transform:translateY(16px);opacity:0;transition:all .22s;pointer-events:none;max-width:300px}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.err{background:#C0392B;color:#fff}
+@media(max-width:680px){.layout{flex-direction:column;padding:1rem}.sidebar{width:100%;position:static;max-height:none}.grid{grid-template-columns:1fr}.soft-pills{display:none}}
 </style>
 </head>
 <body>
 
-<!-- SETUP -->
 <div id="setup-screen">
   <div class="setup-card">
     <div class="setup-logo">dim</div>
@@ -212,7 +197,6 @@ header { background:var(--surface); border-bottom:1px solid var(--border); paddi
   </div>
 </div>
 
-<!-- APP -->
 <div id="app">
   <header>
     <span class="logo">dim</span>
@@ -226,7 +210,7 @@ header { background:var(--surface); border-bottom:1px solid var(--border); paddi
     <aside class="sidebar">
       <div class="search-wrap">
         <span class="search-icon">⌕</span>
-        <input class="search-input" type="text" placeholder="Search…" id="searchInput" oninput="render()" />
+        <input class="search-input" type="text" placeholder="Search…" id="searchInput" oninput="renderGrid()" />
       </div>
       <div class="unit-toggle">
         <button class="unit-btn active" id="u-ftin" onclick="setUnit('ftin')">ft-in</button>
@@ -237,10 +221,27 @@ header { background:var(--surface); border-bottom:1px solid var(--border); paddi
         <span class="sb-label">Category</span>
         <button class="nav-btn active" id="nav-all" onclick="setCat('all')"><span class="nav-left"><span class="nav-dot" style="background:var(--faint)"></span>All</span><span class="nav-count" id="nc-all">0</span></button>
         <button class="nav-btn" id="nav-architectural" onclick="setCat('architectural')"><span class="nav-left"><span class="nav-dot" style="background:#2B8A5A"></span>Architectural</span><span class="nav-count" id="nc-architectural">0</span></button>
+        <button class="nav-btn nav-sub" id="nav-arch-envelope" onclick="setCat('arch-envelope')"><span class="nav-left"><span class="nav-dot" style="background:#2B8A5A;opacity:.5"></span>Envelope &amp; openings</span><span class="nav-count" id="nc-arch-envelope">0</span></button>
+        <button class="nav-btn nav-sub" id="nav-arch-interior" onclick="setCat('arch-interior')"><span class="nav-left"><span class="nav-dot" style="background:#2B8A5A;opacity:.5"></span>Interior &amp; egress</span><span class="nav-count" id="nc-arch-interior">0</span></button>
+        <button class="nav-btn nav-sub" id="nav-arch-vertical" onclick="setCat('arch-vertical')"><span class="nav-left"><span class="nav-dot" style="background:#2B8A5A;opacity:.5"></span>Vertical circulation</span><span class="nav-count" id="nc-arch-vertical">0</span></button>
         <button class="nav-btn" id="nav-furniture" onclick="setCat('furniture')"><span class="nav-left"><span class="nav-dot" style="background:#C4762A"></span>Furniture &amp; millwork</span><span class="nav-count" id="nc-furniture">0</span></button>
-        <button class="nav-btn" id="nav-structural" onclick="setCat('structural')"><span class="nav-left"><span class="nav-dot" style="background:#5A3ABF"></span>Structural / civil</span><span class="nav-count" id="nc-structural">0</span></button>
+        <button class="nav-btn nav-sub" id="nav-furn-kitchen" onclick="setCat('furn-kitchen')"><span class="nav-left"><span class="nav-dot" style="background:#C4762A;opacity:.5"></span>Kitchen &amp; bar</span><span class="nav-count" id="nc-furn-kitchen">0</span></button>
+        <button class="nav-btn nav-sub" id="nav-furn-seating" onclick="setCat('furn-seating')"><span class="nav-left"><span class="nav-dot" style="background:#C4762A;opacity:.5"></span>Seating &amp; tables</span><span class="nav-count" id="nc-furn-seating">0</span></button>
+        <button class="nav-btn nav-sub" id="nav-furn-bedroom" onclick="setCat('furn-bedroom')"><span class="nav-left"><span class="nav-dot" style="background:#C4762A;opacity:.5"></span>Bedroom &amp; storage</span><span class="nav-count" id="nc-furn-bedroom">0</span></button>
+        <button class="nav-btn nav-sub" id="nav-furn-office" onclick="setCat('furn-office')"><span class="nav-left"><span class="nav-dot" style="background:#C4762A;opacity:.5"></span>Office &amp; workspace</span><span class="nav-count" id="nc-furn-office">0</span></button>
+        <button class="nav-btn" id="nav-structural" onclick="setCat('structural')"><span class="nav-left"><span class="nav-dot" style="background:#5A3ABF"></span>Structural</span><span class="nav-count" id="nc-structural">0</span></button>
+        <button class="nav-btn nav-sub" id="nav-str-wood" onclick="setCat('str-wood')"><span class="nav-left"><span class="nav-dot" style="background:#5A3ABF;opacity:.5"></span>Wood framing</span><span class="nav-count" id="nc-str-wood">0</span></button>
+        <button class="nav-btn nav-sub" id="nav-str-steel" onclick="setCat('str-steel')"><span class="nav-left"><span class="nav-dot" style="background:#5A3ABF;opacity:.5"></span>Steel</span><span class="nav-count" id="nc-str-steel">0</span></button>
+        <button class="nav-btn nav-sub" id="nav-str-concrete" onclick="setCat('str-concrete')"><span class="nav-left"><span class="nav-dot" style="background:#5A3ABF;opacity:.5"></span>Concrete</span><span class="nav-count" id="nc-str-concrete">0</span></button>
         <button class="nav-btn" id="nav-mep" onclick="setCat('mep')"><span class="nav-left"><span class="nav-dot" style="background:#BF3A3A"></span>MEP / services</span><span class="nav-count" id="nc-mep">0</span></button>
         <button class="nav-btn" id="nav-site" onclick="setCat('site')"><span class="nav-left"><span class="nav-dot" style="background:#B08020"></span>Site / civil</span><span class="nav-count" id="nc-site">0</span></button>
+      </div>
+      <div class="sb-section">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+          <span class="sb-label" style="margin-bottom:0">Building type</span>
+          <button class="clear-filters-btn" id="clear-btype-btn" onclick="clearBtypes()">Clear</button>
+        </div>
+        <div class="btype-wrap" id="btype-nav"></div>
       </div>
     </aside>
     <main class="main">
@@ -254,6 +255,7 @@ header { background:var(--surface); border-bottom:1px solid var(--border); paddi
           <button class="pill" id="p-Both" onclick="setSoft('Both')">Both</button>
         </div>
       </div>
+      <div class="filter-chips" id="filter-chips" style="display:none"></div>
       <div class="grid" id="grid"></div>
     </main>
   </div>
@@ -265,16 +267,17 @@ header { background:var(--surface); border-bottom:1px solid var(--border); paddi
     <div class="modal-title" id="modal-title">New entry</div>
     <div class="fg"><label class="fl">Name</label><input class="fi" id="f-name" placeholder="e.g. Standard interior door" /></div>
     <div class="fg"><label class="fl">Feature / context</label><input class="fi" id="f-feature" placeholder="e.g. Door opening, wall framing" /></div>
-    <div class="fg-row">
+    <div class="fg-row3">
       <div><label class="fl">Category</label>
-        <select class="fs" id="f-cat">
+        <select class="fs" id="f-cat" onchange="updateSubcatOptions()">
           <option value="architectural">Architectural</option>
           <option value="furniture">Furniture &amp; millwork</option>
-          <option value="structural">Structural / civil</option>
+          <option value="structural">Structural</option>
           <option value="mep">MEP / services</option>
           <option value="site">Site / civil</option>
         </select>
       </div>
+      <div><label class="fl">Subcategory</label><select class="fs" id="f-subcat"></select></div>
       <div><label class="fl">Software</label>
         <select class="fs" id="f-soft">
           <option value="Rhino">Rhino</option>
@@ -284,16 +287,19 @@ header { background:var(--surface); border-bottom:1px solid var(--border); paddi
       </div>
     </div>
     <div class="fg">
+      <label class="fl">Building types</label>
+      <div class="btype-selector" id="f-btypes"></div>
+    </div>
+    <div class="fg">
       <label class="fl">Dimensions &amp; formulas</label>
       <div class="dim-fields" id="dim-fields"></div>
       <div class="row-add-btns" style="margin-bottom:6px">
         <button class="add-row-btn" onclick="addDimRow()">+ Dimension</button>
-        <button class="add-row-btn f" onclick="addFormulaRow()">∑ Formula</button>
+        <button class="add-row-btn f" onclick="addFormulaRow()">&#8721; Formula</button>
       </div>
       <div class="formula-help" id="formula-help" style="display:none">
-        Reference other dimension labels by name. Example: <code>Width * Height</code> or <code>2 * Width + 2 * Depth</code><br>
-        Supported: <code>+ - * / ( ) sqrt(x) round(x) floor(x) ceil(x) min(a,b) max(a,b) abs(x)</code><br>
-        Results display in currently selected unit. Values are resolved in decimal inches internally.
+        Reference other dimension labels by name: <code>Width * Height / 144</code><br>
+        Supported: <code>+ - * / ( ) sqrt round floor ceil min max abs</code>
       </div>
     </div>
     <div class="fg"><label class="fl">Notes</label><textarea class="fta" id="f-notes" placeholder="Code refs, tolerances, context…"></textarea></div>
@@ -306,7 +312,7 @@ header { background:var(--surface); border-bottom:1px solid var(--border); paddi
 
 <!-- Settings modal -->
 <div class="overlay" id="settings-overlay" onclick="if(event.target===this)closeSettings()">
-  <div class="modal">
+  <div class="modal" style="max-width:420px">
     <div class="modal-title">Repository settings</div>
     <div class="fg"><label class="fl">GitHub username</label><input class="fi" id="ss-owner" /></div>
     <div class="fg"><label class="fl">Repository name</label><input class="fi" id="ss-repo" /></div>
@@ -318,15 +324,15 @@ header { background:var(--surface); border-bottom:1px solid var(--border); paddi
   </div>
 </div>
 
-<!-- Write-access modal (PAT prompt) -->
+<!-- PAT modal -->
 <div class="overlay" id="pat-overlay" onclick="if(event.target===this)closePat()">
   <div class="modal" style="max-width:420px">
     <div class="modal-title">Save to GitHub</div>
-    <p style="font-size:13px;color:var(--muted);margin-bottom:1rem;line-height:1.6">Enter a Personal Access Token with <strong style="color:var(--text)">Contents: Read &amp; Write</strong> permission on <span id="pat-repo-label" style="font-family:var(--mono);color:var(--accent);font-size:12px"></span></p>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:1rem;line-height:1.6">Enter a Personal Access Token with <strong style="color:var(--text)">Contents: Read &amp; Write</strong> on <span id="pat-repo-label" style="font-family:var(--mono);color:var(--accent);font-size:12px"></span></p>
     <div class="fg">
       <label class="fl">Personal Access Token</label>
       <input class="fi" id="pat-input" type="password" placeholder="github_pat_…" autocomplete="off" style="font-family:var(--mono);font-size:12px" />
-      <div style="font-size:11px;color:var(--faint);margin-top:5px;line-height:1.5">GitHub → Settings → Developer settings → Fine-grained tokens.<br>Scope: Contents read/write on this repo only.</div>
+      <div class="pat-hint">GitHub → Settings → Developer settings → Fine-grained tokens. Scope: Contents read/write on this repo only.</div>
     </div>
     <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);margin-bottom:1rem;cursor:pointer">
       <input type="checkbox" id="pat-remember" style="width:14px;height:14px" /> Remember for this session
@@ -342,106 +348,90 @@ header { background:var(--surface); border-bottom:1px solid var(--border); paddi
 <div class="toast" id="toast"></div>
 
 <script>
-const FILE_PATH='dimensions.json', CFG_KEY='dim_cfg_v3';
-let cfg={}, entries=[], fileSha=null;
-let activeCat='all', activeSoft='all', activeUnit='ftin';
-let editingId=null, saving=false;
+const FILE_PATH='dimensions.json',CFG_KEY='dim_cfg_v5';
+
+const BTYPES=[
+  {id:'residential', label:'Residential', bg:'#E8F4FF',fg:'#1A4A80',dbg:'#0A1E38',dfg:'#7AB8FF'},
+  {id:'commercial',  label:'Commercial',  bg:'#FFF0E8',fg:'#7A3A10',dbg:'#381A06',dfg:'#FFB07A'},
+  {id:'mixed-use',   label:'Mixed-use',   bg:'#F0EDFF',fg:'#3A1A80',dbg:'#180A38',dfg:'#B07AFF'},
+  {id:'industrial',  label:'Industrial',  bg:'#F0F0EB',fg:'#3A3A20',dbg:'#1A1A0A',dfg:'#C8C8A0'},
+  {id:'hospitality', label:'Hospitality', bg:'#FFF0F4',fg:'#801A3A',dbg:'#380A1A',dfg:'#FF7AAA'},
+  {id:'healthcare',  label:'Healthcare',  bg:'#E8FFF0',fg:'#1A6A3A',dbg:'#083018',dfg:'#7AFFB0'},
+  {id:'education',   label:'Education',   bg:'#FFFDE8',fg:'#6A5A10',dbg:'#302800',dfg:'#FFE87A'},
+  {id:'civic',       label:'Civic',       bg:'#EFF8FF',fg:'#1A5870',dbg:'#082030',dfg:'#7AD8FF'},
+];
+const BM=Object.fromEntries(BTYPES.map(b=>[b.id,b]));
+
+const SUBCATS={
+  architectural:['arch-envelope','arch-interior','arch-vertical'],
+  furniture:['furn-kitchen','furn-seating','furn-bedroom','furn-office'],
+  structural:['str-wood','str-steel','str-concrete'],
+  mep:[],site:[]
+};
+const SL={
+  'arch-envelope':'Envelope & openings','arch-interior':'Interior & egress','arch-vertical':'Vertical circulation',
+  'furn-kitchen':'Kitchen & bar','furn-seating':'Seating & tables','furn-bedroom':'Bedroom & storage','furn-office':'Office & workspace',
+  'str-wood':'Wood framing','str-steel':'Steel','str-concrete':'Concrete'
+};
+const SP={};Object.entries(SUBCATS).forEach(([c,ss])=>ss.forEach(s=>SP[s]=c));
 
 const CAT={
-  architectural:{label:'Arch',  bg:'var(--arch-bg)',fg:'var(--arch-fg)'},
-  furniture:    {label:'Furn',  bg:'var(--furn-bg)',fg:'var(--furn-fg)'},
-  structural:   {label:'Struct',bg:'var(--str-bg)', fg:'var(--str-fg)'},
-  mep:          {label:'MEP',   bg:'var(--mep-bg)', fg:'var(--mep-fg)'},
-  site:         {label:'Site',  bg:'var(--site-bg)',fg:'var(--site-fg)'},
+  architectural:{label:'Arch',bg:'var(--arch-bg)',fg:'var(--arch-fg)'},
+  furniture:{label:'Furn',bg:'var(--furn-bg)',fg:'var(--furn-fg)'},
+  structural:{label:'Struct',bg:'var(--str-bg)',fg:'var(--str-fg)'},
+  mep:{label:'MEP',bg:'var(--mep-bg)',fg:'var(--mep-fg)'},
+  site:{label:'Site',bg:'var(--site-bg)',fg:'var(--site-fg)'}
 };
 
-// ── UNIT HELPERS (stored as decimal inches) ───────────────────────────────────
-function inToFtIn(v){
-  const neg=v<0?'-':'', a=Math.abs(v);
-  const ft=Math.floor(a/12), ins=a%12;
-  const inStr=ins===0?'0"':(Math.round(ins*1000)/1000)+'\"';
-  return neg+ft+"'"+inStr;
-}
-function cvt(inches){
-  const v=parseFloat(inches); if(isNaN(v)) return '—';
-  if(activeUnit==='ftin') return inToFtIn(v);
-  if(activeUnit==='in')   return (Math.round(v*1000)/1000)+'"';
-  if(activeUnit==='mm')   return Math.round(v*25.4)+' mm';
-}
-// ft+in → decimal inches (from two separate inputs)
-function ftInToDec(ft,ins){ return (parseFloat(ft)||0)*12+(parseFloat(ins)||0); }
+const SOPTS={
+  architectural:[{v:'',l:'(none)'},{v:'arch-envelope',l:'Envelope & openings'},{v:'arch-interior',l:'Interior & egress'},{v:'arch-vertical',l:'Vertical circulation'}],
+  furniture:[{v:'',l:'(none)'},{v:'furn-kitchen',l:'Kitchen & bar'},{v:'furn-seating',l:'Seating & tables'},{v:'furn-bedroom',l:'Bedroom & storage'},{v:'furn-office',l:'Office & workspace'}],
+  structural:[{v:'',l:'(none)'},{v:'str-wood',l:'Wood framing'},{v:'str-steel',l:'Steel'},{v:'str-concrete',l:'Concrete'}],
+  mep:[{v:'',l:'(none)'}],site:[{v:'',l:'(none)'}]
+};
 
-// ── FORMULA ENGINE ────────────────────────────────────────────────────────────
-function buildMap(dims){
-  // map label→decimal inches for non-formula dims
-  const m={};
-  dims.filter(d=>d.type!=='formula').forEach(d=>{
-    const v=parseFloat(d.value); if(!isNaN(v)) m[d.label]=v;
-  });
-  return m;
-}
+let cfg={},entries=[],fileSha=null;
+let activeCat='all',activeSoft='all',activeUnit='ftin';
+let activeBtypes=new Set();
+let editingId=null,saving=false,sessionToken=null,pendingMsg=null;
+
+function i(ft,ins=0){return ft*12+ins;}
+
+// unit
+function inToFtIn(v){const neg=v<0?'-':'',a=Math.abs(v),ft=Math.floor(a/12),ins=a%12;return neg+ft+"'"+(ins===0?'0"':(Math.round(ins*1000)/1000)+'"');}
+function cvt(inches){const v=parseFloat(inches);if(isNaN(v))return'—';if(activeUnit==='ftin')return inToFtIn(v);if(activeUnit==='in')return(Math.round(v*1000)/1000)+'"';return Math.round(v*25.4)+' mm';}
+
+// formula
+function buildMap(dims){const m={};dims.filter(d=>d.type!=='formula').forEach(d=>{const v=parseFloat(d.value);if(!isNaN(v))m[d.label]=v;});return m;}
 function evalExpr(expr,map){
   let s=expr;
-  Object.keys(map).sort((a,b)=>b.length-a.length).forEach(lbl=>{
-    s=s.replace(new RegExp('\\b'+lbl.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b','g'),String(map[lbl]));
-  });
-  s=s.replace(/\bsqrt\b/g,'Math.sqrt').replace(/\bround\b/g,'Math.round')
-     .replace(/\bfloor\b/g,'Math.floor').replace(/\bceil\b/g,'Math.ceil')
-     .replace(/\bmin\b/g,'Math.min').replace(/\bmax\b/g,'Math.max')
-     .replace(/\babs\b/g,'Math.abs');
-  if(!/^[\d\s\+\-\*\/\(\)\.,Math\.sqroundflicebmax]+$/.test(s.replace(/Math\.\w+/g,'X'))) throw new Error('unsafe');
-  const r=Function('"use strict";return('+s+')')();
-  if(!isFinite(r)) throw new Error('non-finite');
-  return r;
+  Object.keys(map).sort((a,b)=>b.length-a.length).forEach(lbl=>{s=s.replace(new RegExp('\\b'+lbl.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b','g'),String(map[lbl]));});
+  s=s.replace(/\bsqrt\b/g,'Math.sqrt').replace(/\bround\b/g,'Math.round').replace(/\bfloor\b/g,'Math.floor').replace(/\bceil\b/g,'Math.ceil').replace(/\bmin\b/g,'Math.min').replace(/\bmax\b/g,'Math.max').replace(/\babs\b/g,'Math.abs');
+  if(!/^[\d\s\+\-\*\/\(\)\.,Math\.sqroundflicebmax]+$/.test(s.replace(/Math\.\w+/g,'X')))throw new Error('unsafe');
+  const r=Function('"use strict";return('+s+')')();if(!isFinite(r))throw new Error('non-finite');return r;
 }
-function resolveFormula(expr,dims){ return evalExpr(expr,buildMap(dims)); }
-function resolveForDisplay(d,allDims){
-  if(d.type!=='formula') return cvt(d.value);
-  try{ return cvt(resolveFormula(d.value,allDims)); } catch{ return 'error'; }
-}
+function resolveFormula(expr,dims){return evalExpr(expr,buildMap(dims));}
+function resolveForDisplay(d,allDims){if(d.type!=='formula')return cvt(d.value);try{return cvt(resolveFormula(d.value,allDims));}catch{return'error';}}
 
-// ── GITHUB API ────────────────────────────────────────────────────────────────
+// github
 const apiUrl=()=>`https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${FILE_PATH}`;
 const rawUrl=()=>`https://raw.githubusercontent.com/${cfg.owner}/${cfg.repo}/${cfg.branch}/${FILE_PATH}`;
-
 async function loadFromGitHub(){
   setSyncState('saving','Loading…');
   try{
-    // Public read — no auth needed for public repos
     const res=await fetch(rawUrl()+'?t='+Date.now());
-    if(res.status===404){
-      // File doesn't exist yet — load defaults and note we'll need the SHA on first push
-      entries=getDefaults(); fileSha=null;
-      setSyncState('ok','Ready (new file)'); render(); updateCounts(); return true;
-    }
-    if(!res.ok){setSyncState('err','Load failed');toast('Could not load file (HTTP '+res.status+')',true);return false;}
-    entries=await res.json();
-    if(!Array.isArray(entries)) entries=getDefaults();
-    // Fetch SHA separately (needed for PUT) — also unauthenticated
-    fetchSha();
-    setSyncState('ok','Synced'); render(); updateCounts(); return true;
-  }catch(e){setSyncState('err','Network error');toast('Could not reach GitHub',true);return false;}
+    if(res.status===404){entries=getDefaults();fileSha=null;setSyncState('ok','Ready (new file)');renderAll();return true;}
+    if(!res.ok){setSyncState('err','Load failed');toast('HTTP '+res.status,true);return false;}
+    entries=await res.json();if(!Array.isArray(entries))entries=getDefaults();
+    fetchSha();setSyncState('ok','Synced');renderAll();return true;
+  }catch{setSyncState('err','Network error');toast('Could not reach GitHub',true);return false;}
 }
-
-async function fetchSha(){
-  try{
-    const res=await fetch(apiUrl()+'?ref='+cfg.branch);
-    if(res.ok){ const d=await res.json(); fileSha=d.sha||null; }
-  }catch{}
-}
-
-// Called by saveEntry / deleteCard. Shows PAT modal if no token in session.
-async function pushToGitHub(msg){
-  if(saving) return;
-  if(!sessionToken){ openPat(msg); return; }
-  await doPush(msg, sessionToken);
-}
-
-async function doPush(msg, token){
-  saving=true; setSyncState('saving','Saving…');
+async function fetchSha(){try{const res=await fetch(apiUrl()+'?ref='+cfg.branch);if(res.ok){const d=await res.json();fileSha=d.sha||null;}}catch{}}
+async function pushToGitHub(msg){if(saving)return;if(!sessionToken){openPat(msg);return;}await doPush(msg,sessionToken);}
+async function doPush(msg,token){
+  saving=true;setSyncState('saving','Saving…');
   const content=btoa(unescape(encodeURIComponent(JSON.stringify(entries,null,2))));
-  const body={message:msg||'Update dimensions',content,branch:cfg.branch};
-  if(fileSha) body.sha=fileSha;
+  const body={message:msg||'Update dimensions',content,branch:cfg.branch};if(fileSha)body.sha=fileSha;
   try{
     const res=await fetch(apiUrl(),{method:'PUT',headers:{'Authorization':'Bearer '+token,'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json'},body:JSON.stringify(body)});
     const data=await res.json();
@@ -450,381 +440,319 @@ async function doPush(msg, token){
   }catch{setSyncState('err','Network error');toast('Could not push',true);}
   saving=false;
 }
-
 function setSyncState(s,l){document.getElementById('sync-dot').className='sync-dot '+s;document.getElementById('sync-label').textContent=l;}
 
-// ── PAT MODAL (write-only prompt) ─────────────────────────────────────────────
-function openPat(commitMsg){
-  pendingPushMsg=commitMsg;
-  document.getElementById('pat-repo-label').textContent=cfg.owner+'/'+cfg.repo;
-  document.getElementById('pat-input').value='';
-  document.getElementById('pat-error').textContent='';
-  document.getElementById('pat-remember').checked=false;
-  document.getElementById('pat-overlay').classList.add('open');
-  setTimeout(()=>document.getElementById('pat-input').focus(),80);
-}
-function closePat(){
-  document.getElementById('pat-overlay').classList.remove('open');
-  pendingPushMsg=null;
-  // Re-enable save button if open
-  const btn=document.getElementById('save-btn');
-  if(btn) btn.disabled=false;
-}
-async function confirmPat(){
-  const token=document.getElementById('pat-input').value.trim();
-  const errEl=document.getElementById('pat-error');
-  if(!token){errEl.textContent='Please enter a token.';return;}
-  errEl.textContent='';
-  const btn=document.getElementById('pat-confirm-btn');
-  btn.disabled=true; btn.textContent='Pushing…';
-  if(document.getElementById('pat-remember').checked) sessionToken=token;
-  document.getElementById('pat-overlay').classList.remove('open');
-  await doPush(pendingPushMsg||'Update dimensions', token);
-  pendingPushMsg=null;
-  btn.disabled=false; btn.textContent='Save & push';
-  // Re-enable entry save button
-  const sbtn=document.getElementById('save-btn');
-  if(sbtn) sbtn.disabled=false;
-}
-
-// ── SETUP / SETTINGS ──────────────────────────────────────────────────────────
+// setup/settings
 async function connectGitHub(){
   const btn=document.getElementById('connect-btn'),err=document.getElementById('setup-error');
-  const owner=document.getElementById('s-owner').value.trim(),repo=document.getElementById('s-repo').value.trim();
-  const branch=document.getElementById('s-branch').value.trim()||'main';
+  const owner=document.getElementById('s-owner').value.trim(),repo=document.getElementById('s-repo').value.trim(),branch=document.getElementById('s-branch').value.trim()||'main';
   if(!owner||!repo){err.textContent='Please enter a username and repo name.';return;}
   err.textContent='';btn.disabled=true;btn.textContent='Loading…';
   cfg={owner,repo,branch};
   const ok=await loadFromGitHub();
-  if(ok){
-    localStorage.setItem(CFG_KEY,JSON.stringify(cfg));
-    document.getElementById('setup-screen').style.display='none';
-    document.getElementById('app').style.display='block';
-  } else {
-    err.textContent='Could not load that repo. Make sure it is public and the file exists (or will be created).';
-  }
+  if(ok){localStorage.setItem(CFG_KEY,JSON.stringify(cfg));document.getElementById('setup-screen').style.display='none';document.getElementById('app').style.display='block';}
+  else err.textContent='Could not load. Make sure the repo is public and exists.';
   btn.disabled=false;btn.textContent='Open repository';
 }
-function openSettings(){
-  ['owner','repo','branch'].forEach(k=>document.getElementById('ss-'+k).value=cfg[k]||'');
-  document.getElementById('settings-overlay').classList.add('open');
-}
+function openSettings(){['owner','repo','branch'].forEach(k=>document.getElementById('ss-'+k).value=cfg[k]||'');document.getElementById('settings-overlay').classList.add('open');}
 function closeSettings(){document.getElementById('settings-overlay').classList.remove('open');}
 async function saveSettings(){
-  const owner=document.getElementById('ss-owner').value.trim(),repo=document.getElementById('ss-repo').value.trim();
-  const branch=document.getElementById('ss-branch').value.trim()||'main';
-  if(!owner||!repo)return;
-  cfg={owner,repo,branch};localStorage.setItem(CFG_KEY,JSON.stringify(cfg));
+  const owner=document.getElementById('ss-owner').value.trim(),repo=document.getElementById('ss-repo').value.trim(),branch=document.getElementById('ss-branch').value.trim()||'main';
+  if(!owner||!repo)return;cfg={owner,repo,branch};localStorage.setItem(CFG_KEY,JSON.stringify(cfg));
   fileSha=null;entries=[];sessionToken=null;closeSettings();await loadFromGitHub();
 }
 
-// ── FILTERS ───────────────────────────────────────────────────────────────────
+// PAT
+function openPat(msg){
+  pendingMsg=msg;document.getElementById('pat-repo-label').textContent=cfg.owner+'/'+cfg.repo;
+  document.getElementById('pat-input').value='';document.getElementById('pat-error').textContent='';document.getElementById('pat-remember').checked=false;
+  document.getElementById('pat-overlay').classList.add('open');setTimeout(()=>document.getElementById('pat-input').focus(),80);
+}
+function closePat(){document.getElementById('pat-overlay').classList.remove('open');pendingMsg=null;}
+async function confirmPat(){
+  const token=document.getElementById('pat-input').value.trim(),errEl=document.getElementById('pat-error');
+  if(!token){errEl.textContent='Please enter a token.';return;}
+  errEl.textContent='';const btn=document.getElementById('pat-confirm-btn');btn.disabled=true;btn.textContent='Pushing…';
+  if(document.getElementById('pat-remember').checked)sessionToken=token;
+  document.getElementById('pat-overlay').classList.remove('open');
+  await doPush(pendingMsg||'Update dimensions',token);
+  pendingMsg=null;btn.disabled=false;btn.textContent='Save & push';
+}
+
+// filters
 function setCat(c){
   activeCat=c;
   document.querySelectorAll('[id^="nav-"]').forEach(b=>b.classList.remove('active'));
   document.getElementById('nav-'+c).classList.add('active');
-  const t={all:'All entries',architectural:'Architectural',furniture:'Furniture & millwork',structural:'Structural / civil',mep:'MEP / services',site:'Site / civil'};
-  document.getElementById('page-title').textContent=t[c]||'All entries';render();
+  if(SP[c])document.getElementById('nav-'+SP[c])?.classList.add('active');
+  const titles={all:'All entries',architectural:'Architectural',furniture:'Furniture & millwork',structural:'Structural',mep:'MEP / services',site:'Site / civil',...Object.fromEntries(Object.entries(SL))};
+  document.getElementById('page-title').textContent=titles[c]||c;
+  renderGrid();updateChips();
 }
 function setSoft(s){
-  activeSoft=s;
-  document.querySelectorAll('.pill').forEach(b=>b.classList.remove('active'));
-  document.getElementById('p-'+s).classList.add('active');render();
+  activeSoft=s;document.querySelectorAll('.pill').forEach(b=>b.classList.remove('active'));document.getElementById('p-'+s).classList.add('active');renderGrid();updateChips();
 }
-function setUnit(u){activeUnit=u;['ftin','in','mm'].forEach(x=>document.getElementById('u-'+x).classList.toggle('active',x===u));render();}
+function setUnit(u){activeUnit=u;['ftin','in','mm'].forEach(x=>document.getElementById('u-'+x).classList.toggle('active',x===u));renderGrid();}
+function toggleBtype(id){if(activeBtypes.has(id))activeBtypes.delete(id);else activeBtypes.add(id);renderBtypeNav();renderGrid();updateChips();}
+function clearBtypes(){activeBtypes.clear();renderBtypeNav();renderGrid();updateChips();}
+
+function matchesCat(e){
+  if(activeCat==='all')return true;
+  if(e.category===activeCat)return true;
+  if(e.subcat===activeCat)return true;
+  if(SUBCATS[activeCat]&&SUBCATS[activeCat].includes(e.subcat))return true;
+  return false;
+}
 function getFiltered(){
   const q=document.getElementById('searchInput').value.toLowerCase();
   return entries.filter(e=>{
-    const catOk=activeCat==='all'||e.category===activeCat;
-    const softOk=activeSoft==='all'||e.software===activeSoft;
-    const qOk=!q||[e.name,e.feature,e.notes].filter(Boolean).join(' ').toLowerCase().includes(q);
-    return catOk&&softOk&&qOk;
+    if(!matchesCat(e))return false;
+    if(activeSoft!=='all'&&e.software!==activeSoft)return false;
+    if(activeBtypes.size>0){const et=new Set(e.btypes||[]);if(![...activeBtypes].some(b=>et.has(b)))return false;}
+    if(q&&![e.name,e.feature,e.notes].filter(Boolean).join(' ').toLowerCase().includes(q))return false;
+    return true;
   });
 }
 
-// ── RENDER ────────────────────────────────────────────────────────────────────
+// render
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function render(){
+
+function renderAll(){renderBtypeNav();renderGrid();updateCounts();updateChips();}
+
+function renderBtypeNav(){
+  const wrap=document.getElementById('btype-nav');
+  wrap.innerHTML=BTYPES.map(b=>{
+    const count=entries.filter(e=>(e.btypes||[]).includes(b.id)).length;
+    const active=activeBtypes.has(b.id);
+    return `<button class="btype-btn${active?' active':''}" onclick="toggleBtype('${b.id}')"
+      style="${active?`border-color:${b.fg};background:${b.bg}20;color:${b.fg}`:''}">
+      <span class="btype-left"><span class="btype-swatch" style="background:${b.fg}"></span>${esc(b.label)}</span>
+      <span class="btype-count">${count}</span>
+    </button>`;
+  }).join('');
+  document.getElementById('clear-btype-btn').classList.toggle('show',activeBtypes.size>0);
+}
+
+function updateChips(){
+  const wrap=document.getElementById('filter-chips');
+  const chips=[];
+  if(activeSoft!=='all')chips.push({label:'Software: '+activeSoft,clear:()=>setSoft('all')});
+  [...activeBtypes].forEach(id=>{const b=BM[id];if(b)chips.push({label:b.label,fg:b.fg,bg:b.bg,clear:()=>toggleBtype(id)});});
+  if(!chips.length){wrap.style.display='none';wrap.innerHTML='';return;}
+  wrap.style.display='flex';
+  wrap._chips=chips;
+  wrap.innerHTML=chips.map((c,idx)=>`<span class="chip" style="${c.fg?`border-color:${c.fg}30;background:${c.bg||''};color:${c.fg}`:''}">
+    ${esc(c.label)}<button class="chip-x" onclick="(document.getElementById('filter-chips')._chips[${idx}].clear())">×</button>
+  </span>`).join('');
+}
+
+function renderGrid(){
   const grid=document.getElementById('grid'),list=getFiltered();
   document.getElementById('visible-count').textContent=list.length+' entr'+(list.length===1?'y':'ies');
-  if(!list.length){grid.innerHTML=`<div class="empty"><div class="empty-icon">[ ]</div><p>No entries match.<br>Add one with <strong>+ New entry</strong>.</p></div>`;return;}
+  if(!list.length){grid.innerHTML=`<div class="empty"><div class="empty-icon">[ ]</div><p>No entries match the current filters.<br>Try clearing some filters or adding a new entry.</p></div>`;return;}
   grid.innerHTML=list.map(e=>{
     const m=CAT[e.category]||CAT.architectural;
-    const rows=(e.dims||[]).map(d=>{
-      const isF=d.type==='formula';
-      const val=resolveForDisplay(d,e.dims||[]);
-      return `<div class="dim-row${isF?' fr':''}"><span class="dim-lbl">${esc(d.label)}</span>${isF?'<span class="ftag">f(x)</span>':''}<span class="dim-val">${esc(val)}</span></div>`;
-    }).join('');
+    const dimRows=(e.dims||[]).map(d=>{const isF=d.type==='formula';return`<div class="dim-row${isF?' fr':''}"><span class="dim-lbl">${esc(d.label)}</span>${isF?'<span class="ftag-badge">f(x)</span>':''}<span class="dim-val">${esc(resolveForDisplay(d,e.dims||[]))}</span></div>`;}).join('');
+    const tagHtml=(e.btypes||[]).map(id=>{const b=BM[id];if(!b)return'';return`<span class="btag" style="background:${b.bg};color:${b.fg};border-color:${b.fg}40" onclick="toggleBtype('${id}')" title="Filter by ${b.label}">${esc(b.label)}</span>`;}).join('');
+    const subLabel=e.subcat&&SL[e.subcat]?` <span style="font-size:10px;color:var(--faint)">· ${esc(SL[e.subcat])}</span>`:'';
     return `<div class="card">
-      <div class="card-head"><div class="card-titles"><div class="card-name">${esc(e.name)}</div><div class="card-sub">${esc(e.feature||'')}${e.feature&&e.software?' · ':''}${esc(e.software||'')}</div></div><span class="cat-pill" style="background:${m.bg};color:${m.fg}">${m.label}</span></div>
-      <div class="dim-rows">${rows}</div>
+      <div class="card-head"><div class="card-titles"><div class="card-name">${esc(e.name)}</div><div class="card-sub">${esc(e.feature||'')}${e.feature?' · ':''}${esc(e.software||'')}${subLabel}</div></div><span class="cat-pill" style="background:${m.bg};color:${m.fg}">${m.label}</span></div>
+      ${tagHtml?`<div class="card-tags">${tagHtml}</div>`:''}
+      <div class="dim-rows">${dimRows}</div>
       ${e.notes?`<div class="card-notes">${esc(e.notes)}</div>`:''}
       <div class="card-foot"><button class="cbtn" onclick="copyCard('${e.id}',this)">Copy</button><button class="cbtn" onclick="editCard('${e.id}')">Edit</button><button class="cbtn red" onclick="deleteCard('${e.id}')">Delete</button></div>
     </div>`;
   }).join('')+`<button class="add-card" onclick="openAdd()"><span class="add-plus">+</span>Add entry</button>`;
 }
+
 function updateCounts(){
   document.getElementById('nc-all').textContent=entries.length;
-  ['architectural','furniture','structural','mep','site'].forEach(c=>document.getElementById('nc-'+c).textContent=entries.filter(e=>e.category===c).length);
+  ['architectural','furniture','structural','mep','site'].forEach(c=>{const el=document.getElementById('nc-'+c);if(el)el.textContent=entries.filter(e=>e.category===c).length;});
+  Object.keys(SL).forEach(sc=>{const el=document.getElementById('nc-'+sc);if(el)el.textContent=entries.filter(e=>e.subcat===sc).length;});
 }
 
-// ── CARD ACTIONS ──────────────────────────────────────────────────────────────
+// card actions
 function copyCard(id,btn){
   const e=entries.find(x=>x.id===id);if(!e)return;
-  const txt=[e.name,e.feature?'Feature: '+e.feature:'','Software: '+e.software,
-    ...(e.dims||[]).map(d=>d.label+': '+resolveForDisplay(d,e.dims||[])),
-    e.notes?'Notes: '+e.notes:''
-  ].filter(Boolean).join('\n');
+  const bnames=(e.btypes||[]).map(id=>BM[id]?.label).filter(Boolean).join(', ');
+  const txt=[e.name,e.feature?'Feature: '+e.feature:'','Software: '+e.software,bnames?'Building types: '+bnames:'',...(e.dims||[]).map(d=>d.label+': '+resolveForDisplay(d,e.dims||[])),e.notes?'Notes: '+e.notes:''].filter(Boolean).join('\n');
   navigator.clipboard.writeText(txt).then(()=>{btn.textContent='Copied!';btn.classList.add('copied');setTimeout(()=>{btn.textContent='Copy';btn.classList.remove('copied');},1500);});
 }
-async function deleteCard(id){
-  if(!confirm('Delete this entry?'))return;
-  entries=entries.filter(e=>e.id!==id);render();updateCounts();await pushToGitHub('Delete entry');
-}
+async function deleteCard(id){if(!confirm('Delete this entry?'))return;entries=entries.filter(e=>e.id!==id);renderAll();await pushToGitHub('Delete entry');}
 
-// ── MODAL ─────────────────────────────────────────────────────────────────────
+// modal
 let formulaVisible=false;
 function setFormulaHelp(v){formulaVisible=v;document.getElementById('formula-help').style.display=v?'block':'none';}
 
-function makeDimRow(label='',valueInches=''){
-  const wrap=document.getElementById('dim-fields');
-  const row=document.createElement('div');
-  row.className='dim-fr'; row.dataset.type='dim';
-  let ft='',ins='';
-  if(valueInches!==''){
-    const v=parseFloat(valueInches);
-    if(!isNaN(v)){ft=Math.floor(Math.abs(v)/12)*(v<0?-1:1);ins=Math.abs(v)%12;ins=Math.round(ins*1000)/1000;}
-  }
-  row.innerHTML=`
-    <div class="dim-fr-head">
-      <span class="dim-type-badge t-dim">dim</span>
-      <input class="fi dim-lbl-in" placeholder="Label (e.g. Width)" value="${esc(label)}" />
-      <button class="rm-btn" onclick="this.closest('.dim-fr').remove();checkFormulas()" title="Remove">×</button>
-    </div>
-    <div class="ftin-wrap">
-      <div class="ftin-col"><label>feet</label><input type="number" class="dim-ft" placeholder="0" min="0" step="1" value="${ft===''?'':ft}" /></div>
-      <div class="ftin-col"><label>inches</label><input type="number" class="dim-in" placeholder="0" min="0" max="11.999" step="0.125" value="${ins===''?'':ins}" /></div>
-    </div>`;
-  wrap.appendChild(row);
+function updateSubcatOptions(selected){
+  const cat=document.getElementById('f-cat').value,sel=document.getElementById('f-subcat');
+  sel.innerHTML=(SOPTS[cat]||[{v:'',l:'(none)'}]).map(o=>`<option value="${o.v}">${esc(o.l)}</option>`).join('');
+  if(selected!=null)sel.value=selected;
 }
 
-function makeFormulaRow(label='',expr=''){
-  setFormulaHelp(true);
-  const wrap=document.getElementById('dim-fields');
-  const row=document.createElement('div');
-  row.className='dim-fr'; row.dataset.type='formula';
-  const pid='fp'+Date.now()+Math.random().toString(36).slice(2);
-  row.innerHTML=`
-    <div class="dim-fr-head">
-      <span class="dim-type-badge t-formula">formula</span>
-      <input class="fi dim-lbl-in" placeholder="Result label (e.g. Area)" value="${esc(label)}" />
-      <button class="rm-btn" onclick="this.closest('.dim-fr').remove();checkFormulas()" title="Remove">×</button>
-    </div>
-    <div class="formula-input-wrap">
-      <input class="fi formula-expr dim-expr-in" placeholder='e.g. Width * Height / 144' value="${esc(expr)}" oninput="previewFormula(this,'${pid}')" />
-      <div class="formula-preview" id="${pid}">—</div>
-    </div>`;
-  wrap.appendChild(row);
-  // trigger preview if expr present
-  if(expr) { const inp=row.querySelector('.dim-expr-in'); inp.dataset.prevId=pid; setTimeout(()=>previewFormula(inp,pid),0); }
-  else { row.querySelector('.dim-expr-in').dataset.prevId=pid; }
+function renderBtypeToggles(selected){
+  document.getElementById('f-btypes').innerHTML=BTYPES.map(b=>{
+    const on=(selected||[]).includes(b.id);
+    return `<button type="button" class="btype-toggle${on?' selected':''}" id="bt-${b.id}" onclick="toggleBtypeModal('${b.id}')"
+      style="${on?`border-color:${b.fg};background:${b.bg};color:${b.fg}`:''}">
+      <span class="dot" style="background:${b.fg}"></span>${esc(b.label)}
+    </button>`;
+  }).join('');
 }
-
-function addDimRow(){ makeDimRow(); }
-function addFormulaRow(){ makeFormulaRow(); }
-function checkFormulas(){
-  const hasF=[...document.querySelectorAll('#dim-fields .dim-fr[data-type="formula"]')].length>0;
-  setFormulaHelp(hasF);
+function toggleBtypeModal(id){
+  const btn=document.getElementById('bt-'+id),b=BM[id];if(!btn||!b)return;
+  const on=btn.classList.toggle('selected');
+  btn.style.borderColor=on?b.fg:'';btn.style.background=on?b.bg:'';btn.style.color=on?b.fg:'';
 }
-function previewFormula(input,pid){
-  const prev=document.getElementById(pid||input.dataset.prevId); if(!prev)return;
-  const expr=input.value.trim(); if(!expr){prev.textContent='—';prev.className='formula-preview';return;}
-  const dims=collectDims(false);
-  try{
-    const r=resolveFormula(expr,dims);
-    prev.textContent='= '+cvt(r); prev.className='formula-preview';
-  }catch{prev.textContent='error — check label names & operators';prev.className='formula-preview err';}
-}
-function collectDims(){
-  const dims=[];
-  document.querySelectorAll('#dim-fields .dim-fr').forEach(row=>{
-    const type=row.dataset.type;
-    const lbl=row.querySelector('.dim-lbl-in').value.trim();
-    if(type==='formula'){
-      const expr=row.querySelector('.dim-expr-in').value.trim();
-      if(lbl||expr) dims.push({label:lbl||'Result',value:expr,type:'formula'});
-    }else{
-      const ft=parseFloat(row.querySelector('.dim-ft').value)||0;
-      const ins=parseFloat(row.querySelector('.dim-in').value)||0;
-      const total=ft*12+ins;
-      if(lbl||total) dims.push({label:lbl||'Value',value:total,type:'dim'});
-    }
-  });
-  return dims;
-}
+function getSelectedBtypes(){return BTYPES.filter(b=>document.getElementById('bt-'+b.id)?.classList.contains('selected')).map(b=>b.id);}
 
 function openAdd(){
-  editingId=null; setFormulaHelp(false);
+  editingId=null;setFormulaHelp(false);
   document.getElementById('modal-title').textContent='New entry';
   ['f-name','f-feature','f-notes'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('f-cat').value='architectural';
-  document.getElementById('f-soft').value='Rhino';
+  document.getElementById('f-cat').value='architectural';document.getElementById('f-soft').value='Rhino';
+  updateSubcatOptions('');renderBtypeToggles([]);
   document.getElementById('dim-fields').innerHTML='';
-  makeDimRow('Width',''); makeDimRow('Height',''); makeDimRow('Depth','');
+  makeDimRow('Width','');makeDimRow('Height','');makeDimRow('Depth','');
   document.getElementById('modal-overlay').classList.add('open');
   setTimeout(()=>document.getElementById('f-name').focus(),80);
 }
 function editCard(id){
   const e=entries.find(x=>x.id===id);if(!e)return;
-  editingId=id; setFormulaHelp(false);
+  editingId=id;setFormulaHelp(false);
   document.getElementById('modal-title').textContent='Edit entry';
-  document.getElementById('f-name').value=e.name;
-  document.getElementById('f-feature').value=e.feature||'';
-  document.getElementById('f-cat').value=e.category;
-  document.getElementById('f-soft').value=e.software;
+  document.getElementById('f-name').value=e.name;document.getElementById('f-feature').value=e.feature||'';
+  document.getElementById('f-cat').value=e.category;document.getElementById('f-soft').value=e.software;
   document.getElementById('f-notes').value=e.notes||'';
+  updateSubcatOptions(e.subcat||'');renderBtypeToggles(e.btypes||[]);
   document.getElementById('dim-fields').innerHTML='';
-  (e.dims||[]).forEach(d=>{ if(d.type==='formula') makeFormulaRow(d.label,d.value); else makeDimRow(d.label,d.value); });
-  checkFormulas();
-  document.getElementById('modal-overlay').classList.add('open');
+  (e.dims||[]).forEach(d=>{if(d.type==='formula')makeFormulaRow(d.label,d.value);else makeDimRow(d.label,d.value);});
+  checkFormulas();document.getElementById('modal-overlay').classList.add('open');
 }
 function closeModal(){document.getElementById('modal-overlay').classList.remove('open');}
 function overlayClick(ev){if(ev.target===document.getElementById('modal-overlay'))closeModal();}
 
+function makeDimRow(label='',valueInches=''){
+  const wrap=document.getElementById('dim-fields'),row=document.createElement('div');
+  row.className='dim-fr';row.dataset.type='dim';
+  let ft='',ins='';
+  if(valueInches!==''){const v=parseFloat(valueInches);if(!isNaN(v)){ft=Math.floor(Math.abs(v)/12)*(v<0?-1:1);ins=Math.round((Math.abs(v)%12)*1000)/1000;}}
+  row.innerHTML=`<div class="dim-fr-head"><span class="dim-type-badge t-dim">dim</span><input class="fi dim-lbl-in" placeholder="Label" value="${esc(label)}" /><button class="rm-btn" onclick="this.closest('.dim-fr').remove();checkFormulas()">×</button></div>
+    <div class="ftin-wrap"><div class="ftin-col"><label>feet</label><input type="number" class="dim-ft" placeholder="0" min="0" step="1" value="${ft===''?'':ft}" /></div><div class="ftin-col"><label>inches</label><input type="number" class="dim-in" placeholder="0" min="0" max="11.999" step="0.125" value="${ins===''?'':ins}" /></div></div>`;
+  wrap.appendChild(row);
+}
+function makeFormulaRow(label='',expr=''){
+  setFormulaHelp(true);const wrap=document.getElementById('dim-fields'),row=document.createElement('div');
+  row.className='dim-fr';row.dataset.type='formula';
+  const pid='fp'+Date.now()+Math.random().toString(36).slice(2);
+  row.innerHTML=`<div class="dim-fr-head"><span class="dim-type-badge t-formula">formula</span><input class="fi dim-lbl-in" placeholder="Result label" value="${esc(label)}" /><button class="rm-btn" onclick="this.closest('.dim-fr').remove();checkFormulas()">×</button></div>
+    <div class="formula-input-wrap"><input class="fi formula-expr dim-expr-in" placeholder='e.g. Width * Height / 144' value="${esc(expr)}" oninput="previewFormula(this,'${pid}')" /><div class="formula-preview" id="${pid}">—</div></div>`;
+  wrap.appendChild(row);
+  const inp=row.querySelector('.dim-expr-in');inp.dataset.prevId=pid;if(expr)setTimeout(()=>previewFormula(inp,pid),0);
+}
+function addDimRow(){makeDimRow();}
+function addFormulaRow(){makeFormulaRow();}
+function checkFormulas(){setFormulaHelp([...document.querySelectorAll('#dim-fields .dim-fr[data-type="formula"]')].length>0);}
+function previewFormula(input,pid){
+  const prev=document.getElementById(pid||input.dataset.prevId);if(!prev)return;
+  const expr=input.value.trim();if(!expr){prev.textContent='—';prev.className='formula-preview';return;}
+  try{prev.textContent='= '+cvt(resolveFormula(expr,collectDims()));prev.className='formula-preview';}
+  catch{prev.textContent='error — check label names & operators';prev.className='formula-preview err';}
+}
+function collectDims(){
+  const dims=[];
+  document.querySelectorAll('#dim-fields .dim-fr').forEach(row=>{
+    const type=row.dataset.type,lbl=row.querySelector('.dim-lbl-in').value.trim();
+    if(type==='formula'){const expr=row.querySelector('.dim-expr-in').value.trim();if(lbl||expr)dims.push({label:lbl||'Result',value:expr,type:'formula'});}
+    else{const ft=parseFloat(row.querySelector('.dim-ft').value)||0,ins=parseFloat(row.querySelector('.dim-in').value)||0,total=ft*12+ins;if(lbl||total)dims.push({label:lbl||'Value',value:total,type:'dim'});}
+  });
+  return dims;
+}
 async function saveEntry(){
-  const name=document.getElementById('f-name').value.trim();
-  if(!name){document.getElementById('f-name').focus();return;}
-  const dims=collectDims();
+  const name=document.getElementById('f-name').value.trim();if(!name){document.getElementById('f-name').focus();return;}
+  const subcat=document.getElementById('f-subcat').value||undefined;
+  const btypes=getSelectedBtypes();
   const entry={
     id:editingId||(Date.now().toString(36)+Math.random().toString(36).slice(2)),
-    name, feature:document.getElementById('f-feature').value.trim(),
-    category:document.getElementById('f-cat').value, software:document.getElementById('f-soft').value,
-    notes:document.getElementById('f-notes').value.trim(), dims, updated:Date.now()
+    name,feature:document.getElementById('f-feature').value.trim(),
+    category:document.getElementById('f-cat').value,
+    ...(subcat?{subcat}:{}),
+    software:document.getElementById('f-soft').value,
+    ...(btypes.length?{btypes}:{}),
+    notes:document.getElementById('f-notes').value.trim(),
+    dims:collectDims(),updated:Date.now()
   };
-  if(editingId) entries=entries.map(e=>e.id===editingId?entry:e); else entries.unshift(entry);
-  closeModal(); render(); updateCounts();
-  await pushToGitHub((editingId?'Update':'Add')+' entry: '+name);
+  if(editingId)entries=entries.map(e=>e.id===editingId?entry:e);else entries.unshift(entry);
+  closeModal();renderAll();await pushToGitHub((editingId?'Update':'Add')+' entry: '+name);
 }
 
-function toast(msg,isErr=false){
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.className='toast show'+(isErr?' err':'');
-  clearTimeout(t._t); t._t=setTimeout(()=>t.className='toast',2600);
-}
+function toast(msg,isErr=false){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(isErr?' err':'');clearTimeout(t._t);t._t=setTimeout(()=>t.className='toast',2600);}
 
-// ── DEFAULT PRESETS (US standard, stored as decimal inches) ───────────────────
-function i(ft,ins=0){return ft*12+ins;}
-function getDefaults(){ return [
-  // ARCHITECTURAL
-  {id:'a01',name:'Exterior wall — 2×6 framed',feature:'Wood-frame exterior',category:'architectural',software:'Both',notes:'2×6 studs + 1/2" sheathing + 5/8" GWB each side. Energy-code standard.',
-   dims:[{label:'Total thickness',value:i(0,7.625),type:'dim'},{label:'Stud depth',value:i(0,5.5),type:'dim'},{label:'Sheathing',value:i(0,0.5),type:'dim'},{label:'GWB',value:i(0,0.625),type:'dim'}]},
-  {id:'a02',name:'Interior partition — 2×4',feature:'Non-structural wall',category:'architectural',software:'Both',notes:'3-1/2" stud + 5/8" GWB each side.',
-   dims:[{label:'Total thickness',value:i(0,4.75),type:'dim'},{label:'Stud depth',value:i(0,3.5),type:'dim'},{label:'GWB',value:i(0,0.625),type:'dim'}]},
-  {id:'a03',name:'Interior door — standard',feature:'Door opening (residential)',category:'architectural',software:'Both',notes:'IRC standard. RO = width+2", height+2-1/2".',
-   dims:[{label:'Width',value:i(2,8),type:'dim'},{label:'Height',value:i(6,8),type:'dim'},{label:'Rough opening W',value:i(2,10),type:'dim'},{label:'Rough opening H',value:i(6,10.5),type:'dim'}]},
-  {id:'a04',name:'Exterior door — entry',feature:'Residential front door',category:'architectural',software:'Both',
-   dims:[{label:'Width',value:i(3,0),type:'dim'},{label:'Height',value:i(6,8),type:'dim'},{label:'Rough opening W',value:i(3,2),type:'dim'}]},
-  {id:'a05',name:'Sliding patio door',feature:'Exterior glazed door',category:'architectural',software:'Both',
-   dims:[{label:'Width (common)',value:i(6,0),type:'dim'},{label:'Height',value:i(6,8),type:'dim'}]},
-  {id:'a06',name:'Stair — residential (IRC)',feature:'Rise / run',category:'architectural',software:'Both',notes:'Max riser 7-3/4", min tread 10". Common comfortable combo: 7+11.',
-   dims:[{label:'Riser height',value:i(0,7),type:'dim'},{label:'Tread depth (going)',value:i(0,11),type:'dim'},{label:'Min headroom',value:i(6,8),type:'dim'},{label:'Min width',value:i(3,0),type:'dim'},{label:'Handrail height',value:i(3,2),type:'dim'},{label:'Nosing',value:i(0,1.25),type:'dim'}]},
-  {id:'a07',name:'Stair — commercial egress (IBC)',feature:'Egress stair',category:'architectural',software:'Both',notes:'IBC occupancy-dependent. Egress min 44" wide.',
-   dims:[{label:'Max riser',value:i(0,7),type:'dim'},{label:'Min tread',value:i(0,11),type:'dim'},{label:'Min width',value:i(3,8),type:'dim'},{label:'Headroom',value:i(6,8),type:'dim'}]},
-  {id:'a08',name:'Window — double-hung residential',feature:'Window opening',category:'architectural',software:'Both',
-   dims:[{label:'Width',value:i(3,0),type:'dim'},{label:'Height',value:i(4,0),type:'dim'},{label:'Sill height AFF',value:i(2,6),type:'dim'},{label:'Head height AFF',value:i(6,8),type:'dim'}]},
-  {id:'a09',name:'Ceiling height — residential',feature:'Floor-to-ceiling',category:'architectural',software:'Both',notes:'8\'-0" standard, 9\'-0" premium.',
-   dims:[{label:'Standard',value:i(8,0),type:'dim'},{label:'Premium',value:i(9,0),type:'dim'},{label:'Basement min (IRC)',value:i(7,0),type:'dim'}]},
-  {id:'a10',name:'Ceiling height — commercial',feature:'Floor-to-ceiling / slab soffit',category:'architectural',software:'Both',
-   dims:[{label:'Office (finished)',value:i(9,0),type:'dim'},{label:'Retail',value:i(10,0),type:'dim'},{label:'Warehouse',value:i(24,0),type:'dim'}]},
-  {id:'a11',name:'ADA door clearance',feature:'Accessible maneuvering',category:'architectural',software:'Both',notes:'ADA 2010 §404. 32" min clear in leaf.',
-   dims:[{label:'Min clear width',value:i(2,8),type:'dim'},{label:'Preferred clear',value:i(3,0),type:'dim'},{label:'Latch-side clearance',value:i(1,6),type:'dim'}]},
-  {id:'a12',name:'Corridor width',feature:'Egress / accessible',category:'architectural',software:'Both',notes:'ADA: 36" min, 60" at turns. IBC egress: 44" min.',
-   dims:[{label:'ADA min',value:i(3,0),type:'dim'},{label:'IBC egress min',value:i(3,8),type:'dim'},{label:'Preferred (commercial)',value:i(5,0),type:'dim'}]},
-  {id:'a13',name:'Floor assembly — wood frame',feature:'Floor-to-floor thickness',category:'architectural',software:'Rhino',
-   dims:[{label:'Floor-to-floor',value:i(10,0),type:'dim'},{label:'TJI joist (11-7/8")',value:i(0,11.875),type:'dim'},{label:'3/4" subfloor',value:i(0,0.75),type:'dim'},{label:'Finish floor (hardwood)',value:i(0,0.75),type:'dim'}]},
-  {id:'a14',name:'Bathroom — minimum (residential)',feature:'Minimum 3-fixture bath',category:'architectural',software:'Both',notes:'Toilet CL min 15" from wall, 18" preferred.',
-   dims:[{label:'Min width',value:i(5,0),type:'dim'},{label:'Min length',value:i(8,0),type:'dim'},{label:'Toilet CL from wall',value:i(1,3),type:'dim'},{label:'Lavatory min width',value:i(1,6),type:'dim'}]},
-  // FURNITURE
-  {id:'f01',name:'Kitchen counter — base cabinet',feature:'Standard kitchen',category:'furniture',software:'Both',notes:'NKBA standard. ±1" for ergonomic custom.',
-   dims:[{label:'Counter height',value:i(3,0),type:'dim'},{label:'Counter depth',value:i(2,1),type:'dim'},{label:'Cabinet depth (base)',value:i(1,11),type:'dim'},{label:'Toe kick height',value:i(0,3.5),type:'dim'},{label:'Toe kick depth',value:i(0,3),type:'dim'}]},
-  {id:'f02',name:'Upper cabinet — kitchen',feature:'Wall-mounted cabinet',category:'furniture',software:'Both',
-   dims:[{label:'Height',value:i(1,6),type:'dim'},{label:'Depth',value:i(1,0),type:'dim'},{label:'Bottom AFF',value:i(4,6),type:'dim'},{label:'Top AFF',value:i(6,0),type:'dim'}]},
-  {id:'f03',name:'Kitchen island / breakfast bar',feature:'Island seating',category:'furniture',software:'SketchUp',
-   dims:[{label:'Bar height',value:i(3,6),type:'dim'},{label:'Counter height',value:i(3,0),type:'dim'},{label:'Overhang for seating',value:i(1,0),type:'dim'},{label:'Min width',value:i(4,0),type:'dim'}]},
-  {id:'f04',name:'Dining table — 4 seat',feature:'Residential dining',category:'furniture',software:'SketchUp',
-   dims:[{label:'Length',value:i(4,0),type:'dim'},{label:'Width',value:i(3,0),type:'dim'},{label:'Height',value:i(2,6),type:'dim'}]},
-  {id:'f05',name:'Dining table — 6–8 seat',feature:'Residential / restaurant',category:'furniture',software:'SketchUp',
-   dims:[{label:'Length',value:i(6,0),type:'dim'},{label:'Width',value:i(3,0),type:'dim'},{label:'Height',value:i(2,6),type:'dim'}]},
-  {id:'f06',name:'Dining chair',feature:'Residential / restaurant',category:'furniture',software:'SketchUp',
-   dims:[{label:'Seat height',value:i(1,6),type:'dim'},{label:'Seat width',value:i(1,7),type:'dim'},{label:'Seat depth',value:i(1,5),type:'dim'},{label:'Overall height',value:i(2,9),type:'dim'}]},
-  {id:'f07',name:'Counter stool',feature:'Counter-height seating',category:'furniture',software:'SketchUp',
-   dims:[{label:'Seat height',value:i(1,9),type:'dim'},{label:'Under-counter clearance',value:i(0,10),type:'dim'}]},
-  {id:'f08',name:'Bar stool',feature:'Bar-height seating',category:'furniture',software:'SketchUp',
-   dims:[{label:'Seat height',value:i(2,6),type:'dim'},{label:'Bar top height',value:i(3,6),type:'dim'}]},
-  {id:'f09',name:'Sofa — 3 seat',feature:'Residential seating',category:'furniture',software:'SketchUp',
-   dims:[{label:'Length',value:i(7,0),type:'dim'},{label:'Depth',value:i(3,0),type:'dim'},{label:'Seat height',value:i(1,4),type:'dim'},{label:'Back height',value:i(3,0),type:'dim'}]},
-  {id:'f10',name:'Office desk — standard',feature:'Workstation',category:'furniture',software:'Both',
-   dims:[{label:'Width',value:i(5,0),type:'dim'},{label:'Depth',value:i(2,0),type:'dim'},{label:'Height',value:i(2,5),type:'dim'}]},
-  {id:'f11',name:'Bathroom vanity',feature:'Vanity base cabinet',category:'furniture',software:'Both',
-   dims:[{label:'Height',value:i(2,11),type:'dim'},{label:'Depth',value:i(1,9),type:'dim'},{label:'Width (single)',value:i(2,6),type:'dim'},{label:'Width (double)',value:i(5,0),type:'dim'}]},
-  {id:'f12',name:'Bed — queen',feature:'Bedroom',category:'furniture',software:'SketchUp',
-   dims:[{label:'Length',value:i(6,8),type:'dim'},{label:'Width',value:i(5,0),type:'dim'}]},
-  {id:'f13',name:'Bed — king',feature:'Bedroom',category:'furniture',software:'SketchUp',
-   dims:[{label:'Length',value:i(6,8),type:'dim'},{label:'Width',value:i(6,4),type:'dim'}]},
-  {id:'f14',name:'Closet — walk-in clearances',feature:'Walk-in closet',category:'furniture',software:'Both',notes:'Min 24" hanging depth + 36" center aisle.',
-   dims:[{label:'Hanging rod depth',value:i(2,0),type:'dim'},{label:'Shelf depth',value:i(1,4),type:'dim'},{label:'Aisle (min)',value:i(3,0),type:'dim'},{label:'Room width (min)',value:i(7,0),type:'dim'}]},
-  {id:'f15',name:'Bookshelf / shelving',feature:'Built-in shelving',category:'furniture',software:'Both',
-   dims:[{label:'Shelf depth (books)',value:i(1,0),type:'dim'},{label:'Shelf depth (deep)',value:i(1,4),type:'dim'},{label:'Shelf spacing (standard)',value:i(1,0),type:'dim'},{label:'Max span (unsupported)',value:i(3,0),type:'dim'}]},
-  // STRUCTURAL
-  {id:'s01',name:'Wood stud wall — load bearing',feature:'Bearing wall framing',category:'structural',software:'Rhino',
-   dims:[{label:'Stud size',value:i(0,5.5),type:'dim'},{label:'Plate (each)',value:i(0,1.5),type:'dim'},{label:'Total wall depth',value:i(0,8.5),type:'dim'}]},
-  {id:'s02',name:'LVL beam — double 1-3/4"',feature:'Header / primary beam',category:'structural',software:'Rhino',notes:'Verify with SE. Width fits 2×4 wall; use triple for heavier loads.',
-   dims:[{label:'Width (single)',value:i(0,1.75),type:'dim'},{label:'Width (double)',value:i(0,3.5),type:'dim'},{label:'Depth (9-1/2")',value:i(0,9.5),type:'dim'},{label:'Depth (11-7/8")',value:i(0,11.875),type:'dim'},{label:'Depth (16")',value:i(1,4),type:'dim'}]},
-  {id:'s03',name:'Steel W8×31',feature:'Wide-flange beam',category:'structural',software:'Rhino',notes:'Common light commercial beam. Always confirm with SE.',
-   dims:[{label:'Nominal depth',value:i(0,8),type:'dim'},{label:'Flange width',value:i(0,8),type:'dim'}]},
-  {id:'s04',name:'Steel W12×53',feature:'Mid-span commercial beam',category:'structural',software:'Rhino',
-   dims:[{label:'Nominal depth',value:i(1,0),type:'dim'},{label:'Flange width',value:i(0,10),type:'dim'}]},
-  {id:'s05',name:'Concrete slab on grade',feature:'SOG / basement slab',category:'structural',software:'Rhino',
-   dims:[{label:'Residential',value:i(0,4),type:'dim'},{label:'Commercial light',value:i(0,5),type:'dim'},{label:'Commercial heavy',value:i(0,6),type:'dim'}]},
-  {id:'s06',name:'Post-tensioned slab',feature:'Elevated concrete floor',category:'structural',software:'Rhino',
-   dims:[{label:'Slab thickness',value:i(0,8),type:'dim'},{label:'Total floor assembly',value:i(1,2),type:'dim'}]},
-  {id:'s07',name:'Spread footing — residential',feature:'Foundation footing',category:'structural',software:'Rhino',notes:'Width ~2× bearing wall. Depth below local frost line.',
-   dims:[{label:'Width',value:i(1,4),type:'dim'},{label:'Thickness',value:i(0,8),type:'dim'}]},
-  {id:'s08',name:'TJI 360 floor joist',feature:'Engineered floor joist',category:'structural',software:'Rhino',
-   dims:[{label:'Depth (9-1/2")',value:i(0,9.5),type:'dim'},{label:'Depth (11-7/8")',value:i(0,11.875),type:'dim'},{label:'Flange width',value:i(0,1.75),type:'dim'}]},
-  // MEP
-  {id:'m01',name:'HVAC duct — supply trunk',feature:'Main supply duct',category:'mep',software:'Rhino',notes:'Flex branches: 6" or 8" dia. Size per Manual D.',
-   dims:[{label:'Width (rectangular)',value:i(1,4),type:'dim'},{label:'Height (rectangular)',value:i(0,8),type:'dim'},{label:'Round equiv.',value:i(1,0),type:'dim'}]},
-  {id:'m02',name:'Plumbing rough-in',feature:'Bathroom fixture rough-in',category:'mep',software:'Rhino',notes:'Toilet CL: 15" min (18" preferred) from side wall.',
-   dims:[{label:'Toilet CL from wall',value:i(1,3),type:'dim'},{label:'Toilet rough-in',value:i(1,0),type:'dim'},{label:'Lav drain AFF',value:i(1,7),type:'dim'},{label:'Shower head AFF',value:i(6,6),type:'dim'}]},
-  {id:'m03',name:'Electrical panel clearance',feature:'Working space (NEC 110.26)',category:'mep',software:'Rhino',notes:'NEC 110.26: 36" depth × 30" width × 78" height.',
-   dims:[{label:'Depth',value:i(3,0),type:'dim'},{label:'Width',value:i(2,6),type:'dim'},{label:'Height',value:i(6,6),type:'dim'}]},
-  {id:'m04',name:'Sprinkler coverage — NFPA 13',feature:'Wet-pipe sprinkler head',category:'mep',software:'Rhino',notes:'Light hazard: 130 sqft/head max.',
-   dims:[{label:'Max coverage (light)',value:i(11,6),type:'dim'},{label:'Max coverage (ordinary)',value:i(10,0),type:'dim'},{label:'Min from wall',value:i(0,4),type:'dim'}]},
-  // SITE
-  {id:'t01',name:'Parking stall — standard',feature:'Surface parking',category:'site',software:'Both',notes:'90° stall. ADA = 8\'-0" + 5\'-0" access aisle.',
-   dims:[{label:'Width (standard)',value:i(8,6),type:'dim'},{label:'Width (ADA)',value:i(8,0),type:'dim'},{label:'Length',value:i(18,0),type:'dim'},{label:'Drive aisle (2-way)',value:i(24,0),type:'dim'}]},
-  {id:'t02',name:'Sidewalk / pedestrian path',feature:'Public walk',category:'site',software:'Both',notes:'ADA: 5\'-0" continuous clear. Wider always better.',
-   dims:[{label:'ADA min',value:i(5,0),type:'dim'},{label:'Residential',value:i(4,0),type:'dim'},{label:'Commercial / urban',value:i(8,0),type:'dim'}]},
-  {id:'t03',name:'ADA ramp',feature:'Accessible ramp',category:'site',software:'Both',notes:'Max slope 1:12. Max 30\' run before level landing.',
-   dims:[{label:'Min width',value:i(3,0),type:'dim'},{label:'Max rise per run',value:i(2,6),type:'dim'},{label:'Landing (top/bottom)',value:i(5,0),type:'dim'},{label:'Handrail height',value:i(3,0),type:'dim'}]},
-  {id:'t04',name:'Curb & gutter',feature:'Street edge',category:'site',software:'Rhino',
-   dims:[{label:'Curb height',value:i(0,6),type:'dim'},{label:'Gutter width',value:i(1,0),type:'dim'},{label:'Back of curb to ROW',value:i(4,0),type:'dim'}]},
-  // FORMULA EXAMPLES
-  {id:'fx1',name:'Room area calculator',feature:'Formula example',category:'architectural',software:'Both',notes:'Edit Width and Length to auto-calculate area in sqft.',
-   dims:[{label:'Width',value:i(12,0),type:'dim'},{label:'Length',value:i(16,0),type:'dim'},{label:'Area (sqft)',value:'(Width * Length) / 144',type:'formula'}]},
-  {id:'fx2',name:'Stair total rise calculator',feature:'Formula example — stairs',category:'architectural',software:'Both',notes:'Set Riser Height and Number of Risers; total rise auto-calculates.',
-   dims:[{label:'Riser height',value:i(0,7),type:'dim'},{label:'Number of risers',value:14,type:'dim'},{label:'Total rise',value:'Riser height * Number of risers',type:'formula'},{label:'Total run (approx)',value:'(Number of risers - 1) * 11',type:'formula'}]},
+// defaults
+function getDefaults(){return[
+  {id:'a01',name:'Exterior wall — 2×6 framed',feature:'Wood-frame exterior',category:'architectural',subcat:'arch-envelope',software:'Both',btypes:['residential','mixed-use'],notes:'2×6 studs + 1/2" sheathing + 5/8" GWB.',dims:[{label:'Total thickness',value:i(0,7.625),type:'dim'},{label:'Stud depth',value:i(0,5.5),type:'dim'},{label:'Sheathing',value:i(0,0.5),type:'dim'},{label:'GWB',value:i(0,0.625),type:'dim'}]},
+  {id:'a02',name:'Exterior wall — CMU masonry',feature:'Masonry bearing wall',category:'architectural',subcat:'arch-envelope',software:'Rhino',btypes:['commercial','industrial','civic'],notes:'8" CMU + 1" furring + 5/8" GWB.',dims:[{label:'CMU thickness',value:i(0,8),type:'dim'},{label:'Furring',value:i(0,1),type:'dim'},{label:'GWB',value:i(0,0.625),type:'dim'},{label:'Total',value:i(0,9.625),type:'dim'}]},
+  {id:'a03',name:'Curtain wall — stick system',feature:'Glazed facade',category:'architectural',subcat:'arch-envelope',software:'Rhino',btypes:['commercial','mixed-use','civic'],notes:'Typical stick system mullion depths.',dims:[{label:'Mullion depth',value:i(0,6),type:'dim'},{label:'Mullion face width',value:i(0,2.5),type:'dim'},{label:'Min floor-to-floor',value:i(12,0),type:'dim'}]},
+  {id:'a04',name:'Interior door — standard',feature:'Door opening',category:'architectural',subcat:'arch-interior',software:'Both',btypes:['residential','commercial','mixed-use','hospitality'],notes:'IRC. RO = width+2", height+2-1/2".',dims:[{label:'Width',value:i(2,8),type:'dim'},{label:'Height',value:i(6,8),type:'dim'},{label:'Rough opening W',value:i(2,10),type:'dim'},{label:'Rough opening H',value:i(6,10.5),type:'dim'}]},
+  {id:'a05',name:'Exterior door — entry',feature:'Residential entry',category:'architectural',subcat:'arch-envelope',software:'Both',btypes:['residential'],dims:[{label:'Width',value:i(3,0),type:'dim'},{label:'Height',value:i(6,8),type:'dim'},{label:'Rough opening W',value:i(3,2),type:'dim'}]},
+  {id:'a06',name:'Sliding patio door',feature:'Exterior glazed door',category:'architectural',subcat:'arch-envelope',software:'Both',btypes:['residential','mixed-use'],dims:[{label:'Width (common)',value:i(6,0),type:'dim'},{label:'Height',value:i(6,8),type:'dim'}]},
+  {id:'a07',name:'Window — double-hung residential',feature:'Window opening',category:'architectural',subcat:'arch-envelope',software:'Both',btypes:['residential'],dims:[{label:'Width',value:i(3,0),type:'dim'},{label:'Height',value:i(4,0),type:'dim'},{label:'Sill height AFF',value:i(2,6),type:'dim'},{label:'Head height AFF',value:i(6,8),type:'dim'}]},
+  {id:'a08',name:'Interior partition — 2×4',feature:'Non-structural wall',category:'architectural',subcat:'arch-interior',software:'Both',btypes:['residential','commercial','mixed-use','hospitality'],dims:[{label:'Total thickness',value:i(0,4.75),type:'dim'},{label:'Stud depth',value:i(0,3.5),type:'dim'},{label:'GWB',value:i(0,0.625),type:'dim'}]},
+  {id:'a09',name:'Ceiling height — residential',feature:'Floor-to-ceiling',category:'architectural',subcat:'arch-interior',software:'Both',btypes:['residential'],notes:'8\'-0" standard; 9\'-0" premium.',dims:[{label:'Standard',value:i(8,0),type:'dim'},{label:'Premium',value:i(9,0),type:'dim'},{label:'Basement min',value:i(7,0),type:'dim'}]},
+  {id:'a10',name:'Ceiling height — commercial',feature:'Floor-to-ceiling / slab soffit',category:'architectural',subcat:'arch-interior',software:'Both',btypes:['commercial','mixed-use','hospitality'],dims:[{label:'Office (finished)',value:i(9,0),type:'dim'},{label:'Retail',value:i(10,0),type:'dim'},{label:'Warehouse',value:i(24,0),type:'dim'}]},
+  {id:'a11',name:'ADA door clearance',feature:'Accessible maneuvering',category:'architectural',subcat:'arch-interior',software:'Both',btypes:['commercial','civic','healthcare','education'],notes:'ADA 2010 §404.',dims:[{label:'Min clear width',value:i(2,8),type:'dim'},{label:'Preferred clear',value:i(3,0),type:'dim'},{label:'Latch-side clearance',value:i(1,6),type:'dim'}]},
+  {id:'a12',name:'Corridor width',feature:'Egress / accessible',category:'architectural',subcat:'arch-interior',software:'Both',btypes:['commercial','civic','healthcare','education','hospitality'],notes:'ADA: 36" min, 60" at turns. IBC egress: 44" min.',dims:[{label:'ADA min',value:i(3,0),type:'dim'},{label:'IBC egress min',value:i(3,8),type:'dim'},{label:'Preferred commercial',value:i(5,0),type:'dim'}]},
+  {id:'a13',name:'Bathroom — minimum residential',feature:'3-fixture bath',category:'architectural',subcat:'arch-interior',software:'Both',btypes:['residential'],notes:'Toilet CL min 15" from wall.',dims:[{label:'Min width',value:i(5,0),type:'dim'},{label:'Min length',value:i(8,0),type:'dim'},{label:'Toilet CL from wall',value:i(1,3),type:'dim'}]},
+  {id:'a14',name:'Stair — residential (IRC)',feature:'Rise / run',category:'architectural',subcat:'arch-vertical',software:'Both',btypes:['residential'],notes:'Max riser 7-3/4", min tread 10".',dims:[{label:'Riser height',value:i(0,7),type:'dim'},{label:'Tread depth',value:i(0,11),type:'dim'},{label:'Min headroom',value:i(6,8),type:'dim'},{label:'Min width',value:i(3,0),type:'dim'},{label:'Handrail height',value:i(3,2),type:'dim'}]},
+  {id:'a15',name:'Stair — commercial egress (IBC)',feature:'Egress stair',category:'architectural',subcat:'arch-vertical',software:'Both',btypes:['commercial','mixed-use','civic','healthcare','education','hospitality','industrial'],notes:'IBC. Egress min 44" wide.',dims:[{label:'Max riser',value:i(0,7),type:'dim'},{label:'Min tread',value:i(0,11),type:'dim'},{label:'Min width',value:i(3,8),type:'dim'},{label:'Headroom',value:i(6,8),type:'dim'}]},
+  {id:'a16',name:'Elevator — passenger',feature:'Cab & hoistway',category:'architectural',subcat:'arch-vertical',software:'Rhino',btypes:['commercial','mixed-use','healthcare','civic','hospitality'],notes:'ASME A17.1. Verify with vendor.',dims:[{label:'Cab width',value:i(6,8),type:'dim'},{label:'Cab depth',value:i(4,3),type:'dim'},{label:'Hoistway width',value:i(7,4),type:'dim'},{label:'Hoistway depth',value:i(6,2),type:'dim'}]},
+  {id:'a17',name:'Elevator — ADA accessible',feature:'ADA compliant cab',category:'architectural',subcat:'arch-vertical',software:'Rhino',btypes:['commercial','healthcare','civic','mixed-use'],notes:'ADA 2010 §407.',dims:[{label:'Min cab width',value:i(5,0),type:'dim'},{label:'Min cab depth',value:i(6,8),type:'dim'},{label:'Door clear width',value:i(3,0),type:'dim'}]},
+  {id:'f01',name:'Kitchen counter — base cabinet',feature:'Standard kitchen',category:'furniture',subcat:'furn-kitchen',software:'Both',btypes:['residential','hospitality','mixed-use'],notes:'NKBA standard.',dims:[{label:'Counter height',value:i(3,0),type:'dim'},{label:'Counter depth',value:i(2,1),type:'dim'},{label:'Cabinet depth',value:i(1,11),type:'dim'},{label:'Toe kick height',value:i(0,3.5),type:'dim'}]},
+  {id:'f02',name:'Upper cabinet — kitchen',feature:'Wall-mounted cabinet',category:'furniture',subcat:'furn-kitchen',software:'Both',btypes:['residential'],dims:[{label:'Height',value:i(1,6),type:'dim'},{label:'Depth',value:i(1,0),type:'dim'},{label:'Bottom AFF',value:i(4,6),type:'dim'},{label:'Top AFF',value:i(6,0),type:'dim'}]},
+  {id:'f03',name:'Kitchen island / breakfast bar',feature:'Island seating',category:'furniture',subcat:'furn-kitchen',software:'SketchUp',btypes:['residential','hospitality'],dims:[{label:'Bar height',value:i(3,6),type:'dim'},{label:'Counter height',value:i(3,0),type:'dim'},{label:'Overhang for seating',value:i(1,0),type:'dim'},{label:'Min width',value:i(4,0),type:'dim'}]},
+  {id:'f04',name:'Dining table — 4 seat',feature:'Residential dining',category:'furniture',subcat:'furn-seating',software:'SketchUp',btypes:['residential'],dims:[{label:'Length',value:i(4,0),type:'dim'},{label:'Width',value:i(3,0),type:'dim'},{label:'Height',value:i(2,6),type:'dim'}]},
+  {id:'f05',name:'Dining table — 6–8 seat',feature:'Restaurant / residential',category:'furniture',subcat:'furn-seating',software:'SketchUp',btypes:['residential','hospitality','commercial'],dims:[{label:'Length',value:i(6,0),type:'dim'},{label:'Width',value:i(3,0),type:'dim'},{label:'Height',value:i(2,6),type:'dim'}]},
+  {id:'f06',name:'Dining chair',feature:'Residential / restaurant',category:'furniture',subcat:'furn-seating',software:'SketchUp',btypes:['residential','hospitality','commercial'],dims:[{label:'Seat height',value:i(1,6),type:'dim'},{label:'Seat width',value:i(1,7),type:'dim'},{label:'Seat depth',value:i(1,5),type:'dim'},{label:'Overall height',value:i(2,9),type:'dim'}]},
+  {id:'f07',name:'Counter stool',feature:'Counter-height seating',category:'furniture',subcat:'furn-seating',software:'SketchUp',btypes:['residential','hospitality'],dims:[{label:'Seat height',value:i(1,9),type:'dim'},{label:'Under-counter clearance',value:i(0,10),type:'dim'}]},
+  {id:'f08',name:'Bar stool',feature:'Bar-height seating',category:'furniture',subcat:'furn-seating',software:'SketchUp',btypes:['hospitality','commercial'],dims:[{label:'Seat height',value:i(2,6),type:'dim'},{label:'Bar top height',value:i(3,6),type:'dim'}]},
+  {id:'f09',name:'Sofa — 3 seat',feature:'Residential seating',category:'furniture',subcat:'furn-seating',software:'SketchUp',btypes:['residential','hospitality'],dims:[{label:'Length',value:i(7,0),type:'dim'},{label:'Depth',value:i(3,0),type:'dim'},{label:'Seat height',value:i(1,4),type:'dim'},{label:'Back height',value:i(3,0),type:'dim'}]},
+  {id:'f10',name:'Bed — queen',feature:'Bedroom',category:'furniture',subcat:'furn-bedroom',software:'SketchUp',btypes:['residential','hospitality'],dims:[{label:'Length',value:i(6,8),type:'dim'},{label:'Width',value:i(5,0),type:'dim'}]},
+  {id:'f11',name:'Bed — king',feature:'Bedroom',category:'furniture',subcat:'furn-bedroom',software:'SketchUp',btypes:['residential','hospitality'],dims:[{label:'Length',value:i(6,8),type:'dim'},{label:'Width',value:i(6,4),type:'dim'}]},
+  {id:'f12',name:'Closet — walk-in clearances',feature:'Walk-in closet',category:'furniture',subcat:'furn-bedroom',software:'Both',btypes:['residential','hospitality'],notes:'Min 24" hanging + 36" aisle.',dims:[{label:'Hanging rod depth',value:i(2,0),type:'dim'},{label:'Shelf depth',value:i(1,4),type:'dim'},{label:'Aisle (min)',value:i(3,0),type:'dim'},{label:'Room width (min)',value:i(7,0),type:'dim'}]},
+  {id:'f13',name:'Bathroom vanity',feature:'Vanity base',category:'furniture',subcat:'furn-bedroom',software:'Both',btypes:['residential','hospitality'],dims:[{label:'Height',value:i(2,11),type:'dim'},{label:'Depth',value:i(1,9),type:'dim'},{label:'Width (single)',value:i(2,6),type:'dim'},{label:'Width (double)',value:i(5,0),type:'dim'}]},
+  {id:'f14',name:'Office desk — standard',feature:'Workstation',category:'furniture',subcat:'furn-office',software:'Both',btypes:['commercial','mixed-use','education'],dims:[{label:'Width',value:i(5,0),type:'dim'},{label:'Depth',value:i(2,0),type:'dim'},{label:'Height',value:i(2,5),type:'dim'}]},
+  {id:'f15',name:'Conference table — 8 seat',feature:'Meeting room',category:'furniture',subcat:'furn-office',software:'SketchUp',btypes:['commercial','mixed-use'],dims:[{label:'Length',value:i(10,0),type:'dim'},{label:'Width',value:i(4,0),type:'dim'},{label:'Height',value:i(2,6),type:'dim'}]},
+  {id:'f16',name:'Bookshelf / shelving',feature:'Built-in shelving',category:'furniture',subcat:'furn-office',software:'Both',btypes:['residential','commercial','education'],dims:[{label:'Shelf depth (books)',value:i(1,0),type:'dim'},{label:'Shelf spacing (std)',value:i(1,0),type:'dim'},{label:'Max span unsupported',value:i(3,0),type:'dim'}]},
+  {id:'s01',name:'Wood stud wall — load bearing',feature:'Bearing wall framing',category:'structural',subcat:'str-wood',software:'Rhino',btypes:['residential','mixed-use'],dims:[{label:'Stud size',value:i(0,5.5),type:'dim'},{label:'Plate (each)',value:i(0,1.5),type:'dim'},{label:'Total wall depth',value:i(0,8.5),type:'dim'}]},
+  {id:'s02',name:'LVL beam — double 1-3/4"',feature:'Header / primary beam',category:'structural',subcat:'str-wood',software:'Rhino',btypes:['residential','mixed-use'],notes:'Verify with SE.',dims:[{label:'Width (double)',value:i(0,3.5),type:'dim'},{label:'Depth (9-1/2")',value:i(0,9.5),type:'dim'},{label:'Depth (11-7/8")',value:i(0,11.875),type:'dim'},{label:'Depth (16")',value:i(1,4),type:'dim'}]},
+  {id:'s03',name:'TJI 360 floor joist',feature:'Engineered floor joist',category:'structural',subcat:'str-wood',software:'Rhino',btypes:['residential'],dims:[{label:'Depth (9-1/2")',value:i(0,9.5),type:'dim'},{label:'Depth (11-7/8")',value:i(0,11.875),type:'dim'},{label:'Flange width',value:i(0,1.75),type:'dim'}]},
+  {id:'s04',name:'Spread footing — residential',feature:'Foundation footing',category:'structural',subcat:'str-wood',software:'Rhino',btypes:['residential'],notes:'Width ~2× bearing wall.',dims:[{label:'Width',value:i(1,4),type:'dim'},{label:'Thickness',value:i(0,8),type:'dim'}]},
+  {id:'s05',name:'Steel W8×31',feature:'Wide-flange beam',category:'structural',subcat:'str-steel',software:'Rhino',btypes:['commercial','industrial','mixed-use'],notes:'Confirm with SE.',dims:[{label:'Nominal depth',value:i(0,8),type:'dim'},{label:'Flange width',value:i(0,8),type:'dim'}]},
+  {id:'s06',name:'Steel W12×53',feature:'Mid-span commercial beam',category:'structural',subcat:'str-steel',software:'Rhino',btypes:['commercial','industrial'],dims:[{label:'Nominal depth',value:i(1,0),type:'dim'},{label:'Flange width',value:i(0,10),type:'dim'}]},
+  {id:'s07',name:'Steel W18×76',feature:'Long-span beam',category:'structural',subcat:'str-steel',software:'Rhino',btypes:['commercial','industrial','civic'],notes:'Confirm with SE.',dims:[{label:'Nominal depth',value:i(1,6),type:'dim'},{label:'Flange width',value:i(0,11),type:'dim'}]},
+  {id:'s08',name:'HSS column — square',feature:'Hollow structural section',category:'structural',subcat:'str-steel',software:'Rhino',btypes:['commercial','industrial','mixed-use'],dims:[{label:'Size (common)',value:i(0,6),type:'dim'},{label:'Wall thickness',value:i(0,0.375),type:'dim'}]},
+  {id:'s09',name:'Concrete slab on grade',feature:'SOG / basement',category:'structural',subcat:'str-concrete',software:'Rhino',btypes:['residential','commercial','industrial'],dims:[{label:'Residential',value:i(0,4),type:'dim'},{label:'Commercial light',value:i(0,5),type:'dim'},{label:'Commercial heavy',value:i(0,6),type:'dim'}]},
+  {id:'s10',name:'Post-tensioned slab',feature:'Elevated concrete floor',category:'structural',subcat:'str-concrete',software:'Rhino',btypes:['commercial','mixed-use','hospitality'],dims:[{label:'Slab thickness',value:i(0,8),type:'dim'},{label:'Total floor assembly',value:i(1,2),type:'dim'}]},
+  {id:'s11',name:'Concrete column — typical',feature:'Primary structure',category:'structural',subcat:'str-concrete',software:'Rhino',btypes:['commercial','civic','mixed-use','industrial'],notes:'Confirm with SE.',dims:[{label:'Size (4–6 story)',value:i(1,6),type:'dim'},{label:'Size (mid-rise)',value:i(2,0),type:'dim'}]},
+  {id:'m01',name:'HVAC duct — supply trunk',feature:'Main supply duct',category:'mep',software:'Rhino',btypes:['commercial','mixed-use','industrial','healthcare'],notes:'Flex branches: 6" or 8" dia.',dims:[{label:'Width (rectangular)',value:i(1,4),type:'dim'},{label:'Height (rectangular)',value:i(0,8),type:'dim'},{label:'Round equiv.',value:i(1,0),type:'dim'}]},
+  {id:'m02',name:'Plumbing rough-in',feature:'Bathroom fixture rough-in',category:'mep',software:'Rhino',btypes:['residential','commercial','hospitality','healthcare'],notes:'Toilet CL: 15" min, 18" preferred.',dims:[{label:'Toilet CL from wall',value:i(1,3),type:'dim'},{label:'Toilet rough-in',value:i(1,0),type:'dim'},{label:'Lav drain AFF',value:i(1,7),type:'dim'},{label:'Shower head AFF',value:i(6,6),type:'dim'}]},
+  {id:'m03',name:'Electrical panel clearance',feature:'Working space (NEC 110.26)',category:'mep',software:'Rhino',btypes:['commercial','industrial','residential'],notes:'36" depth × 30" width × 78" height.',dims:[{label:'Depth',value:i(3,0),type:'dim'},{label:'Width',value:i(2,6),type:'dim'},{label:'Height',value:i(6,6),type:'dim'}]},
+  {id:'m04',name:'Sprinkler coverage — NFPA 13',feature:'Wet-pipe sprinkler',category:'mep',software:'Rhino',btypes:['commercial','industrial','healthcare','civic','mixed-use'],notes:'Light hazard: 130 sqft/head.',dims:[{label:'Max coverage (light)',value:i(11,6),type:'dim'},{label:'Max coverage (ordinary)',value:i(10,0),type:'dim'},{label:'Min from wall',value:i(0,4),type:'dim'}]},
+  {id:'t01',name:'Parking stall — standard',feature:'Surface parking',category:'site',software:'Both',btypes:['commercial','mixed-use','civic','industrial'],notes:'90°. ADA = 8\'-0" + 5\'-0" access aisle.',dims:[{label:'Width (standard)',value:i(8,6),type:'dim'},{label:'Width (ADA)',value:i(8,0),type:'dim'},{label:'Length',value:i(18,0),type:'dim'},{label:'Drive aisle (2-way)',value:i(24,0),type:'dim'}]},
+  {id:'t02',name:'Sidewalk / pedestrian path',feature:'Public walk',category:'site',software:'Both',btypes:['residential','commercial','civic','mixed-use'],notes:'ADA: 5\'-0" continuous clear.',dims:[{label:'ADA min',value:i(5,0),type:'dim'},{label:'Residential',value:i(4,0),type:'dim'},{label:'Commercial / urban',value:i(8,0),type:'dim'}]},
+  {id:'t03',name:'ADA ramp',feature:'Accessible ramp',category:'site',software:'Both',btypes:['commercial','civic','healthcare','education','mixed-use'],notes:'Max slope 1:12.',dims:[{label:'Min width',value:i(3,0),type:'dim'},{label:'Max rise per run',value:i(2,6),type:'dim'},{label:'Landing',value:i(5,0),type:'dim'},{label:'Handrail height',value:i(3,0),type:'dim'}]},
+  {id:'t04',name:'Curb & gutter',feature:'Street edge',category:'site',software:'Rhino',btypes:['commercial','civic','mixed-use'],dims:[{label:'Curb height',value:i(0,6),type:'dim'},{label:'Gutter width',value:i(1,0),type:'dim'},{label:'Back of curb to ROW',value:i(4,0),type:'dim'}]},
+  {id:'fx1',name:'Room area calculator',feature:'Formula example',category:'architectural',subcat:'arch-interior',software:'Both',btypes:['residential','commercial'],notes:'Edit Width and Length — area auto-calculates.',dims:[{label:'Width',value:i(12,0),type:'dim'},{label:'Length',value:i(16,0),type:'dim'},{label:'Area (sqft)',value:'(Width * Length) / 144',type:'formula'}]},
+  {id:'fx2',name:'Stair total rise / run',feature:'Formula example — stairs',category:'architectural',subcat:'arch-vertical',software:'Both',btypes:['residential','commercial'],notes:'Set Riser Height and Number of Risers.',dims:[{label:'Riser height',value:i(0,7),type:'dim'},{label:'Number of risers',value:14,type:'dim'},{label:'Total rise',value:'Riser height * Number of risers',type:'formula'},{label:'Total run (approx)',value:'(Number of risers - 1) * 11',type:'formula'}]},
 ];}
 
-// ── BOOT ─────────────────────────────────────────────────────────────────────
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'){closeModal();closeSettings();closePat();} });
+// boot
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeSettings();closePat();}});
+updateSubcatOptions('');
 (async function boot(){
-  let saved; try{saved=JSON.parse(localStorage.getItem(CFG_KEY));}catch{}
+  let saved;try{saved=JSON.parse(localStorage.getItem(CFG_KEY));}catch{}
   if(saved&&saved.owner&&saved.repo){
-    cfg=saved;
-    document.getElementById('setup-screen').style.display='none';
-    document.getElementById('app').style.display='block';
+    cfg=saved;document.getElementById('setup-screen').style.display='none';document.getElementById('app').style.display='block';
     await loadFromGitHub();
   }
 })();
