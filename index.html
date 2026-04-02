@@ -554,20 +554,32 @@ const schemaRawUrl=()=>`https://raw.githubusercontent.com/${cfg.owner}/${cfg.rep
 
 async function loadFromGitHub(){
   setSyncState('saving','Loading…');
-  // Always try schema first but never let it block entries load
+  // Load schema — never let this block entry loading
   try{ await loadSchemaFromGitHub(); }catch{ schema=JSON.parse(JSON.stringify(DEFAULT_SCHEMA));rebuildDerived(); }
   try{
     const res=await fetch(rawUrl()+'?t='+Date.now());
-    if(res.status===404){
-      // Repo exists but dimensions.json not yet created — start fresh with defaults
-      entries=getDefaults();fileSha=null;setSyncState('ok','Ready — no file yet');renderAll();return true;
+    if(res.status===200){
+      const text=await res.text();
+      try{
+        const parsed=JSON.parse(text);
+        entries=Array.isArray(parsed)?parsed:getDefaults();
+      }catch{
+        // File exists but isn't valid JSON — start fresh
+        entries=getDefaults();
+      }
+      fetchSha();
+    } else {
+      // 404 = file not created yet, any other error = treat same (empty/new repo)
+      entries=getDefaults();fileSha=null;
     }
-    if(!res.ok){setSyncState('err','Load failed');toast('HTTP '+res.status+' loading dimensions.json',true);return false;}
-    const parsed=await res.json();
-    entries=Array.isArray(parsed)?parsed:getDefaults();
-    fetchSha();setSyncState('ok','Synced');renderAll();return true;
+    setSyncState('ok',res.status===200?'Synced':'Ready — no file yet');
+    renderAll();return true;
   }catch(e){
-    setSyncState('err','Network error');toast('Network error: '+e.message,true);return false;
+    // Only a true network failure reaches here
+    setSyncState('err','Network error');
+    console.error('loadFromGitHub error:',e);
+    toast('Network error loading repo: '+e.message,true);
+    return false;
   }
 }
 
@@ -631,9 +643,32 @@ async function connectGitHub(){
   if(!owner||!repo){err.textContent='Please enter a username and repo name.';return;}
   err.textContent='';btn.disabled=true;btn.textContent='Loading…';
   cfg={owner,repo,branch};
+
+  // First verify the repo exists at all using the GitHub API (no auth needed for public repos)
+  try{
+    const check=await fetch(`https://api.github.com/repos/${owner}/${repo}`,{headers:{'Accept':'application/vnd.github+json'}});
+    if(!check.ok){
+      const d=await check.json().catch(()=>({}));
+      err.textContent=check.status===404
+        ?`Repo "${owner}/${repo}" not found. Check the name and make sure it's public.`
+        :`GitHub error ${check.status}: ${d.message||'unknown'}`;
+      btn.disabled=false;btn.textContent='Open repository';
+      return;
+    }
+  }catch{
+    err.textContent='Network error — check your connection and try again.';
+    btn.disabled=false;btn.textContent='Open repository';
+    return;
+  }
+
   const ok=await loadFromGitHub();
-  if(ok){localStorage.setItem(CFG_KEY,JSON.stringify(cfg));document.getElementById('setup-screen').style.display='none';document.getElementById('app').style.display='block';}
-  else err.textContent='Could not load. Make sure the repo is public and exists.';
+  if(ok){
+    localStorage.setItem(CFG_KEY,JSON.stringify(cfg));
+    document.getElementById('setup-screen').style.display='none';
+    document.getElementById('app').style.display='block';
+  } else {
+    err.textContent='Repo found but could not load dimensions.json. Check the browser console for details.';
+  }
   btn.disabled=false;btn.textContent='Open repository';
 }
 function openSettings(){['owner','repo','branch'].forEach(k=>document.getElementById('ss-'+k).value=cfg[k]||'');document.getElementById('settings-overlay').classList.add('open');}
