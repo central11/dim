@@ -20,10 +20,10 @@
     "formulas": [
       {
         "label": "Pediment Height",
-        "expr": "(Pediment Width * 4)/(14 + Number of Columns)"
+        "expr": "(4 * Pediment Width)/(14 + Number of Columns)"
       }
     ],
-    "updated": 1775169584547
+    "updated": 1775169680826
   },
   {
     "id": "mni11nk76nr1h737bcr",
