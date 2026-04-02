@@ -1,0 +1,80 @@
+[
+  {
+    "id": "architectural",
+    "label": "Architectural",
+    "color": "#0080ff",
+    "subcats": [
+      {
+        "id": "arch-envelope",
+        "label": "Envelope & openings"
+      },
+      {
+        "id": "arch-interior",
+        "label": "Interior & egress"
+      },
+      {
+        "id": "arch-vertical",
+        "label": "Vertical circulation"
+      },
+      {
+        "id": "architectural-traditional-features",
+        "label": "Traditional Features",
+        "color": "#800040"
+      }
+    ]
+  },
+  {
+    "id": "furniture",
+    "label": "Furniture & millwork",
+    "color": "#C4762A",
+    "subcats": [
+      {
+        "id": "furn-kitchen",
+        "label": "Kitchen & bar"
+      },
+      {
+        "id": "furn-seating",
+        "label": "Seating & tables"
+      },
+      {
+        "id": "furn-bedroom",
+        "label": "Bedroom & storage"
+      },
+      {
+        "id": "furn-office",
+        "label": "Office & workspace"
+      }
+    ]
+  },
+  {
+    "id": "structural",
+    "label": "Structural",
+    "color": "#5A3ABF",
+    "subcats": [
+      {
+        "id": "str-wood",
+        "label": "Wood framing"
+      },
+      {
+        "id": "str-steel",
+        "label": "Steel"
+      },
+      {
+        "id": "str-concrete",
+        "label": "Concrete"
+      }
+    ]
+  },
+  {
+    "id": "mep",
+    "label": "MEP / services",
+    "color": "#BF3A3A",
+    "subcats": []
+  },
+  {
+    "id": "site",
+    "label": "Site / civil",
+    "color": "#B08020",
+    "subcats": []
+  }
+]
