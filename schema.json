@@ -2,19 +2,22 @@
   {
     "id": "architectural",
     "label": "Architectural",
-    "color": "#0080ff",
+    "color": "#800040",
     "subcats": [
       {
         "id": "arch-envelope",
-        "label": "Envelope & openings"
+        "label": "Envelope & openings",
+        "color": "#ffffff"
       },
       {
         "id": "arch-interior",
-        "label": "Interior & egress"
+        "label": "Interior & egress",
+        "color": "#ffffff"
       },
       {
         "id": "arch-vertical",
-        "label": "Vertical circulation"
+        "label": "Vertical circulation",
+        "color": "#ffffff"
       },
       {
         "id": "architectural-traditional-features",
