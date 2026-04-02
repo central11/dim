@@ -179,7 +179,30 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
 .toast.show{transform:translateY(0);opacity:1}
 .toast.err{background:#C0392B;color:#fff}
 @media(max-width:680px){.layout{flex-direction:column;padding:1rem}.sidebar{width:100%;position:static;max-height:none}.grid{grid-template-columns:1fr}.soft-pills{display:none}}
-/* category manager */
+/* calculator cards */
+.calc-card{border-left:3px solid var(--formula)}
+.calc-vars{display:flex;flex-direction:column;gap:4px;margin-bottom:6px}
+.calc-var-row{display:flex;align-items:center;gap:6px;padding:3px 8px;background:var(--accent-lt);border-radius:5px}
+.calc-var-lbl{font-size:11px;color:var(--accent);flex:1}
+.calc-var-type{font-size:9px;font-family:var(--mono);color:var(--accent-md)}
+.calc-run-btn{font-size:11px;padding:5px 12px;border-radius:5px;border:1.5px solid var(--formula);background:var(--formula-bg);color:var(--formula);cursor:pointer;font-family:var(--sans);font-weight:600;transition:all .12s}
+.calc-run-btn:hover{background:var(--formula);color:#fff}
+/* calculator runner */
+.calc-input-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.calc-input-row label{font-size:13px;flex:1;font-weight:500}
+.calc-input-row .ftin-wrap{flex:1.5}
+.calc-result-row{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:var(--formula-bg);border-radius:6px;margin-bottom:5px}
+.calc-result-lbl{font-size:12px;color:var(--formula)}
+.calc-result-val{font-family:var(--mono);font-size:14px;font-weight:600;color:var(--formula)}
+.calc-section-title{font-size:10px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin:10px 0 6px}
+/* calc builder */
+.calc-var-def{background:var(--surface2);border-radius:var(--r);padding:7px 10px;display:flex;align-items:center;gap:8px}
+.calc-var-def input{flex:1;padding:5px 8px;font-size:12px;border:1px solid var(--border);border-radius:var(--r);background:var(--bg);color:var(--text);font-family:var(--sans);outline:none}
+.calc-var-def input:focus{border-color:var(--accent)}
+.calc-var-def .unit-tag{font-size:10px;color:var(--muted);font-family:var(--mono);white-space:nowrap}
+.calc-formula-def{background:var(--formula-bg);border-radius:var(--r);padding:7px 10px;display:flex;align-items:flex-start;gap:8px}
+.calc-formula-def input{flex:1;padding:5px 8px;font-size:12px;font-family:var(--mono);border:1px solid var(--formula);border-radius:var(--r);background:transparent;color:var(--formula);outline:none}
+.calc-formula-def input:focus{border-color:var(--formula)}
 .cm-cat{background:var(--surface2);border-radius:var(--r);padding:10px 12px;margin-bottom:8px}
 .cm-cat-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
 .cm-cat-head input{flex:1;padding:5px 8px;font-size:13px;font-weight:600;border:1px solid var(--border);border-radius:var(--r);background:var(--bg);color:var(--text);font-family:var(--sans);outline:none}
@@ -219,6 +242,7 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
     <div class="sync-status"><div class="sync-dot" id="sync-dot"></div><span id="sync-label">—</span></div>
     <div class="header-right">
       <button class="hbtn" onclick="openSettings()">Settings</button>
+      <button class="hbtn" onclick="openCalcBuilder(null)" style="color:var(--formula);border-color:var(--formula)">∑ Calculator</button>
       <button class="hbtn hbtn-primary" onclick="openAdd()">+ New entry</button>
     </div>
   </header>
@@ -343,6 +367,51 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
   </div>
 </div>
 
+<!-- Calculator builder modal -->
+<div class="overlay" id="calc-overlay" onclick="if(event.target===this)closeCalcBuilder()">
+  <div class="modal" style="max-width:540px">
+    <div class="modal-title" id="calc-modal-title">New calculator</div>
+    <div class="fg"><label class="fl">Calculator name</label><input class="fi" id="calc-name" placeholder="e.g. Pediment height" /></div>
+    <div class="fg-row">
+      <div><label class="fl">Category</label><select class="fs" id="calc-cat" onchange="updateSubcatOptions()"></select></div>
+      <div><label class="fl">Subcategory</label><select class="fs" id="calc-subcat"></select></div>
+    </div>
+    <div class="fg"><label class="fl">Notes</label><input class="fi" id="calc-notes" placeholder="What does this calculate?" /></div>
+
+    <div class="fg">
+      <label class="fl">Input variables <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--faint)">— values you enter when calculating</span></label>
+      <div id="calc-var-fields" style="display:flex;flex-direction:column;gap:6px;margin-bottom:6px"></div>
+      <button class="add-row-btn" onclick="addCalcVar()">+ Add variable</button>
+    </div>
+
+    <div class="fg">
+      <label class="fl">Formula outputs <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--faint)">— results computed from inputs</span></label>
+      <div id="calc-formula-fields" style="display:flex;flex-direction:column;gap:6px;margin-bottom:6px"></div>
+      <button class="add-row-btn f" onclick="addCalcFormula()">∑ Add formula output</button>
+      <div style="font-size:11px;color:var(--faint);margin-top:6px;padding:6px 8px;background:var(--surface2);border-radius:var(--r);line-height:1.6">
+        Reference input variable names in formula expressions. E.g. if you have a variable called <code style="font-family:var(--mono);font-size:10px;background:var(--formula-bg);color:var(--formula);padding:1px 4px;border-radius:3px">Width</code>, use it as <code style="font-family:var(--mono);font-size:10px;background:var(--formula-bg);color:var(--formula);padding:1px 4px;border-radius:3px">Width * 0.25</code>
+      </div>
+    </div>
+
+    <div class="modal-foot">
+      <button class="mbtn" onclick="closeCalcBuilder()">Cancel</button>
+      <button class="mbtn mbtn-p" onclick="saveCalc()">Save &amp; push</button>
+    </div>
+  </div>
+</div>
+
+<!-- Calculator runner modal -->
+<div class="overlay" id="runner-overlay" onclick="if(event.target===this)closeRunner()">
+  <div class="modal" style="max-width:460px">
+    <div class="modal-title" id="runner-title">Calculate</div>
+    <div id="runner-body"></div>
+    <div class="modal-foot" style="margin-top:.75rem;padding-top:.75rem">
+      <button class="mbtn" onclick="closeRunner()">Close</button>
+      <button class="mbtn" onclick="copyRunnerResults(this)">Copy results</button>
+    </div>
+  </div>
+</div>
+
 <!-- Category manager modal -->
 <div class="overlay" id="catmgr-overlay" onclick="if(event.target===this)closeCatManager()">
   <div class="modal" style="max-width:580px">
@@ -423,19 +492,19 @@ function rebuildDerived(){
 // ── RENDER CATEGORY NAV ───────────────────────────────────────────────────────
 function renderCatNav(){
   const wrap=document.getElementById('cat-nav');
-  const allCount=entries.length;
-  let html=`<button class="nav-btn${activeCat==='all'?' active':''}" id="nav-all" onclick="setCat('all')">
+  let html=`<button class="nav-btn${activeCat==='all'?' active':''}" onclick="setCat('all')">
     <span class="nav-left"><span class="nav-dot" style="background:var(--faint)"></span>All</span>
-    <span class="nav-count">${allCount}</span></button>`;
+    <span class="nav-count">${entries.length}</span></button>`;
   schema.forEach(c=>{
     const cCount=entries.filter(e=>e.category===c.id).length;
-    html+=`<button class="nav-btn${activeCat===c.id?' active':''}" id="nav-${c.id}" onclick="setCat('${c.id}')">
+    html+=`<button class="nav-btn${activeCat===c.id?' active':''}" onclick="setCat('${c.id}')">
       <span class="nav-left"><span class="nav-dot" style="background:${c.color}"></span>${esc(c.label)}</span>
       <span class="nav-count">${cCount}</span></button>`;
     c.subcats.forEach(s=>{
+      const dotColor=s.color||c.color;
       const sCount=entries.filter(e=>e.subcat===s.id).length;
-      html+=`<button class="nav-btn nav-sub${activeCat===s.id?' active':''}" id="nav-${s.id}" onclick="setCat('${s.id}')">
-        <span class="nav-left"><span class="nav-dot" style="background:${c.color};opacity:.5"></span>${esc(s.label)}</span>
+      html+=`<button class="nav-btn nav-sub${activeCat===s.id?' active':''}" onclick="setCat('${s.id}')">
+        <span class="nav-left"><span class="nav-dot" style="background:${dotColor};opacity:.7"></span>${esc(s.label)}</span>
         <span class="nav-count">${sCount}</span></button>`;
     });
   });
@@ -485,16 +554,21 @@ const schemaRawUrl=()=>`https://raw.githubusercontent.com/${cfg.owner}/${cfg.rep
 
 async function loadFromGitHub(){
   setSyncState('saving','Loading…');
+  // Always try schema first but never let it block entries load
+  try{ await loadSchemaFromGitHub(); }catch{ schema=JSON.parse(JSON.stringify(DEFAULT_SCHEMA));rebuildDerived(); }
   try{
-    // Load schema first (non-blocking fallback to defaults if 404)
-    await loadSchemaFromGitHub();
-    // Then load entries
     const res=await fetch(rawUrl()+'?t='+Date.now());
-    if(res.status===404){entries=getDefaults();fileSha=null;setSyncState('ok','Ready (new file)');renderAll();return true;}
-    if(!res.ok){setSyncState('err','Load failed');toast('HTTP '+res.status,true);return false;}
-    entries=await res.json();if(!Array.isArray(entries))entries=getDefaults();
+    if(res.status===404){
+      // Repo exists but dimensions.json not yet created — start fresh with defaults
+      entries=getDefaults();fileSha=null;setSyncState('ok','Ready — no file yet');renderAll();return true;
+    }
+    if(!res.ok){setSyncState('err','Load failed');toast('HTTP '+res.status+' loading dimensions.json',true);return false;}
+    const parsed=await res.json();
+    entries=Array.isArray(parsed)?parsed:getDefaults();
     fetchSha();setSyncState('ok','Synced');renderAll();return true;
-  }catch{setSyncState('err','Network error');toast('Could not reach GitHub',true);return false;}
+  }catch(e){
+    setSyncState('err','Network error');toast('Network error: '+e.message,true);return false;
+  }
 }
 
 async function loadSchemaFromGitHub(){
@@ -630,11 +704,15 @@ function getFiltered(){
   });
 }
 
+function getCatColor(catId,subcatId){
+  const c=schema.find(x=>x.id===catId);if(!c)return'#888';
+  if(subcatId){const s=c.subcats.find(x=>x.id===subcatId);if(s&&s.color)return s.color;}
+  return c.color;
+}
 function getCatMeta(catId){
   const c=schema.find(x=>x.id===catId);
   if(!c)return{label:catId,pillBg:'var(--surface2)',pillFg:'var(--muted)'};
-  // derive readable pill colors from the category color
-  return{label:c.label.slice(0,6),pillBg:c.color+'22',pillFg:c.color};
+  return{label:c.label.slice(0,7),pillBg:c.color+'22',pillFg:c.color};
 }
 
 function renderAll(){renderBtypeNav();renderCatNav();renderGrid();updateCounts();updateChips();}
@@ -671,6 +749,7 @@ function renderGrid(){
   document.getElementById('visible-count').textContent=list.length+' entr'+(list.length===1?'y':'ies');
   if(!list.length){grid.innerHTML=`<div class="empty"><div class="empty-icon">[ ]</div><p>No entries match the current filters.<br>Try clearing some filters or adding a new entry.</p></div>`;return;}
   grid.innerHTML=list.map(e=>{
+    if(e.type==='calc')return renderCalcCard(e);
     const m=getCatMeta(e.category);
     const dimRows=(e.dims||[]).map(d=>{const isF=d.type==='formula';return`<div class="dim-row${isF?' fr':''}"><span class="dim-lbl">${esc(d.label)}</span>${isF?'<span class="ftag-badge">f(x)</span>':''}<span class="dim-val">${esc(resolveForDisplay(d,e.dims||[]))}</span></div>`;}).join('');
     const tagHtml=(e.btypes||[]).map(id=>{const b=BM[id];if(!b)return'';return`<span class="btag" style="background:${b.bg};color:${b.fg};border-color:${b.fg}40" onclick="toggleBtype('${id}')" title="Filter by ${b.label}">${esc(b.label)}</span>`;}).join('');
@@ -683,6 +762,26 @@ function renderGrid(){
       <div class="card-foot"><button class="cbtn" onclick="copyCard('${e.id}',this)">Copy</button><button class="cbtn" onclick="editCard('${e.id}')">Edit</button><button class="cbtn red" onclick="deleteCard('${e.id}')">Delete</button></div>
     </div>`;
   }).join('')+`<button class="add-card" onclick="openAdd()"><span class="add-plus">+</span>Add entry</button>`;
+}
+
+function renderCalcCard(e){
+  const m=getCatMeta(e.category);
+  const subLabel=e.subcat&&SL[e.subcat]?` · ${SL[e.subcat]}`:'';
+  const varRows=(e.vars||[]).map(v=>`<div class="calc-var-row"><span class="calc-var-lbl">${esc(v.label)}</span><span class="calc-var-type">${v.unit}</span></div>`).join('');
+  const fmlRows=(e.formulas||[]).map(f=>`<div class="dim-row fr"><span class="dim-lbl">${esc(f.label)}</span><span class="ftag-badge">f(x)</span><span class="dim-val" style="color:var(--formula);font-size:10px">${esc(f.expr.length>22?f.expr.slice(0,22)+'…':f.expr)}</span></div>`).join('');
+  return`<div class="card calc-card">
+    <div class="card-head"><div class="card-titles"><div class="card-name">${esc(e.name)}</div><div class="card-sub">Calculator${subLabel}</div></div><span class="cat-pill" style="background:${m.pillBg};color:${m.pillFg}">${m.label}</span></div>
+    <div style="font-size:10px;color:var(--muted);margin-bottom:4px;font-weight:600;letter-spacing:.5px">INPUTS</div>
+    <div class="calc-vars">${varRows}</div>
+    <div style="font-size:10px;color:var(--muted);margin-bottom:4px;font-weight:600;letter-spacing:.5px">OUTPUTS</div>
+    <div class="dim-rows">${fmlRows}</div>
+    ${e.notes?`<div class="card-notes">${esc(e.notes)}</div>`:''}
+    <div class="card-foot">
+      <button class="calc-run-btn" onclick="openRunner('${e.id}')">∑ Calculate</button>
+      <button class="cbtn" onclick="openCalcBuilder('${e.id}')">Edit</button>
+      <button class="cbtn red" onclick="deleteCard('${e.id}')">Delete</button>
+    </div>
+  </div>`;
 }
 
 function updateCounts(){
@@ -869,7 +968,206 @@ function getDefaults(){return[
   {id:'fx2',name:'Stair total rise / run',feature:'Formula example — stairs',category:'architectural',subcat:'arch-vertical',software:'Both',btypes:['residential','commercial'],notes:'Set Riser Height and Number of Risers.',dims:[{label:'Riser height',value:i(0,7),type:'dim'},{label:'Number of risers',value:14,type:'dim'},{label:'Total rise',value:'Riser height * Number of risers',type:'formula'},{label:'Total run (approx)',value:'(Number of risers - 1) * 11',type:'formula'}]},
 ];}
 
-// ── CATEGORY MANAGER ─────────────────────────────────────────────────────────
+// ── CALCULATOR BUILDER ───────────────────────────────────────────────────────
+let editingCalcId=null;
+
+function openCalcBuilder(id){
+  editingCalcId=id;
+  const calc=id?entries.find(e=>e.id===id):null;
+  document.getElementById('calc-modal-title').textContent=calc?'Edit calculator':'New calculator';
+  document.getElementById('calc-name').value=calc?.name||'';
+  document.getElementById('calc-notes').value=calc?.notes||'';
+  // populate category selects — reuse same selects as entry modal
+  const catSel=document.getElementById('calc-cat');
+  catSel.innerHTML=schema.map(c=>`<option value="${c.id}"${c.id===(calc?.category||schema[0]?.id)?' selected':''}>${esc(c.label)}</option>`).join('');
+  const subcatSel=document.getElementById('calc-subcat');
+  const cat=catSel.value;
+  subcatSel.innerHTML=(SOPTS[cat]||[{v:'',l:'(none)'}]).map(o=>`<option value="${o.v}"${o.v===(calc?.subcat||'')?'selected':''}>${esc(o.l)}</option>`).join('');
+  // populate var fields
+  const varWrap=document.getElementById('calc-var-fields');
+  varWrap.innerHTML='';
+  (calc?.vars||[{label:'Width',unit:'in'},{label:'Height',unit:'in'}]).forEach(v=>addCalcVar(v.label,v.unit));
+  // populate formula fields
+  const fmlWrap=document.getElementById('calc-formula-fields');
+  fmlWrap.innerHTML='';
+  (calc?.formulas||[{label:'Result',expr:''}]).forEach(f=>addCalcFormula(f.label,f.expr));
+  document.getElementById('calc-overlay').classList.add('open');
+  setTimeout(()=>document.getElementById('calc-name').focus(),80);
+}
+function closeCalcBuilder(){document.getElementById('calc-overlay').classList.remove('open');}
+
+// sync calc-subcat when calc-cat changes
+document.addEventListener('change',e=>{
+  if(e.target.id==='calc-cat'){
+    const sel=document.getElementById('calc-subcat');
+    sel.innerHTML=(SOPTS[e.target.value]||[{v:'',l:'(none)'}]).map(o=>`<option value="${o.v}">${esc(o.l)}</option>`).join('');
+  }
+});
+
+function addCalcVar(label='',unit='in'){
+  const wrap=document.getElementById('calc-var-fields');
+  const row=document.createElement('div');
+  row.className='calc-var-def';
+  row.innerHTML=`
+    <input placeholder="Variable name (e.g. Width)" value="${esc(label)}" class="cv-lbl" />
+    <select class="fs cv-unit" style="width:80px;padding:5px 6px;font-size:12px">
+      <option value="in"${unit==='in'?' selected':''}>in</option>
+      <option value="ft"${unit==='ft'?' selected':''}>ft</option>
+      <option value="mm"${unit==='mm'?' selected':''}>mm</option>
+      <option value="num"${unit==='num'?' selected':''}>number</option>
+    </select>
+    <button class="rm-btn" onclick="this.parentElement.remove()">×</button>`;
+  wrap.appendChild(row);
+}
+function addCalcFormula(label='',expr=''){
+  const wrap=document.getElementById('calc-formula-fields');
+  const row=document.createElement('div');
+  row.className='calc-formula-def';
+  const pid='cp'+Date.now()+Math.random().toString(36).slice(2);
+  row.innerHTML=`
+    <div style="flex:1;display:flex;flex-direction:column;gap:4px">
+      <input placeholder="Output label (e.g. Pediment height)" class="cf-lbl" style="border:1px solid var(--border);border-radius:var(--r);background:var(--bg);color:var(--text)" value="${esc(label)}" />
+      <input placeholder="Formula (e.g. Width * 0.25)" class="cf-expr" oninput="previewCalcFormula(this,'${pid}')" value="${esc(expr)}" />
+      <div class="formula-preview" id="${pid}" style="font-size:10px">${expr?'...':'—'}</div>
+    </div>
+    <button class="rm-btn" style="margin-top:1px" onclick="this.parentElement.remove()">×</button>`;
+  wrap.appendChild(row);
+  if(expr)setTimeout(()=>previewCalcFormula(row.querySelector('.cf-expr'),pid),0);
+}
+function previewCalcFormula(input,pid){
+  const prev=document.getElementById(pid);if(!prev)return;
+  const expr=input.value.trim();if(!expr){prev.textContent='—';prev.className='formula-preview';return;}
+  // build a dummy map from the current var labels with value 1 for preview
+  const demoMap={};
+  document.querySelectorAll('#calc-var-fields .cv-lbl').forEach(i=>{if(i.value.trim())demoMap[i.value.trim()]=1;});
+  try{
+    const r=evalExpr(expr,demoMap);
+    prev.textContent='(preview with vars=1): '+r;prev.className='formula-preview';
+  }catch{prev.textContent='check variable names & operators';prev.className='formula-preview err';}
+}
+
+function collectCalcVars(){
+  return [...document.querySelectorAll('#calc-var-fields .calc-var-def')].map(r=>({
+    label:r.querySelector('.cv-lbl').value.trim(),
+    unit:r.querySelector('.cv-unit').value
+  })).filter(v=>v.label);
+}
+function collectCalcFormulas(){
+  return [...document.querySelectorAll('#calc-formula-fields .calc-formula-def')].map(r=>({
+    label:r.querySelector('.cf-lbl').value.trim()||'Result',
+    expr:r.querySelector('.cf-expr').value.trim()
+  })).filter(f=>f.expr);
+}
+
+async function saveCalc(){
+  const name=document.getElementById('calc-name').value.trim();
+  if(!name){document.getElementById('calc-name').focus();return;}
+  const vars=collectCalcVars();
+  const formulas=collectCalcFormulas();
+  if(!vars.length){toast('Add at least one input variable');return;}
+  if(!formulas.length){toast('Add at least one formula output');return;}
+  const cat=document.getElementById('calc-cat').value;
+  const subcat=document.getElementById('calc-subcat').value||undefined;
+  const entry={
+    id:editingCalcId||(Date.now().toString(36)+Math.random().toString(36).slice(2)),
+    type:'calc',name,
+    notes:document.getElementById('calc-notes').value.trim(),
+    category:cat,...(subcat?{subcat}:{}),
+    software:'Both',vars,formulas,updated:Date.now()
+  };
+  if(editingCalcId)entries=entries.map(e=>e.id===editingCalcId?entry:e);
+  else entries.unshift(entry);
+  closeCalcBuilder();renderAll();
+  await pushToGitHub((editingCalcId?'Update':'Add')+' calculator: '+name);
+}
+
+// ── CALCULATOR RUNNER ────────────────────────────────────────────────────────
+let runnerEntry=null;
+
+function openRunner(id){
+  runnerEntry=entries.find(e=>e.id===id);if(!runnerEntry)return;
+  document.getElementById('runner-title').textContent=runnerEntry.name;
+  renderRunnerBody();
+  document.getElementById('runner-overlay').classList.add('open');
+}
+function closeRunner(){document.getElementById('runner-overlay').classList.remove('open');runnerEntry=null;}
+
+function renderRunnerBody(){
+  if(!runnerEntry)return;
+  const body=document.getElementById('runner-body');
+  const varHtml=runnerEntry.vars.map((v,vi)=>{
+    const isImperial=v.unit==='in'||v.unit==='ft';
+    return`<div class="calc-input-row">
+      <label>${esc(v.label)}</label>
+      ${isImperial
+        ?`<div class="ftin-wrap"><div class="ftin-col"><label>ft</label><input type="number" class="cv-in" data-vi="${vi}" data-part="ft" min="0" step="1" oninput="runnerRecalc()" /></div><div class="ftin-col"><label>in</label><input type="number" class="cv-in" data-vi="${vi}" data-part="in" min="0" step="0.125" oninput="runnerRecalc()" /></div></div>`
+        :`<input type="number" class="fi cv-in" data-vi="${vi}" data-part="num" step="any" oninput="runnerRecalc()" style="max-width:140px" />`}
+      <span style="font-size:11px;color:var(--faint);min-width:30px">${v.unit==='num'?'':v.unit}</span>
+    </div>`;
+  }).join('');
+  const fmlHtml=runnerEntry.formulas.map(f=>`
+    <div class="calc-result-row">
+      <span class="calc-result-lbl">${esc(f.label)}</span>
+      <span class="calc-result-val" data-expr="${esc(f.expr)}">—</span>
+    </div>`).join('');
+  body.innerHTML=`
+    <p class="calc-section-title">Inputs</p>${varHtml}
+    <p class="calc-section-title">Results</p>${fmlHtml}
+    ${runnerEntry.notes?`<p style="font-size:11px;color:var(--muted);margin-top:8px;font-style:italic">${esc(runnerEntry.notes)}</p>`:''}`;
+}
+
+function runnerRecalc(){
+  if(!runnerEntry)return;
+  // Build value map from inputs
+  const map={};
+  runnerEntry.vars.forEach((v,vi)=>{
+    const isImperial=v.unit==='in'||v.unit==='ft';
+    if(isImperial){
+      const ftEl=document.querySelector(`.cv-in[data-vi="${vi}"][data-part="ft"]`);
+      const inEl=document.querySelector(`.cv-in[data-vi="${vi}"][data-part="in"]`);
+      const totalIn=(parseFloat(ftEl?.value)||0)*12+(parseFloat(inEl?.value)||0);
+      map[v.label]=v.unit==='ft'?totalIn/12:totalIn;
+    }else{
+      const el=document.querySelector(`.cv-in[data-vi="${vi}"][data-part="num"]`);
+      map[v.label]=parseFloat(el?.value)||0;
+    }
+  });
+  // Evaluate each formula output
+  document.querySelectorAll('.calc-result-val').forEach((el,fi)=>{
+    const f=runnerEntry.formulas[fi];if(!f)return;
+    try{
+      const raw=evalExpr(f.expr,map);
+      // Display in current unit
+      const v=runnerEntry.vars[0];
+      if(v&&(v.unit==='in'||v.unit==='ft'))el.textContent=cvt(raw);
+      else el.textContent=isNaN(raw)?'—':(Math.round(raw*1000)/1000)+'';
+    }catch{el.textContent='error';}
+  });
+}
+
+function copyRunnerResults(btn){
+  if(!runnerEntry)return;
+  const lines=[runnerEntry.name,''];
+  runnerEntry.vars.forEach((v,vi)=>{
+    const isImperial=v.unit==='in'||v.unit==='ft';
+    let val='?';
+    if(isImperial){
+      const ft=parseFloat(document.querySelector(`.cv-in[data-vi="${vi}"][data-part="ft"]`)?.value)||0;
+      const ins=parseFloat(document.querySelector(`.cv-in[data-vi="${vi}"][data-part="in"]`)?.value)||0;
+      val=cvt(ft*12+ins);
+    }else{
+      val=document.querySelector(`.cv-in[data-vi="${vi}"][data-part="num"]`)?.value||'0';
+    }
+    lines.push(v.label+': '+val);
+  });
+  lines.push('');
+  document.querySelectorAll('.calc-result-val').forEach((el,fi)=>{
+    lines.push((runnerEntry.formulas[fi]?.label||'Result')+': '+el.textContent);
+  });
+  navigator.clipboard.writeText(lines.join('\n')).then(()=>{
+    btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy results',1500);
+  });
+}
 let cmSchema=[];// working copy while editor is open
 
 function openCatManager(){
@@ -884,19 +1182,20 @@ function renderCmBody(){
   body.innerHTML=cmSchema.map((c,ci)=>`
     <div class="cm-cat" id="cmcat-${ci}">
       <div class="cm-cat-head">
-        <span class="cm-drag-handle" title="Drag to reorder">⠿</span>
-        <div class="cm-color-swatch" style="background:${c.color}" title="Pick color">
+        <div class="cm-color-swatch" style="background:${c.color}" title="Category color">
           <input type="color" value="${c.color}" oninput="cmSetColor(${ci},this.value)" />
         </div>
-        <input value="${esc(c.label)}" placeholder="Category name" oninput="cmSchema[${ci}].label=this.value" />
+        <input value="${esc(c.label)}" placeholder="Category name" oninput="cmSchema[${ci}].label=this.value" style="font-weight:600" />
         <button class="cm-del" onclick="cmDelCat(${ci})" title="Delete category">×</button>
       </div>
       <div class="cm-subcats" id="cmsubs-${ci}">
         ${c.subcats.map((s,si)=>`
-          <div class="cm-subcat-row" id="cmsub-${ci}-${si}">
-            <span class="cm-drag-handle" style="font-size:12px">⠿</span>
+          <div class="cm-subcat-row">
+            <div class="cm-color-swatch" style="background:${s.color||c.color};width:16px;height:16px" title="Subcategory color (defaults to parent)">
+              <input type="color" value="${s.color||c.color}" oninput="cmSetSubColor(${ci},${si},this.value)" />
+            </div>
             <input value="${esc(s.label)}" placeholder="Subcategory name" oninput="cmSchema[${ci}].subcats[${si}].label=this.value" />
-            <button class="cm-del" onclick="cmDelSub(${ci},${si})" title="Remove">×</button>
+            <button class="cm-del" onclick="cmDelSub(${ci},${si})">×</button>
           </div>`).join('')}
       </div>
       <button class="cm-add-sub" onclick="cmAddSub(${ci})">+ Add subcategory</button>
@@ -907,6 +1206,9 @@ function cmSetColor(ci,val){
   cmSchema[ci].color=val;
   const swatch=document.querySelector(`#cmcat-${ci} .cm-color-swatch`);
   if(swatch)swatch.style.background=val;
+}
+function cmSetSubColor(ci,si,val){
+  cmSchema[ci].subcats[si].color=val;
 }
 function cmDelCat(ci){
   if(!confirm('Delete this category? Entries in it will keep their category ID but it won\'t appear in filters.'))return;
@@ -946,7 +1248,7 @@ function saveCatManager(){
     });
   }
 }
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeSettings();closePat();closeCatManager();}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeSettings();closePat();closeCatManager();closeCalcBuilder();closeRunner();}});
 loadSchema();
 rebuildDerived();
 populateCatSelect('');
