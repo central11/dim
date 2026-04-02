@@ -179,6 +179,22 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
 .toast.show{transform:translateY(0);opacity:1}
 .toast.err{background:#C0392B;color:#fff}
 @media(max-width:680px){.layout{flex-direction:column;padding:1rem}.sidebar{width:100%;position:static;max-height:none}.grid{grid-template-columns:1fr}.soft-pills{display:none}}
+/* category manager */
+.cm-cat{background:var(--surface2);border-radius:var(--r);padding:10px 12px;margin-bottom:8px}
+.cm-cat-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.cm-cat-head input{flex:1;padding:5px 8px;font-size:13px;font-weight:600;border:1px solid var(--border);border-radius:var(--r);background:var(--bg);color:var(--text);font-family:var(--sans);outline:none}
+.cm-cat-head input:focus{border-color:var(--accent)}
+.cm-color-swatch{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);cursor:pointer;flex-shrink:0;position:relative}
+.cm-color-swatch input[type=color]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;border:none;padding:0}
+.cm-subcats{display:flex;flex-direction:column;gap:5px;padding-left:20px}
+.cm-subcat-row{display:flex;align-items:center;gap:6px}
+.cm-subcat-row input{flex:1;padding:4px 8px;font-size:12px;border:1px solid var(--border);border-radius:var(--r);background:var(--bg);color:var(--text);font-family:var(--sans);outline:none}
+.cm-subcat-row input:focus{border-color:var(--accent)}
+.cm-del{width:22px;height:22px;border:1px solid var(--border);border-radius:4px;background:transparent;color:var(--faint);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .12s}
+.cm-del:hover{background:#FDEDEC;color:#C0392B;border-color:#C0392B}
+.cm-add-sub{font-size:11px;padding:3px 8px;border:1px dashed var(--border2);border-radius:4px;background:transparent;color:var(--muted);cursor:pointer;font-family:var(--sans);transition:all .12s;margin-top:2px;align-self:flex-start}
+.cm-add-sub:hover{border-color:var(--accent);color:var(--accent)}
+.cm-drag-handle{color:var(--faint);cursor:grab;font-size:14px;flex-shrink:0;user-select:none}
 </style>
 </head>
 <body>
@@ -218,23 +234,11 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
         <button class="unit-btn" id="u-mm" onclick="setUnit('mm')">mm</button>
       </div>
       <div class="sb-section">
-        <span class="sb-label">Category</span>
-        <button class="nav-btn active" id="nav-all" onclick="setCat('all')"><span class="nav-left"><span class="nav-dot" style="background:var(--faint)"></span>All</span><span class="nav-count" id="nc-all">0</span></button>
-        <button class="nav-btn" id="nav-architectural" onclick="setCat('architectural')"><span class="nav-left"><span class="nav-dot" style="background:#2B8A5A"></span>Architectural</span><span class="nav-count" id="nc-architectural">0</span></button>
-        <button class="nav-btn nav-sub" id="nav-arch-envelope" onclick="setCat('arch-envelope')"><span class="nav-left"><span class="nav-dot" style="background:#2B8A5A;opacity:.5"></span>Envelope &amp; openings</span><span class="nav-count" id="nc-arch-envelope">0</span></button>
-        <button class="nav-btn nav-sub" id="nav-arch-interior" onclick="setCat('arch-interior')"><span class="nav-left"><span class="nav-dot" style="background:#2B8A5A;opacity:.5"></span>Interior &amp; egress</span><span class="nav-count" id="nc-arch-interior">0</span></button>
-        <button class="nav-btn nav-sub" id="nav-arch-vertical" onclick="setCat('arch-vertical')"><span class="nav-left"><span class="nav-dot" style="background:#2B8A5A;opacity:.5"></span>Vertical circulation</span><span class="nav-count" id="nc-arch-vertical">0</span></button>
-        <button class="nav-btn" id="nav-furniture" onclick="setCat('furniture')"><span class="nav-left"><span class="nav-dot" style="background:#C4762A"></span>Furniture &amp; millwork</span><span class="nav-count" id="nc-furniture">0</span></button>
-        <button class="nav-btn nav-sub" id="nav-furn-kitchen" onclick="setCat('furn-kitchen')"><span class="nav-left"><span class="nav-dot" style="background:#C4762A;opacity:.5"></span>Kitchen &amp; bar</span><span class="nav-count" id="nc-furn-kitchen">0</span></button>
-        <button class="nav-btn nav-sub" id="nav-furn-seating" onclick="setCat('furn-seating')"><span class="nav-left"><span class="nav-dot" style="background:#C4762A;opacity:.5"></span>Seating &amp; tables</span><span class="nav-count" id="nc-furn-seating">0</span></button>
-        <button class="nav-btn nav-sub" id="nav-furn-bedroom" onclick="setCat('furn-bedroom')"><span class="nav-left"><span class="nav-dot" style="background:#C4762A;opacity:.5"></span>Bedroom &amp; storage</span><span class="nav-count" id="nc-furn-bedroom">0</span></button>
-        <button class="nav-btn nav-sub" id="nav-furn-office" onclick="setCat('furn-office')"><span class="nav-left"><span class="nav-dot" style="background:#C4762A;opacity:.5"></span>Office &amp; workspace</span><span class="nav-count" id="nc-furn-office">0</span></button>
-        <button class="nav-btn" id="nav-structural" onclick="setCat('structural')"><span class="nav-left"><span class="nav-dot" style="background:#5A3ABF"></span>Structural</span><span class="nav-count" id="nc-structural">0</span></button>
-        <button class="nav-btn nav-sub" id="nav-str-wood" onclick="setCat('str-wood')"><span class="nav-left"><span class="nav-dot" style="background:#5A3ABF;opacity:.5"></span>Wood framing</span><span class="nav-count" id="nc-str-wood">0</span></button>
-        <button class="nav-btn nav-sub" id="nav-str-steel" onclick="setCat('str-steel')"><span class="nav-left"><span class="nav-dot" style="background:#5A3ABF;opacity:.5"></span>Steel</span><span class="nav-count" id="nc-str-steel">0</span></button>
-        <button class="nav-btn nav-sub" id="nav-str-concrete" onclick="setCat('str-concrete')"><span class="nav-left"><span class="nav-dot" style="background:#5A3ABF;opacity:.5"></span>Concrete</span><span class="nav-count" id="nc-str-concrete">0</span></button>
-        <button class="nav-btn" id="nav-mep" onclick="setCat('mep')"><span class="nav-left"><span class="nav-dot" style="background:#BF3A3A"></span>MEP / services</span><span class="nav-count" id="nc-mep">0</span></button>
-        <button class="nav-btn" id="nav-site" onclick="setCat('site')"><span class="nav-left"><span class="nav-dot" style="background:#B08020"></span>Site / civil</span><span class="nav-count" id="nc-site">0</span></button>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+          <span class="sb-label" style="margin-bottom:0">Category</span>
+          <button class="clear-filters-btn" style="display:block" onclick="openCatManager()">Edit</button>
+        </div>
+        <div id="cat-nav"></div>
       </div>
       <div class="sb-section">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
@@ -269,13 +273,7 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
     <div class="fg"><label class="fl">Feature / context</label><input class="fi" id="f-feature" placeholder="e.g. Door opening, wall framing" /></div>
     <div class="fg-row3">
       <div><label class="fl">Category</label>
-        <select class="fs" id="f-cat" onchange="updateSubcatOptions()">
-          <option value="architectural">Architectural</option>
-          <option value="furniture">Furniture &amp; millwork</option>
-          <option value="structural">Structural</option>
-          <option value="mep">MEP / services</option>
-          <option value="site">Site / civil</option>
-        </select>
+        <select class="fs" id="f-cat" onchange="updateSubcatOptions()"></select>
       </div>
       <div><label class="fl">Subcategory</label><select class="fs" id="f-subcat"></select></div>
       <div><label class="fl">Software</label>
@@ -345,10 +343,25 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
   </div>
 </div>
 
+<!-- Category manager modal -->
+<div class="overlay" id="catmgr-overlay" onclick="if(event.target===this)closeCatManager()">
+  <div class="modal" style="max-width:580px">
+    <div class="modal-title">Manage categories &amp; subcategories</div>
+    <div id="catmgr-body"></div>
+    <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap">
+      <button class="mbtn" onclick="cmAddCat()" style="border-style:dashed">+ Add category</button>
+      <div style="margin-left:auto;display:flex;gap:8px">
+        <button class="mbtn" onclick="closeCatManager()">Cancel</button>
+        <button class="mbtn mbtn-p" onclick="saveCatManager()">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
-const FILE_PATH='dimensions.json',CFG_KEY='dim_cfg_v5';
+const FILE_PATH='dimensions.json',SCHEMA_PATH='schema.json',CFG_KEY='dim_cfg_v5';
 
 const BTYPES=[
   {id:'residential', label:'Residential', bg:'#E8F4FF',fg:'#1A4A80',dbg:'#0A1E38',dfg:'#7AB8FF'},
@@ -362,35 +375,86 @@ const BTYPES=[
 ];
 const BM=Object.fromEntries(BTYPES.map(b=>[b.id,b]));
 
-const SUBCATS={
-  architectural:['arch-envelope','arch-interior','arch-vertical'],
-  furniture:['furn-kitchen','furn-seating','furn-bedroom','furn-office'],
-  structural:['str-wood','str-steel','str-concrete'],
-  mep:[],site:[]
-};
-const SL={
-  'arch-envelope':'Envelope & openings','arch-interior':'Interior & egress','arch-vertical':'Vertical circulation',
-  'furn-kitchen':'Kitchen & bar','furn-seating':'Seating & tables','furn-bedroom':'Bedroom & storage','furn-office':'Office & workspace',
-  'str-wood':'Wood framing','str-steel':'Steel','str-concrete':'Concrete'
-};
-const SP={};Object.entries(SUBCATS).forEach(([c,ss])=>ss.forEach(s=>SP[s]=c));
+// Default schema — array of {id, label, color, subcats:[{id,label}]}
+const DEFAULT_SCHEMA=[
+  {id:'architectural',label:'Architectural',color:'#2B8A5A',subcats:[
+    {id:'arch-envelope',label:'Envelope & openings'},
+    {id:'arch-interior',label:'Interior & egress'},
+    {id:'arch-vertical',label:'Vertical circulation'}]},
+  {id:'furniture',label:'Furniture & millwork',color:'#C4762A',subcats:[
+    {id:'furn-kitchen',label:'Kitchen & bar'},
+    {id:'furn-seating',label:'Seating & tables'},
+    {id:'furn-bedroom',label:'Bedroom & storage'},
+    {id:'furn-office',label:'Office & workspace'}]},
+  {id:'structural',label:'Structural',color:'#5A3ABF',subcats:[
+    {id:'str-wood',label:'Wood framing'},
+    {id:'str-steel',label:'Steel'},
+    {id:'str-concrete',label:'Concrete'}]},
+  {id:'mep',label:'MEP / services',color:'#BF3A3A',subcats:[]},
+  {id:'site',label:'Site / civil',color:'#B08020',subcats:[]},
+];
 
-const CAT={
-  architectural:{label:'Arch',bg:'var(--arch-bg)',fg:'var(--arch-fg)'},
-  furniture:{label:'Furn',bg:'var(--furn-bg)',fg:'var(--furn-fg)'},
-  structural:{label:'Struct',bg:'var(--str-bg)',fg:'var(--str-fg)'},
-  mep:{label:'MEP',bg:'var(--mep-bg)',fg:'var(--mep-fg)'},
-  site:{label:'Site',bg:'var(--site-bg)',fg:'var(--site-fg)'}
-};
+let schema=[];
 
-const SOPTS={
-  architectural:[{v:'',l:'(none)'},{v:'arch-envelope',l:'Envelope & openings'},{v:'arch-interior',l:'Interior & egress'},{v:'arch-vertical',l:'Vertical circulation'}],
-  furniture:[{v:'',l:'(none)'},{v:'furn-kitchen',l:'Kitchen & bar'},{v:'furn-seating',l:'Seating & tables'},{v:'furn-bedroom',l:'Bedroom & storage'},{v:'furn-office',l:'Office & workspace'}],
-  structural:[{v:'',l:'(none)'},{v:'str-wood',l:'Wood framing'},{v:'str-steel',l:'Steel'},{v:'str-concrete',l:'Concrete'}],
-  mep:[{v:'',l:'(none)'}],site:[{v:'',l:'(none)'}]
-};
+function loadSchema(){
+  // Called at boot before GitHub is available — just set defaults.
+  // The real load happens in loadSchemaFromGitHub() once cfg is set.
+  schema=JSON.parse(JSON.stringify(DEFAULT_SCHEMA));
+}
+// No more saveSchema() to localStorage — we push to GitHub instead.
 
-let cfg={},entries=[],fileSha=null;
+// Derived lookup objects rebuilt from schema
+let CAT={};
+let SUBCATS={};
+let SL={};
+let SP={};
+let SOPTS={};
+
+function rebuildDerived(){
+  CAT={};SUBCATS={};SL={};SP={};SOPTS={};
+  schema.forEach(c=>{
+    CAT[c.id]={label:c.label.slice(0,6),bg:'',fg:'',color:c.color};
+    SUBCATS[c.id]=c.subcats.map(s=>s.id);
+    SOPTS[c.id]=[{v:'',l:'(none)'},...c.subcats.map(s=>({v:s.id,l:s.label}))];
+    c.subcats.forEach(s=>{SL[s.id]=s.label;SP[s.id]=c.id;});
+  });
+}
+
+// ── RENDER CATEGORY NAV ───────────────────────────────────────────────────────
+function renderCatNav(){
+  const wrap=document.getElementById('cat-nav');
+  const allCount=entries.length;
+  let html=`<button class="nav-btn${activeCat==='all'?' active':''}" id="nav-all" onclick="setCat('all')">
+    <span class="nav-left"><span class="nav-dot" style="background:var(--faint)"></span>All</span>
+    <span class="nav-count">${allCount}</span></button>`;
+  schema.forEach(c=>{
+    const cCount=entries.filter(e=>e.category===c.id).length;
+    html+=`<button class="nav-btn${activeCat===c.id?' active':''}" id="nav-${c.id}" onclick="setCat('${c.id}')">
+      <span class="nav-left"><span class="nav-dot" style="background:${c.color}"></span>${esc(c.label)}</span>
+      <span class="nav-count">${cCount}</span></button>`;
+    c.subcats.forEach(s=>{
+      const sCount=entries.filter(e=>e.subcat===s.id).length;
+      html+=`<button class="nav-btn nav-sub${activeCat===s.id?' active':''}" id="nav-${s.id}" onclick="setCat('${s.id}')">
+        <span class="nav-left"><span class="nav-dot" style="background:${c.color};opacity:.5"></span>${esc(s.label)}</span>
+        <span class="nav-count">${sCount}</span></button>`;
+    });
+  });
+  wrap.innerHTML=html;
+}
+
+// ── DYNAMIC CATEGORY SELECTS ──────────────────────────────────────────────────
+function populateCatSelect(selectedCat){
+  const sel=document.getElementById('f-cat');
+  sel.innerHTML=schema.map(c=>`<option value="${c.id}"${c.id===selectedCat?' selected':''}>${esc(c.label)}</option>`).join('');
+}
+
+function updateSubcatOptions(selected){
+  const cat=document.getElementById('f-cat').value;
+  const sel=document.getElementById('f-subcat');
+  sel.innerHTML=(SOPTS[cat]||[{v:'',l:'(none)'}]).map(o=>`<option value="${o.v}"${o.v===(selected||'')?'selected':''}>${esc(o.l)}</option>`).join('');
+}
+
+let cfg={},entries=[],fileSha=null,schemaSha=null;
 let activeCat='all',activeSoft='all',activeUnit='ftin';
 let activeBtypes=new Set();
 let editingId=null,saving=false,sessionToken=null,pendingMsg=null;
@@ -414,11 +478,17 @@ function resolveFormula(expr,dims){return evalExpr(expr,buildMap(dims));}
 function resolveForDisplay(d,allDims){if(d.type!=='formula')return cvt(d.value);try{return cvt(resolveFormula(d.value,allDims));}catch{return'error';}}
 
 // github
-const apiUrl=()=>`https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${FILE_PATH}`;
-const rawUrl=()=>`https://raw.githubusercontent.com/${cfg.owner}/${cfg.repo}/${cfg.branch}/${FILE_PATH}`;
+const apiUrl      =()=>`https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${FILE_PATH}`;
+const schemaApiUrl=()=>`https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${SCHEMA_PATH}`;
+const rawUrl      =()=>`https://raw.githubusercontent.com/${cfg.owner}/${cfg.repo}/${cfg.branch}/${FILE_PATH}`;
+const schemaRawUrl=()=>`https://raw.githubusercontent.com/${cfg.owner}/${cfg.repo}/${cfg.branch}/${SCHEMA_PATH}`;
+
 async function loadFromGitHub(){
   setSyncState('saving','Loading…');
   try{
+    // Load schema first (non-blocking fallback to defaults if 404)
+    await loadSchemaFromGitHub();
+    // Then load entries
     const res=await fetch(rawUrl()+'?t='+Date.now());
     if(res.status===404){entries=getDefaults();fileSha=null;setSyncState('ok','Ready (new file)');renderAll();return true;}
     if(!res.ok){setSyncState('err','Load failed');toast('HTTP '+res.status,true);return false;}
@@ -426,8 +496,33 @@ async function loadFromGitHub(){
     fetchSha();setSyncState('ok','Synced');renderAll();return true;
   }catch{setSyncState('err','Network error');toast('Could not reach GitHub',true);return false;}
 }
+
+async function loadSchemaFromGitHub(){
+  try{
+    const res=await fetch(schemaRawUrl()+'?t='+Date.now());
+    if(res.status===404){
+      // No schema file yet — use defaults, schemaSha stays null
+      schema=JSON.parse(JSON.stringify(DEFAULT_SCHEMA));
+    } else if(res.ok){
+      const loaded=await res.json();
+      if(Array.isArray(loaded)&&loaded.length>0) schema=loaded;
+      else schema=JSON.parse(JSON.stringify(DEFAULT_SCHEMA));
+      // Fetch SHA so we can update the file later
+      fetchSchemaSha();
+    }
+  }catch{
+    schema=JSON.parse(JSON.stringify(DEFAULT_SCHEMA));
+  }
+  rebuildDerived();
+  populateCatSelect(schema[0]?.id||'');
+  updateSubcatOptions('');
+}
+
 async function fetchSha(){try{const res=await fetch(apiUrl()+'?ref='+cfg.branch);if(res.ok){const d=await res.json();fileSha=d.sha||null;}}catch{}}
+async function fetchSchemaSha(){try{const res=await fetch(schemaApiUrl()+'?ref='+cfg.branch);if(res.ok){const d=await res.json();schemaSha=d.sha||null;}}catch{}}
+
 async function pushToGitHub(msg){if(saving)return;if(!sessionToken){openPat(msg);return;}await doPush(msg,sessionToken);}
+
 async function doPush(msg,token){
   saving=true;setSyncState('saving','Saving…');
   const content=btoa(unescape(encodeURIComponent(JSON.stringify(entries,null,2))));
@@ -440,6 +535,19 @@ async function doPush(msg,token){
   }catch{setSyncState('err','Network error');toast('Could not push',true);}
   saving=false;
 }
+
+async function pushSchemaToGitHub(token){
+  const content=btoa(unescape(encodeURIComponent(JSON.stringify(schema,null,2))));
+  const body={message:'Update category schema',content,branch:cfg.branch};
+  if(schemaSha)body.sha=schemaSha;
+  try{
+    const res=await fetch(schemaApiUrl(),{method:'PUT',headers:{'Authorization':'Bearer '+token,'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json'},body:JSON.stringify(body)});
+    const data=await res.json();
+    if(!res.ok){toast('Schema push failed: '+(data.message||res.status),true);return false;}
+    schemaSha=data.content.sha;return true;
+  }catch{toast('Could not push schema',true);return false;}
+}
+
 function setSyncState(s,l){document.getElementById('sync-dot').className='sync-dot '+s;document.getElementById('sync-label').textContent=l;}
 
 // setup/settings
@@ -459,7 +567,7 @@ function closeSettings(){document.getElementById('settings-overlay').classList.r
 async function saveSettings(){
   const owner=document.getElementById('ss-owner').value.trim(),repo=document.getElementById('ss-repo').value.trim(),branch=document.getElementById('ss-branch').value.trim()||'main';
   if(!owner||!repo)return;cfg={owner,repo,branch};localStorage.setItem(CFG_KEY,JSON.stringify(cfg));
-  fileSha=null;entries=[];sessionToken=null;closeSettings();await loadFromGitHub();
+  fileSha=null;schemaSha=null;entries=[];sessionToken=null;closeSettings();await loadFromGitHub();
 }
 
 // PAT
@@ -475,18 +583,26 @@ async function confirmPat(){
   errEl.textContent='';const btn=document.getElementById('pat-confirm-btn');btn.disabled=true;btn.textContent='Pushing…';
   if(document.getElementById('pat-remember').checked)sessionToken=token;
   document.getElementById('pat-overlay').classList.remove('open');
-  await doPush(pendingMsg||'Update dimensions',token);
+  if(pendingMsg==='__schema__'){
+    const ok=await pushSchemaToGitHub(token);
+    if(ok)toast('Schema saved to repo');
+  } else {
+    await doPush(pendingMsg||'Update dimensions',token);
+  }
   pendingMsg=null;btn.disabled=false;btn.textContent='Save & push';
 }
 
 // filters
 function setCat(c){
   activeCat=c;
-  document.querySelectorAll('[id^="nav-"]').forEach(b=>b.classList.remove('active'));
-  document.getElementById('nav-'+c).classList.add('active');
-  if(SP[c])document.getElementById('nav-'+SP[c])?.classList.add('active');
-  const titles={all:'All entries',architectural:'Architectural',furniture:'Furniture & millwork',structural:'Structural',mep:'MEP / services',site:'Site / civil',...Object.fromEntries(Object.entries(SL))};
-  document.getElementById('page-title').textContent=titles[c]||c;
+  renderCatNav(); // re-renders with correct active state
+  // build page title from schema
+  const allTitles={all:'All entries'};
+  schema.forEach(cat=>{
+    allTitles[cat.id]=cat.label;
+    cat.subcats.forEach(s=>{allTitles[s.id]=s.label;});
+  });
+  document.getElementById('page-title').textContent=allTitles[c]||c;
   renderGrid();updateChips();
 }
 function setSoft(s){
@@ -514,10 +630,14 @@ function getFiltered(){
   });
 }
 
-// render
-function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function getCatMeta(catId){
+  const c=schema.find(x=>x.id===catId);
+  if(!c)return{label:catId,pillBg:'var(--surface2)',pillFg:'var(--muted)'};
+  // derive readable pill colors from the category color
+  return{label:c.label.slice(0,6),pillBg:c.color+'22',pillFg:c.color};
+}
 
-function renderAll(){renderBtypeNav();renderGrid();updateCounts();updateChips();}
+function renderAll(){renderBtypeNav();renderCatNav();renderGrid();updateCounts();updateChips();}
 
 function renderBtypeNav(){
   const wrap=document.getElementById('btype-nav');
@@ -551,12 +671,12 @@ function renderGrid(){
   document.getElementById('visible-count').textContent=list.length+' entr'+(list.length===1?'y':'ies');
   if(!list.length){grid.innerHTML=`<div class="empty"><div class="empty-icon">[ ]</div><p>No entries match the current filters.<br>Try clearing some filters or adding a new entry.</p></div>`;return;}
   grid.innerHTML=list.map(e=>{
-    const m=CAT[e.category]||CAT.architectural;
+    const m=getCatMeta(e.category);
     const dimRows=(e.dims||[]).map(d=>{const isF=d.type==='formula';return`<div class="dim-row${isF?' fr':''}"><span class="dim-lbl">${esc(d.label)}</span>${isF?'<span class="ftag-badge">f(x)</span>':''}<span class="dim-val">${esc(resolveForDisplay(d,e.dims||[]))}</span></div>`;}).join('');
     const tagHtml=(e.btypes||[]).map(id=>{const b=BM[id];if(!b)return'';return`<span class="btag" style="background:${b.bg};color:${b.fg};border-color:${b.fg}40" onclick="toggleBtype('${id}')" title="Filter by ${b.label}">${esc(b.label)}</span>`;}).join('');
     const subLabel=e.subcat&&SL[e.subcat]?` <span style="font-size:10px;color:var(--faint)">· ${esc(SL[e.subcat])}</span>`:'';
     return `<div class="card">
-      <div class="card-head"><div class="card-titles"><div class="card-name">${esc(e.name)}</div><div class="card-sub">${esc(e.feature||'')}${e.feature?' · ':''}${esc(e.software||'')}${subLabel}</div></div><span class="cat-pill" style="background:${m.bg};color:${m.fg}">${m.label}</span></div>
+      <div class="card-head"><div class="card-titles"><div class="card-name">${esc(e.name)}</div><div class="card-sub">${esc(e.feature||'')}${e.feature?' · ':''}${esc(e.software||'')}${subLabel}</div></div><span class="cat-pill" style="background:${m.pillBg};color:${m.pillFg}">${m.label}</span></div>
       ${tagHtml?`<div class="card-tags">${tagHtml}</div>`:''}
       <div class="dim-rows">${dimRows}</div>
       ${e.notes?`<div class="card-notes">${esc(e.notes)}</div>`:''}
@@ -566,9 +686,8 @@ function renderGrid(){
 }
 
 function updateCounts(){
-  document.getElementById('nc-all').textContent=entries.length;
-  ['architectural','furniture','structural','mep','site'].forEach(c=>{const el=document.getElementById('nc-'+c);if(el)el.textContent=entries.filter(e=>e.category===c).length;});
-  Object.keys(SL).forEach(sc=>{const el=document.getElementById('nc-'+sc);if(el)el.textContent=entries.filter(e=>e.subcat===sc).length;});
+  // counts are embedded in renderCatNav — no separate nc-* ids needed
+  renderCatNav();
 }
 
 // card actions
@@ -610,8 +729,10 @@ function openAdd(){
   editingId=null;setFormulaHelp(false);
   document.getElementById('modal-title').textContent='New entry';
   ['f-name','f-feature','f-notes'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('f-cat').value='architectural';document.getElementById('f-soft').value='Rhino';
-  updateSubcatOptions('');renderBtypeToggles([]);
+  populateCatSelect(schema[0]?.id||'');
+  updateSubcatOptions('');
+  document.getElementById('f-soft').value='Rhino';
+  renderBtypeToggles([]);
   document.getElementById('dim-fields').innerHTML='';
   makeDimRow('Width','');makeDimRow('Height','');makeDimRow('Depth','');
   document.getElementById('modal-overlay').classList.add('open');
@@ -622,9 +743,11 @@ function editCard(id){
   editingId=id;setFormulaHelp(false);
   document.getElementById('modal-title').textContent='Edit entry';
   document.getElementById('f-name').value=e.name;document.getElementById('f-feature').value=e.feature||'';
-  document.getElementById('f-cat').value=e.category;document.getElementById('f-soft').value=e.software;
+  populateCatSelect(e.category);
+  updateSubcatOptions(e.subcat||'');
+  document.getElementById('f-soft').value=e.software;
   document.getElementById('f-notes').value=e.notes||'';
-  updateSubcatOptions(e.subcat||'');renderBtypeToggles(e.btypes||[]);
+  renderBtypeToggles(e.btypes||[]);
   document.getElementById('dim-fields').innerHTML='';
   (e.dims||[]).forEach(d=>{if(d.type==='formula')makeFormulaRow(d.label,d.value);else makeDimRow(d.label,d.value);});
   checkFormulas();document.getElementById('modal-overlay').classList.add('open');
@@ -746,14 +869,95 @@ function getDefaults(){return[
   {id:'fx2',name:'Stair total rise / run',feature:'Formula example — stairs',category:'architectural',subcat:'arch-vertical',software:'Both',btypes:['residential','commercial'],notes:'Set Riser Height and Number of Risers.',dims:[{label:'Riser height',value:i(0,7),type:'dim'},{label:'Number of risers',value:14,type:'dim'},{label:'Total rise',value:'Riser height * Number of risers',type:'formula'},{label:'Total run (approx)',value:'(Number of risers - 1) * 11',type:'formula'}]},
 ];}
 
-// boot
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeSettings();closePat();}});
+// ── CATEGORY MANAGER ─────────────────────────────────────────────────────────
+let cmSchema=[];// working copy while editor is open
+
+function openCatManager(){
+  cmSchema=JSON.parse(JSON.stringify(schema));// deep clone
+  renderCmBody();
+  document.getElementById('catmgr-overlay').classList.add('open');
+}
+function closeCatManager(){document.getElementById('catmgr-overlay').classList.remove('open');}
+
+function renderCmBody(){
+  const body=document.getElementById('catmgr-body');
+  body.innerHTML=cmSchema.map((c,ci)=>`
+    <div class="cm-cat" id="cmcat-${ci}">
+      <div class="cm-cat-head">
+        <span class="cm-drag-handle" title="Drag to reorder">⠿</span>
+        <div class="cm-color-swatch" style="background:${c.color}" title="Pick color">
+          <input type="color" value="${c.color}" oninput="cmSetColor(${ci},this.value)" />
+        </div>
+        <input value="${esc(c.label)}" placeholder="Category name" oninput="cmSchema[${ci}].label=this.value" />
+        <button class="cm-del" onclick="cmDelCat(${ci})" title="Delete category">×</button>
+      </div>
+      <div class="cm-subcats" id="cmsubs-${ci}">
+        ${c.subcats.map((s,si)=>`
+          <div class="cm-subcat-row" id="cmsub-${ci}-${si}">
+            <span class="cm-drag-handle" style="font-size:12px">⠿</span>
+            <input value="${esc(s.label)}" placeholder="Subcategory name" oninput="cmSchema[${ci}].subcats[${si}].label=this.value" />
+            <button class="cm-del" onclick="cmDelSub(${ci},${si})" title="Remove">×</button>
+          </div>`).join('')}
+      </div>
+      <button class="cm-add-sub" onclick="cmAddSub(${ci})">+ Add subcategory</button>
+    </div>`).join('');
+}
+
+function cmSetColor(ci,val){
+  cmSchema[ci].color=val;
+  const swatch=document.querySelector(`#cmcat-${ci} .cm-color-swatch`);
+  if(swatch)swatch.style.background=val;
+}
+function cmDelCat(ci){
+  if(!confirm('Delete this category? Entries in it will keep their category ID but it won\'t appear in filters.'))return;
+  cmSchema.splice(ci,1);renderCmBody();
+}
+function cmDelSub(ci,si){cmSchema[ci].subcats.splice(si,1);renderCmBody();}
+function cmAddSub(ci){
+  const label=prompt('Subcategory name:');
+  if(!label||!label.trim())return;
+  const id=cmSchema[ci].id+'-'+label.trim().toLowerCase().replace(/[^a-z0-9]+/g,'-');
+  cmSchema[ci].subcats.push({id,label:label.trim()});
+  renderCmBody();
+}
+function cmAddCat(){
+  const label=prompt('New category name:');
+  if(!label||!label.trim())return;
+  const id=label.trim().toLowerCase().replace(/[^a-z0-9]+/g,'-');
+  cmSchema.push({id,label:label.trim(),color:'#888888',subcats:[]});
+  renderCmBody();
+}
+function saveCatManager(){
+  schema=JSON.parse(JSON.stringify(cmSchema));
+  rebuildDerived();
+  closeCatManager();
+  // reset activeCat if it no longer exists
+  const allIds=['all',...schema.map(c=>c.id),...schema.flatMap(c=>c.subcats.map(s=>s.id))];
+  if(!allIds.includes(activeCat)){activeCat='all';document.getElementById('page-title').textContent='All entries';}
+  renderAll();
+  // Push to GitHub — reuse PAT flow
+  if(!sessionToken){
+    openPat('Update category schema');
+    // Store a flag so confirmPat knows to push schema instead of entries
+    pendingMsg='__schema__';
+  } else {
+    pushSchemaToGitHub(sessionToken).then(ok=>{
+      if(ok)toast('Schema saved to repo');
+    });
+  }
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeSettings();closePat();closeCatManager();}});
+loadSchema();
+rebuildDerived();
+populateCatSelect('');
 updateSubcatOptions('');
 (async function boot(){
   let saved;try{saved=JSON.parse(localStorage.getItem(CFG_KEY));}catch{}
   if(saved&&saved.owner&&saved.repo){
     cfg=saved;document.getElementById('setup-screen').style.display='none';document.getElementById('app').style.display='block';
     await loadFromGitHub();
+  } else {
+    renderAll();
   }
 })();
 </script>
