@@ -549,8 +549,20 @@ function cvt(inches){
   const v=parseFloat(inches);if(isNaN(v))return'—';
   if(activeUnit==='ftin')  return inToFtIn(v);
   if(activeUnit==='in')    return(Math.round(v*1000)/1000)+'"';
-  if(activeUnit==='ftdec') return(Math.round(v/12*10000)/10000)+'\'';
+  if(activeUnit==='ftdec') return(Math.round(v/12*10000)/10000)+"'";
   return Math.round(v*25.4)+' mm';
+}
+// Display a stored dim value respecting its unit metadata
+function displayDim(d){
+  const v=parseFloat(d.value);if(isNaN(v))return'—';
+  const u=d.unit||'in';
+  if(u==='deg')    return(Math.round(v*1000)/1000)+'°';
+  if(u==='rad')    return(Math.round(v*100000)/100000)+' rad';
+  if(u==='num')    return String(Math.round(v*10000)/10000);
+  if(u==='ftdec')  return(Math.round(v/12*10000)/10000)+"'";  // stored as inches, display as decimal feet
+  if(u==='mm')     return Math.round(v*25.4)+' mm';
+  // Imperial (in / ft / legacy no-unit) — use cvt
+  return cvt(v);
 }
 
 // formula
@@ -565,35 +577,26 @@ function evalExpr(expr,map){
   s=s.replace(/\bpi\b/gi,'Math.PI')
      .replace(/\bPHI\b|\bphi\b/g,'1.6180339887498949')   // golden ratio
      .replace(/\bE\b(?![a-zA-Z])/g,'Math.E');              // Euler's number (capital E only)
-  // Functions
-  s=s.replace(/\bsqrt\b/g,'Math.sqrt')
-     .replace(/\bcbrt\b/g,'Math.cbrt')       // cube root
-     .replace(/\bpow\b/g,'Math.pow')         // pow(base, exp)
-     .replace(/\bround\b/g,'Math.round')
-     .replace(/\bfloor\b/g,'Math.floor')
-     .replace(/\bceil\b/g,'Math.ceil')
-     .replace(/\bmin\b/g,'Math.min')
-     .replace(/\bmax\b/g,'Math.max')
-     .replace(/\babs\b/g,'Math.abs')
-     .replace(/\blog\b/g,'Math.log10')       // log base-10
-     .replace(/\bln\b/g,'Math.log')          // natural log
-     .replace(/\bsin\b/g,'Math.sin')         // radians
-     .replace(/\bcos\b/g,'Math.cos')
-     .replace(/\btan\b/g,'Math.tan')
-     .replace(/\basin\b/g,'Math.asin')
-     .replace(/\bacos\b/g,'Math.acos')
-     .replace(/\batan\b/g,'Math.atan')
-     .replace(/\batan2\b/g,'Math.atan2')
-     .replace(/\bsind\b/g,'(_x=>Math.sin(_x*Math.PI/180))')  // degree variants
-     .replace(/\bcosd\b/g,'(_x=>Math.cos(_x*Math.PI/180))')
-     .replace(/\btand\b/g,'(_x=>Math.tan(_x*Math.PI/180))')
-     .replace(/\basind\b/g,'(_x=>Math.asin(_x)*180/Math.PI)')
-     .replace(/\bacosd\b/g,'(_x=>Math.acos(_x)*180/Math.PI)')
-     .replace(/\batand\b/g,'(_x=>Math.atan(_x)*180/Math.PI)')
-     .replace(/\batan2d\b/g,'((_y,_x)=>Math.atan2(_y,_x)*180/Math.PI)')
-     .replace(/\bhyp\b/g,'((_a,_b)=>Math.sqrt(_a*_a+_b*_b))')  // hypotenuse
-     .replace(/\bdeg2rad\b/g,'(_x=>_x*Math.PI/180)')
-     .replace(/\brad2deg\b/g,'(_x=>_x*180/Math.PI)');
+  // Trig substitution — single combined regex to avoid double-replacement
+  // (e.g. sind → Math.sin would get hit again by the sin→Math.sin rule if done separately)
+  const TRIG_MAP={
+    atan2d:'((_y,_x)=>Math.atan2(_y,_x)*180/Math.PI)',
+    atan2: 'Math.atan2',
+    atand: '(_x=>Math.atan(_x)*180/Math.PI)',
+    asind: '(_x=>Math.asin(_x)*180/Math.PI)',
+    acosd: '(_x=>Math.acos(_x)*180/Math.PI)',
+    atan:  'Math.atan',
+    asin:  'Math.asin',
+    acos:  'Math.acos',
+    sind:  '(_x=>Math.sin(_x*Math.PI/180))',
+    cosd:  '(_x=>Math.cos(_x*Math.PI/180))',
+    tand:  '(_x=>Math.tan(_x*Math.PI/180))',
+    sin:   'Math.sin',
+    cos:   'Math.cos',
+    tan:   'Math.tan',
+  };
+  s=s.replace(/\b(atan2d|atan2|atand|asind|acosd|atan|asin|acos|sind|cosd|tand|sin|cos|tan)\b/g,
+    (_,fn)=>TRIG_MAP[fn]||_);
   // ^ as power operator shorthand (e.g. x^2 → Math.pow(x,2)) — simple two-operand only
   s=s.replace(/(\([^)]+\)|[\d.]+)\s*\^\s*(\([^)]+\)|[\d.]+)/g,'Math.pow($1,$2)');
   // After substitution, only safe chars remain
@@ -605,8 +608,10 @@ function evalExpr(expr,map){
   return r;
 }
 function resolveFormula(expr,dims){return evalExpr(expr,buildMap(dims));}
-function resolveForDisplay(d,allDims){if(d.type!=='formula')return cvt(d.value);try{return cvt(resolveFormula(d.value,allDims));}catch{return'error';}}
-
+function resolveForDisplay(d,allDims){
+  if(d.type!=='formula') return displayDim(d);
+  try{return cvt(resolveFormula(d.value,allDims));}catch{return'error';}
+}
 // github
 const apiUrl      =()=>`https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${FILE_PATH}`;
 const schemaApiUrl=()=>`https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${SCHEMA_PATH}`;
@@ -944,20 +949,68 @@ function editCard(id){
   document.getElementById('f-notes').value=e.notes||'';
   renderBtypeToggles(e.btypes||[]);
   document.getElementById('dim-fields').innerHTML='';
-  (e.dims||[]).forEach(d=>{if(d.type==='formula')makeFormulaRow(d.label,d.value);else makeDimRow(d.label,d.value);});
+  (e.dims||[]).forEach(d=>{if(d.type==='formula')makeFormulaRow(d.label,d.value);else makeDimRow(d.label,d.value,d.unit||'in');});
   checkFormulas();document.getElementById('modal-overlay').classList.add('open');
 }
 function closeModal(){document.getElementById('modal-overlay').classList.remove('open');}
 function overlayClick(ev){if(ev.target===document.getElementById('modal-overlay'))closeModal();}
 
-function makeDimRow(label='',valueInches=''){
+function makeDimRow(label='', rawValue='', unit='in'){
   const wrap=document.getElementById('dim-fields'),row=document.createElement('div');
   row.className='dim-fr';row.dataset.type='dim';
-  let ft='',ins='';
-  if(valueInches!==''){const v=parseFloat(valueInches);if(!isNaN(v)){ft=Math.floor(Math.abs(v)/12)*(v<0?-1:1);ins=Math.round((Math.abs(v)%12)*1000)/1000;}}
-  row.innerHTML=`<div class="dim-fr-head"><span class="dim-type-badge t-dim">dim</span><input class="fi dim-lbl-in" placeholder="Label" value="${esc(label)}" /><button class="rm-btn" onclick="this.closest('.dim-fr').remove();checkFormulas()">×</button></div>
-    <div class="ftin-wrap"><div class="ftin-col"><label>feet</label><input type="number" class="dim-ft" placeholder="0" min="0" step="1" value="${ft===''?'':ft}" /></div><div class="ftin-col"><label>inches</label><input type="number" class="dim-in" placeholder="0" min="0" max="11.999" step="0.125" value="${ins===''?'':ins}" /></div></div>`;
+  const isImperial=!unit||unit==='in'||unit==='ft'||unit==='ftdec';
+  let ft='',ins='',scalar='';
+  if(rawValue!==''){
+    const v=parseFloat(rawValue);
+    if(!isNaN(v)){
+      if(isImperial){ft=Math.floor(Math.abs(v)/12)*(v<0?-1:1);ins=Math.round((Math.abs(v)%12)*1000)/1000;}
+      else scalar=v;
+    }
+  }
+  const pid='dr'+Date.now()+Math.random().toString(36).slice(2);
+  row.innerHTML=`
+    <div class="dim-fr-head">
+      <span class="dim-type-badge t-dim">dim</span>
+      <input class="fi dim-lbl-in" placeholder="Label" value="${esc(label)}" />
+      <select class="dim-unit-sel fs" style="width:76px;padding:4px 6px;font-size:11px;font-family:var(--mono)" onchange="dimUnitChanged(this)">
+        <option value="in"${unit==='in'||!unit?' selected':''}>in</option>
+        <option value="ftdec"${unit==='ftdec'?' selected':''}>ft dec</option>
+        <option value="mm"${unit==='mm'?' selected':''}>mm</option>
+        <option value="deg"${unit==='deg'?' selected':''}>°deg</option>
+        <option value="rad"${unit==='rad'?' selected':''}>rad</option>
+        <option value="num"${unit==='num'?' selected':''}>num</option>
+      </select>
+      <button class="rm-btn" onclick="this.closest('.dim-fr').remove();checkFormulas()">×</button>
+    </div>
+    <div class="dim-input-body" id="${pid}">
+      ${isImperial
+        ? `<div class="ftin-wrap"><div class="ftin-col"><label>feet</label><input type="number" class="dim-ft" placeholder="0" min="0" step="1" value="${ft===''?'':ft}" /></div><div class="ftin-col"><label>inches</label><input type="number" class="dim-in" placeholder="0" min="0" max="11.999" step="0.125" value="${ins===''?'':ins}" /></div></div>`
+        : `<input class="fi dim-scalar" type="number" step="any" placeholder="${unit==='deg'?'e.g. 45':unit==='rad'?'e.g. 0.785':'0'}" value="${scalar===''?'':scalar}" style="font-family:var(--mono)" />`
+      }
+    </div>`;
+  row.querySelector('.dim-unit-sel').dataset.bodyId=pid;
   wrap.appendChild(row);
+}
+
+function dimUnitChanged(sel){
+  const unit=sel.value;
+  const pid=sel.dataset.bodyId;
+  const body=document.getElementById(pid);if(!body)return;
+  const isImperial=unit==='in'||unit==='ftdec'||unit==='mm';
+  // Preserve current value
+  const oldFt=parseFloat(body.querySelector('.dim-ft')?.value)||0;
+  const oldIn=parseFloat(body.querySelector('.dim-in')?.value)||0;
+  const oldScalar=parseFloat(body.querySelector('.dim-scalar')?.value)||0;
+  let newVal=oldScalar;
+  if(body.querySelector('.dim-ft')) newVal=oldFt*12+oldIn; // was imperial
+  if(isImperial){
+    const ft=Math.floor(Math.abs(newVal)/12);
+    const ins=Math.round((Math.abs(newVal)%12)*1000)/1000;
+    body.innerHTML=`<div class="ftin-wrap"><div class="ftin-col"><label>feet</label><input type="number" class="dim-ft" placeholder="0" min="0" step="1" value="${ft}" /></div><div class="ftin-col"><label>inches</label><input type="number" class="dim-in" placeholder="0" min="0" max="11.999" step="0.125" value="${ins}" /></div></div>`;
+  }else{
+    const placeholder=unit==='deg'?'e.g. 45':unit==='rad'?'e.g. 0.785':'0';
+    body.innerHTML=`<input class="fi dim-scalar" type="number" step="any" placeholder="${placeholder}" value="${newVal||''}" style="font-family:var(--mono)" />`;
+  }
 }
 function makeFormulaRow(label='',expr=''){
   setFormulaHelp(true);const wrap=document.getElementById('dim-fields'),row=document.createElement('div');
@@ -981,8 +1034,22 @@ function collectDims(){
   const dims=[];
   document.querySelectorAll('#dim-fields .dim-fr').forEach(row=>{
     const type=row.dataset.type,lbl=row.querySelector('.dim-lbl-in').value.trim();
-    if(type==='formula'){const expr=row.querySelector('.dim-expr-in').value.trim();if(lbl||expr)dims.push({label:lbl||'Result',value:expr,type:'formula'});}
-    else{const ft=parseFloat(row.querySelector('.dim-ft').value)||0,ins=parseFloat(row.querySelector('.dim-in').value)||0,total=ft*12+ins;if(lbl||total)dims.push({label:lbl||'Value',value:total,type:'dim'});}
+    if(type==='formula'){
+      const expr=row.querySelector('.dim-expr-in').value.trim();
+      if(lbl||expr)dims.push({label:lbl||'Result',value:expr,type:'formula'});
+    }else{
+      const unit=row.querySelector('.dim-unit-sel')?.value||'in';
+      const isImperial=unit==='in'||unit==='ftdec'||unit==='mm';
+      let value=0;
+      if(isImperial){
+        const ft=parseFloat(row.querySelector('.dim-ft')?.value)||0;
+        const ins=parseFloat(row.querySelector('.dim-in')?.value)||0;
+        value=ft*12+ins;
+      }else{
+        value=parseFloat(row.querySelector('.dim-scalar')?.value)||0;
+      }
+      if(lbl||value)dims.push({label:lbl||'Value',value,type:'dim',unit});
+    }
   });
   return dims;
 }
@@ -1184,6 +1251,8 @@ function addCalcVar(label='',unit='in'){
       <option value="ft"${unit==='ft'?' selected':''}>ft</option>
       <option value="ftdec"${unit==='ftdec'?' selected':''}>ft dec</option>
       <option value="mm"${unit==='mm'?' selected':''}>mm</option>
+      <option value="deg"${unit==='deg'?' selected':''}>° deg</option>
+      <option value="rad"${unit==='rad'?' selected':''}>rad</option>
       <option value="num"${unit==='num'?' selected':''}>number</option>
     </select>
     <button class="rm-btn" onclick="this.parentElement.remove()">×</button>`;
@@ -1203,6 +1272,8 @@ function addCalcFormula(label='',expr='',unit='in'){
           <option value="ftin"${unit==='ftin'?' selected':''}>ft-in</option>
           <option value="ftdec"${unit==='ftdec'?' selected':''}>ft dec</option>
           <option value="mm"${unit==='mm'?' selected':''}>mm</option>
+          <option value="deg"${unit==='deg'?' selected':''}>° deg</option>
+          <option value="rad"${unit==='rad'?' selected':''}>rad</option>
           <option value="num"${unit==='num'?' selected':''}>number</option>
         </select>
       </div>
@@ -1277,12 +1348,15 @@ function renderRunnerBody(){
   const body=document.getElementById('runner-body');
   const varHtml=runnerEntry.vars.map((v,vi)=>{
     const isImperial=v.unit==='in'||v.unit==='ft';
-    const unitHint=v.unit==='num'?'':'<span style="font-size:11px;color:var(--faint);margin-left:4px">'+esc(v.unit)+'</span>';
+    const unitLabel={'in':'in','ft':'ft','ftdec':"ft'",'mm':'mm','deg':'°','rad':'rad','num':''}[v.unit]||v.unit;
+    const unitHint=v.unit==='num'?'':` <span style="font-size:11px;color:var(--faint)">${esc(unitLabel)}</span>`;
+    const step=v.unit==='deg'?'0.1':v.unit==='rad'?'0.001':v.unit==='ftdec'?'0.001':'any';
+    const placeholder=v.unit==='deg'?'e.g. 45':v.unit==='rad'?'e.g. 0.785':'0';
     return`<div class="calc-input-row">
       <label style="font-size:13px;flex:1;font-weight:500">${esc(v.label)}${unitHint}</label>
       ${isImperial
         ?`<div class="ftin-wrap" style="flex:1.2"><div class="ftin-col"><label>feet</label><input type="number" class="cv-in" data-vi="${vi}" data-part="ft" min="0" step="1" value="0" oninput="runnerRecalc()" /></div><div class="ftin-col"><label>inches</label><input type="number" class="cv-in" data-vi="${vi}" data-part="in" min="0" max="11.99" step="0.125" value="0" oninput="runnerRecalc()" /></div></div>`
-        :`<input type="number" class="fi cv-in" data-vi="${vi}" data-part="num" step="${v.unit==='ftdec'?'0.001':'any'}" value="0" oninput="runnerRecalc()" style="max-width:130px;font-family:var(--mono)" />`}
+        :`<input type="number" class="fi cv-in" data-vi="${vi}" data-part="num" step="${step}" placeholder="${placeholder}" value="0" oninput="runnerRecalc()" style="max-width:130px;font-family:var(--mono)" />`}
     </div>`;
   }).join('');
   const fmlHtml=runnerEntry.formulas.map((f,fi)=>`
@@ -1290,7 +1364,7 @@ function renderRunnerBody(){
       <span class="calc-result-lbl">${esc(f.label)}</span>
       <span style="display:flex;align-items:center;gap:6px">
         <span class="calc-result-val" data-fi="${fi}">—</span>
-        <span style="font-size:10px;color:var(--formula);opacity:.7">${f.unit==='num'?'':esc(f.unit||'in')}</span>
+        <span style="font-size:10px;color:var(--formula);opacity:.7">${{'deg':'°','rad':'rad','ftin':'ft-in','ftdec':"ft'",'mm':'mm','in':'in','num':''}[f.unit||'in']||''}</span>
       </span>
     </div>`).join('');
   body.innerHTML=`
@@ -1313,10 +1387,10 @@ function runnerRecalc(){
       const inEl=document.querySelector(`.cv-in[data-vi="${vi}"][data-part="in"]`);
       map[v.label]=(parseFloat(ftEl?.value)||0)*12+(parseFloat(inEl?.value)||0);
     }else if(v.unit==='ftdec'){
-      // Single decimal-feet input — convert to inches for formula
       const el=document.querySelector(`.cv-in[data-vi="${vi}"][data-part="num"]`);
       map[v.label]=(parseFloat(el?.value)||0)*12;
     }else{
+      // deg, rad, num — pass through as-is
       const el=document.querySelector(`.cv-in[data-vi="${vi}"][data-part="num"]`);
       map[v.label]=parseFloat(el?.value)||0;
     }
@@ -1330,8 +1404,11 @@ function runnerRecalc(){
       if(!isFinite(raw)){el.textContent='—';return;}
       const unit=f.unit||'in';
       if(unit==='num'){
-        // Plain number — round to 4 sig figs
         el.textContent=parseFloat(raw.toFixed(4))+'';
+      }else if(unit==='deg'){
+        el.textContent=(Math.round(raw*10000)/10000)+'°';
+      }else if(unit==='rad'){
+        el.textContent=(Math.round(raw*100000)/100000)+' rad';
       }else if(unit==='ftin'){
         el.textContent=inToFtIn(raw);
       }else if(unit==='ftdec'){
@@ -1339,7 +1416,6 @@ function runnerRecalc(){
       }else if(unit==='mm'){
         el.textContent=Math.round(raw*25.4)+' mm';
       }else{
-        // 'in' — show in current active display unit
         el.textContent=cvt(raw);
       }
     }catch(e){
