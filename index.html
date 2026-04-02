@@ -187,7 +187,11 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
 .calc-var-type{font-size:9px;font-family:var(--mono);color:var(--accent-md)}
 .calc-run-btn{font-size:11px;padding:5px 12px;border-radius:5px;border:1.5px solid var(--formula);background:var(--formula-bg);color:var(--formula);cursor:pointer;font-family:var(--sans);font-weight:600;transition:all .12s}
 .calc-run-btn:hover{background:var(--formula);color:#fff}
-/* calculator runner */
+/* symbol palette */
+.sym-btn{padding:4px 8px;border-radius:5px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:var(--mono);font-size:12px;cursor:pointer;transition:all .1s;white-space:nowrap;line-height:1.3}
+.sym-btn:hover{background:var(--formula-bg);color:var(--formula);border-color:var(--formula)}
+.sym-btn.sym-const{background:var(--accent-lt);color:var(--accent);border-color:var(--accent-md)}
+.sym-btn.sym-const:hover{background:var(--accent);color:#fff}
 .calc-input-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
 .calc-input-row label{font-size:13px;flex:1;font-weight:500}
 .calc-input-row .ftin-wrap{flex:1.5}
@@ -252,8 +256,9 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
         <span class="search-icon">⌕</span>
         <input class="search-input" type="text" placeholder="Search…" id="searchInput" oninput="renderGrid()" />
       </div>
-      <div class="unit-toggle">
+      <div class="unit-toggle" style="grid-template-columns:repeat(4,1fr)">
         <button class="unit-btn active" id="u-ftin" onclick="setUnit('ftin')">ft-in</button>
+        <button class="unit-btn" id="u-ftdec" onclick="setUnit('ftdec')">ft</button>
         <button class="unit-btn" id="u-in" onclick="setUnit('in')">in</button>
         <button class="unit-btn" id="u-mm" onclick="setUnit('mm')">mm</button>
       </div>
@@ -388,8 +393,13 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
       <label class="fl">Formula outputs <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--faint)">— results computed from inputs</span></label>
       <div id="calc-formula-fields" style="display:flex;flex-direction:column;gap:6px;margin-bottom:6px"></div>
       <button class="add-row-btn f" onclick="addCalcFormula()">∑ Add formula output</button>
-      <div style="font-size:11px;color:var(--faint);margin-top:6px;padding:6px 8px;background:var(--surface2);border-radius:var(--r);line-height:1.6">
-        Reference input variable names in formula expressions. E.g. if you have a variable called <code style="font-family:var(--mono);font-size:10px;background:var(--formula-bg);color:var(--formula);padding:1px 4px;border-radius:3px">Width</code>, use it as <code style="font-family:var(--mono);font-size:10px;background:var(--formula-bg);color:var(--formula);padding:1px 4px;border-radius:3px">Width * 0.25</code>
+      <div style="margin-top:8px;padding:10px;background:var(--surface2);border-radius:var(--r)">
+        <div style="font-size:10px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Symbol palette — click to insert into focused formula</div>
+        <div id="sym-palette" style="display:flex;flex-wrap:wrap;gap:4px"></div>
+        <div style="font-size:11px;color:var(--faint);margin-top:8px;line-height:1.6">
+          Variables are in <strong>inches</strong> (imperial) or raw numbers. Write formulas using variable names exactly as defined above.<br>
+          Trig functions use <strong>radians</strong> by default — use <code style="font-family:var(--mono);font-size:10px;background:var(--formula-bg);color:var(--formula);padding:1px 4px;border-radius:3px">sind(x)</code> / <code style="font-family:var(--mono);font-size:10px;background:var(--formula-bg);color:var(--formula);padding:1px 4px;border-radius:3px">cosd(x)</code> for degrees.
+        </div>
       </div>
     </div>
 
@@ -535,7 +545,13 @@ function i(ft,ins=0){return ft*12+ins;}
 
 // unit
 function inToFtIn(v){const neg=v<0?'-':'',a=Math.abs(v),ft=Math.floor(a/12),ins=a%12;return neg+ft+"'"+(ins===0?'0"':(Math.round(ins*1000)/1000)+'"');}
-function cvt(inches){const v=parseFloat(inches);if(isNaN(v))return'—';if(activeUnit==='ftin')return inToFtIn(v);if(activeUnit==='in')return(Math.round(v*1000)/1000)+'"';return Math.round(v*25.4)+' mm';}
+function cvt(inches){
+  const v=parseFloat(inches);if(isNaN(v))return'—';
+  if(activeUnit==='ftin')  return inToFtIn(v);
+  if(activeUnit==='in')    return(Math.round(v*1000)/1000)+'"';
+  if(activeUnit==='ftdec') return(Math.round(v/12*10000)/10000)+'\'';
+  return Math.round(v*25.4)+' mm';
+}
 
 // formula
 function buildMap(dims){const m={};dims.filter(d=>d.type!=='formula').forEach(d=>{const v=parseFloat(d.value);if(!isNaN(v))m[d.label]=v;});return m;}
@@ -545,18 +561,45 @@ function evalExpr(expr,map){
   Object.keys(map).sort((a,b)=>b.length-a.length).forEach(lbl=>{
     s=s.replace(new RegExp('\\b'+lbl.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b','g'),String(map[lbl]));
   });
-  // Replace math function names before safety check
+  // Named constants
+  s=s.replace(/\bpi\b/gi,'Math.PI')
+     .replace(/\bPHI\b|\bphi\b/g,'1.6180339887498949')   // golden ratio
+     .replace(/\bE\b(?![a-zA-Z])/g,'Math.E');              // Euler's number (capital E only)
+  // Functions
   s=s.replace(/\bsqrt\b/g,'Math.sqrt')
+     .replace(/\bcbrt\b/g,'Math.cbrt')       // cube root
+     .replace(/\bpow\b/g,'Math.pow')         // pow(base, exp)
      .replace(/\bround\b/g,'Math.round')
      .replace(/\bfloor\b/g,'Math.floor')
      .replace(/\bceil\b/g,'Math.ceil')
      .replace(/\bmin\b/g,'Math.min')
      .replace(/\bmax\b/g,'Math.max')
      .replace(/\babs\b/g,'Math.abs')
-     .replace(/\bpi\b/g,'Math.PI');
-  // After substitution, only digits, operators, parens, dots, and Math.* should remain
-  const safe=s.replace(/Math\.(sqrt|round|floor|ceil|min|max|abs|PI)/g,'0');
-  if(!/^[\d\s\+\-\*\/\(\)\.,e]+$/.test(safe))throw new Error('unsafe expression');
+     .replace(/\blog\b/g,'Math.log10')       // log base-10
+     .replace(/\bln\b/g,'Math.log')          // natural log
+     .replace(/\bsin\b/g,'Math.sin')         // radians
+     .replace(/\bcos\b/g,'Math.cos')
+     .replace(/\btan\b/g,'Math.tan')
+     .replace(/\basin\b/g,'Math.asin')
+     .replace(/\bacos\b/g,'Math.acos')
+     .replace(/\batan\b/g,'Math.atan')
+     .replace(/\batan2\b/g,'Math.atan2')
+     .replace(/\bsind\b/g,'(_x=>Math.sin(_x*Math.PI/180))')  // degree variants
+     .replace(/\bcosd\b/g,'(_x=>Math.cos(_x*Math.PI/180))')
+     .replace(/\btand\b/g,'(_x=>Math.tan(_x*Math.PI/180))')
+     .replace(/\basind\b/g,'(_x=>Math.asin(_x)*180/Math.PI)')
+     .replace(/\bacosd\b/g,'(_x=>Math.acos(_x)*180/Math.PI)')
+     .replace(/\batand\b/g,'(_x=>Math.atan(_x)*180/Math.PI)')
+     .replace(/\batan2d\b/g,'((_y,_x)=>Math.atan2(_y,_x)*180/Math.PI)')
+     .replace(/\bhyp\b/g,'((_a,_b)=>Math.sqrt(_a*_a+_b*_b))')  // hypotenuse
+     .replace(/\bdeg2rad\b/g,'(_x=>_x*Math.PI/180)')
+     .replace(/\brad2deg\b/g,'(_x=>_x*180/Math.PI)');
+  // ^ as power operator shorthand (e.g. x^2 → Math.pow(x,2)) — simple two-operand only
+  s=s.replace(/(\([^)]+\)|[\d.]+)\s*\^\s*(\([^)]+\)|[\d.]+)/g,'Math.pow($1,$2)');
+  // After substitution, only safe chars remain
+  const safe=s.replace(/Math\.[a-zA-Z0-9_]+/g,'0')
+              .replace(/1\.6180339887498949/g,'0');
+  if(!/^[\d\s\+\-\*\/\(\)\.,_e]+$/.test(safe))throw new Error('unsafe expression: '+safe);
   const r=Function('"use strict";return('+s+')')();
   if(!isFinite(r))throw new Error('non-finite result');
   return r;
@@ -735,7 +778,7 @@ function setCat(c){
 function setSoft(s){
   activeSoft=s;document.querySelectorAll('.pill').forEach(b=>b.classList.remove('active'));document.getElementById('p-'+s).classList.add('active');renderGrid();updateChips();
 }
-function setUnit(u){activeUnit=u;['ftin','in','mm'].forEach(x=>document.getElementById('u-'+x).classList.toggle('active',x===u));renderGrid();}
+function setUnit(u){activeUnit=u;['ftin','ftdec','in','mm'].forEach(x=>document.getElementById('u-'+x).classList.toggle('active',x===u));renderGrid();}
 function toggleBtype(id){if(activeBtypes.has(id))activeBtypes.delete(id);else activeBtypes.add(id);renderBtypeNav();renderGrid();updateChips();}
 function clearBtypes(){activeBtypes.clear();renderBtypeNav();renderGrid();updateChips();}
 
@@ -1021,7 +1064,79 @@ function getDefaults(){return[
   {id:'fx2',name:'Stair total rise / run',feature:'Formula example — stairs',category:'architectural',subcat:'arch-vertical',software:'Both',btypes:['residential','commercial'],notes:'Set Riser Height and Number of Risers.',dims:[{label:'Riser height',value:i(0,7),type:'dim'},{label:'Number of risers',value:14,type:'dim'},{label:'Total rise',value:'Riser height * Number of risers',type:'formula'},{label:'Total run (approx)',value:'(Number of risers - 1) * 11',type:'formula'}]},
 ];}
 
-// ── CALCULATOR BUILDER ───────────────────────────────────────────────────────
+// ── SYMBOL PALETTE ────────────────────────────────────────────────────────────
+let focusedFormulaInput=null;
+
+const SYMBOLS=[
+  // Basic operators (convenience)
+  {label:'( )',   insert:'()',       tip:'Grouping',          group:'ops'},
+  {label:'x²',   insert:'^2',       tip:'Square (x^2)',      group:'ops'},
+  {label:'x³',   insert:'^3',       tip:'Cube (x^3)',        group:'ops'},
+  {label:'xⁿ',   insert:'^',        tip:'Power (x^n)',       group:'ops'},
+  {label:'√x',   insert:'sqrt()',   tip:'Square root',       group:'ops'},
+  {label:'∛x',   insert:'cbrt()',   tip:'Cube root',         group:'ops'},
+  {label:'|x|',  insert:'abs()',    tip:'Absolute value',    group:'ops'},
+  // Rounding
+  {label:'⌊x⌋',  insert:'floor()', tip:'Floor (round down)',group:'round'},
+  {label:'⌈x⌉',  insert:'ceil()',  tip:'Ceiling (round up)',group:'round'},
+  {label:'~x',   insert:'round()', tip:'Round to nearest',   group:'round'},
+  // Trig — degrees (most useful for arch)
+  {label:'sin°', insert:'sind()',   tip:'Sine (degrees)',    group:'trig'},
+  {label:'cos°', insert:'cosd()',   tip:'Cosine (degrees)',  group:'trig'},
+  {label:'tan°', insert:'tand()',   tip:'Tangent (degrees)', group:'trig'},
+  {label:'asin°',insert:'asind()',  tip:'Arcsine → degrees', group:'trig'},
+  {label:'acos°',insert:'acosd()',  tip:'Arccos → degrees',  group:'trig'},
+  {label:'atan°',insert:'atand()',  tip:'Arctan → degrees',  group:'trig'},
+  // Trig — radians
+  {label:'sin',  insert:'sin()',    tip:'Sine (radians)',    group:'trig'},
+  {label:'cos',  insert:'cos()',    tip:'Cosine (radians)',  group:'trig'},
+  {label:'tan',  insert:'tan()',    tip:'Tangent (radians)', group:'trig'},
+  // Geometry helpers
+  {label:'hyp',  insert:'hyp(,)',   tip:'Hypotenuse: hyp(a,b) = √(a²+b²)', group:'geo'},
+  {label:'pow',  insert:'pow(,)',   tip:'Power: pow(base, exp)',             group:'geo'},
+  {label:'min',  insert:'min(,)',   tip:'Minimum of two values',            group:'geo'},
+  {label:'max',  insert:'max(,)',   tip:'Maximum of two values',            group:'geo'},
+  {label:'log',  insert:'log()',    tip:'Log base-10',                      group:'geo'},
+  {label:'ln',   insert:'ln()',     tip:'Natural log',                      group:'geo'},
+  // Constants
+  {label:'π',    insert:'pi',       tip:'Pi ≈ 3.14159',          group:'const'},
+  {label:'φ',    insert:'PHI',      tip:'Golden ratio ≈ 1.618',  group:'const'},
+  {label:'e',    insert:'E',        tip:'Euler\'s number ≈ 2.718',group:'const'},
+  {label:'°→rad',insert:'deg2rad()',tip:'Degrees to radians',    group:'const'},
+  {label:'rad→°',insert:'rad2deg()',tip:'Radians to degrees',    group:'const'},
+];
+
+function initSymbolPalette(){
+  const wrap=document.getElementById('sym-palette');if(!wrap)return;
+  wrap.innerHTML=SYMBOLS.map(s=>`
+    <button class="sym-btn${s.group==='const'?' sym-const':''}"
+      title="${esc(s.tip)}"
+      onclick="insertSymbol('${esc(s.insert)}')">${esc(s.label)}</button>`).join('');
+}
+
+function insertSymbol(text){
+  const el=focusedFormulaInput||document.querySelector('#calc-formula-fields .cf-expr');
+  if(!el)return;
+  el.focus();
+  const start=el.selectionStart,end=el.selectionEnd;
+  const val=el.value;
+  // For things like 'sqrt()' or 'hyp(,)' place cursor inside the parens
+  const hasParen=text.endsWith(')') || text.includes('(,)');
+  el.value=val.slice(0,start)+text+val.slice(end);
+  // Position cursor: inside parens if present, otherwise after insertion
+  let cur=start+text.length;
+  if(hasParen){
+    const parenPos=text.indexOf('(');
+    if(parenPos!==-1) cur=start+parenPos+1;
+  }
+  el.setSelectionRange(cur,cur);
+  el.dispatchEvent(new Event('input'));// trigger preview
+}
+
+// Track which formula input was last focused so the palette targets it
+document.addEventListener('focusin',e=>{
+  if(e.target.classList.contains('cf-expr')) focusedFormulaInput=e.target;
+});
 let editingCalcId=null;
 
 function openCalcBuilder(id){
@@ -1045,6 +1160,7 @@ function openCalcBuilder(id){
   fmlWrap.innerHTML='';
   (calc?.formulas||[{label:'Result',expr:'',unit:'in'}]).forEach(f=>addCalcFormula(f.label,f.expr,f.unit||'in'));
   document.getElementById('calc-overlay').classList.add('open');
+  initSymbolPalette();
   setTimeout(()=>document.getElementById('calc-name').focus(),80);
 }
 function closeCalcBuilder(){document.getElementById('calc-overlay').classList.remove('open');}
@@ -1066,6 +1182,7 @@ function addCalcVar(label='',unit='in'){
     <select class="fs cv-unit" style="width:80px;padding:5px 6px;font-size:12px">
       <option value="in"${unit==='in'?' selected':''}>in</option>
       <option value="ft"${unit==='ft'?' selected':''}>ft</option>
+      <option value="ftdec"${unit==='ftdec'?' selected':''}>ft dec</option>
       <option value="mm"${unit==='mm'?' selected':''}>mm</option>
       <option value="num"${unit==='num'?' selected':''}>number</option>
     </select>
@@ -1084,6 +1201,7 @@ function addCalcFormula(label='',expr='',unit='in'){
         <select class="cf-unit fs" style="width:80px;padding:5px 6px;font-size:12px">
           <option value="in"${unit==='in'?' selected':''}>inches</option>
           <option value="ftin"${unit==='ftin'?' selected':''}>ft-in</option>
+          <option value="ftdec"${unit==='ftdec'?' selected':''}>ft dec</option>
           <option value="mm"${unit==='mm'?' selected':''}>mm</option>
           <option value="num"${unit==='num'?' selected':''}>number</option>
         </select>
@@ -1164,7 +1282,7 @@ function renderRunnerBody(){
       <label style="font-size:13px;flex:1;font-weight:500">${esc(v.label)}${unitHint}</label>
       ${isImperial
         ?`<div class="ftin-wrap" style="flex:1.2"><div class="ftin-col"><label>feet</label><input type="number" class="cv-in" data-vi="${vi}" data-part="ft" min="0" step="1" value="0" oninput="runnerRecalc()" /></div><div class="ftin-col"><label>inches</label><input type="number" class="cv-in" data-vi="${vi}" data-part="in" min="0" max="11.99" step="0.125" value="0" oninput="runnerRecalc()" /></div></div>`
-        :`<input type="number" class="fi cv-in" data-vi="${vi}" data-part="num" step="any" value="0" oninput="runnerRecalc()" style="max-width:130px;font-family:var(--mono)" />`}
+        :`<input type="number" class="fi cv-in" data-vi="${vi}" data-part="num" step="${v.unit==='ftdec'?'0.001':'any'}" value="0" oninput="runnerRecalc()" style="max-width:130px;font-family:var(--mono)" />`}
     </div>`;
   }).join('');
   const fmlHtml=runnerEntry.formulas.map((f,fi)=>`
@@ -1194,6 +1312,10 @@ function runnerRecalc(){
       const ftEl=document.querySelector(`.cv-in[data-vi="${vi}"][data-part="ft"]`);
       const inEl=document.querySelector(`.cv-in[data-vi="${vi}"][data-part="in"]`);
       map[v.label]=(parseFloat(ftEl?.value)||0)*12+(parseFloat(inEl?.value)||0);
+    }else if(v.unit==='ftdec'){
+      // Single decimal-feet input — convert to inches for formula
+      const el=document.querySelector(`.cv-in[data-vi="${vi}"][data-part="num"]`);
+      map[v.label]=(parseFloat(el?.value)||0)*12;
     }else{
       const el=document.querySelector(`.cv-in[data-vi="${vi}"][data-part="num"]`);
       map[v.label]=parseFloat(el?.value)||0;
@@ -1212,6 +1334,8 @@ function runnerRecalc(){
         el.textContent=parseFloat(raw.toFixed(4))+'';
       }else if(unit==='ftin'){
         el.textContent=inToFtIn(raw);
+      }else if(unit==='ftdec'){
+        el.textContent=(Math.round(raw/12*10000)/10000)+"'";
       }else if(unit==='mm'){
         el.textContent=Math.round(raw*25.4)+' mm';
       }else{
