@@ -1,5 +1,31 @@
 [
   {
+    "id": "mni24jfuxgom7xoy4ga",
+    "type": "calc",
+    "name": "Pediment Height Calculator",
+    "notes": "The total height of a pediment if you have the width",
+    "category": "architectural",
+    "subcat": "architectural-traditional-features",
+    "software": "Both",
+    "vars": [
+      {
+        "label": "Pediment Width",
+        "unit": "ft"
+      },
+      {
+        "label": "Number of Columns",
+        "unit": "in"
+      }
+    ],
+    "formulas": [
+      {
+        "label": "Pediment Height",
+        "expr": "(Pediment Width * 4)/(14 + Number of Columns)"
+      }
+    ],
+    "updated": 1775169566058
+  },
+  {
     "id": "mni11nk76nr1h737bcr",
     "name": "test",
     "feature": "test",
