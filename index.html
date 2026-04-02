@@ -541,10 +541,25 @@ function cvt(inches){const v=parseFloat(inches);if(isNaN(v))return'—';if(activ
 function buildMap(dims){const m={};dims.filter(d=>d.type!=='formula').forEach(d=>{const v=parseFloat(d.value);if(!isNaN(v))m[d.label]=v;});return m;}
 function evalExpr(expr,map){
   let s=expr;
-  Object.keys(map).sort((a,b)=>b.length-a.length).forEach(lbl=>{s=s.replace(new RegExp('\\b'+lbl.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b','g'),String(map[lbl]));});
-  s=s.replace(/\bsqrt\b/g,'Math.sqrt').replace(/\bround\b/g,'Math.round').replace(/\bfloor\b/g,'Math.floor').replace(/\bceil\b/g,'Math.ceil').replace(/\bmin\b/g,'Math.min').replace(/\bmax\b/g,'Math.max').replace(/\babs\b/g,'Math.abs');
-  if(!/^[\d\s\+\-\*\/\(\)\.,Math\.sqroundflicebmax]+$/.test(s.replace(/Math\.\w+/g,'X')))throw new Error('unsafe');
-  const r=Function('"use strict";return('+s+')')();if(!isFinite(r))throw new Error('non-finite');return r;
+  // Substitute variables longest-first to avoid partial matches
+  Object.keys(map).sort((a,b)=>b.length-a.length).forEach(lbl=>{
+    s=s.replace(new RegExp('\\b'+lbl.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b','g'),String(map[lbl]));
+  });
+  // Replace math function names before safety check
+  s=s.replace(/\bsqrt\b/g,'Math.sqrt')
+     .replace(/\bround\b/g,'Math.round')
+     .replace(/\bfloor\b/g,'Math.floor')
+     .replace(/\bceil\b/g,'Math.ceil')
+     .replace(/\bmin\b/g,'Math.min')
+     .replace(/\bmax\b/g,'Math.max')
+     .replace(/\babs\b/g,'Math.abs')
+     .replace(/\bpi\b/g,'Math.PI');
+  // After substitution, only digits, operators, parens, dots, and Math.* should remain
+  const safe=s.replace(/Math\.(sqrt|round|floor|ceil|min|max|abs|PI)/g,'0');
+  if(!/^[\d\s\+\-\*\/\(\)\.,e]+$/.test(safe))throw new Error('unsafe expression');
+  const r=Function('"use strict";return('+s+')')();
+  if(!isFinite(r))throw new Error('non-finite result');
+  return r;
 }
 function resolveFormula(expr,dims){return evalExpr(expr,buildMap(dims));}
 function resolveForDisplay(d,allDims){if(d.type!=='formula')return cvt(d.value);try{return cvt(resolveFormula(d.value,allDims));}catch{return'error';}}
@@ -1028,7 +1043,7 @@ function openCalcBuilder(id){
   // populate formula fields
   const fmlWrap=document.getElementById('calc-formula-fields');
   fmlWrap.innerHTML='';
-  (calc?.formulas||[{label:'Result',expr:''}]).forEach(f=>addCalcFormula(f.label,f.expr));
+  (calc?.formulas||[{label:'Result',expr:'',unit:'in'}]).forEach(f=>addCalcFormula(f.label,f.expr,f.unit||'in'));
   document.getElementById('calc-overlay').classList.add('open');
   setTimeout(()=>document.getElementById('calc-name').focus(),80);
 }
@@ -1057,18 +1072,26 @@ function addCalcVar(label='',unit='in'){
     <button class="rm-btn" onclick="this.parentElement.remove()">×</button>`;
   wrap.appendChild(row);
 }
-function addCalcFormula(label='',expr=''){
+function addCalcFormula(label='',expr='',unit='in'){
   const wrap=document.getElementById('calc-formula-fields');
   const row=document.createElement('div');
   row.className='calc-formula-def';
   const pid='cp'+Date.now()+Math.random().toString(36).slice(2);
   row.innerHTML=`
     <div style="flex:1;display:flex;flex-direction:column;gap:4px">
-      <input placeholder="Output label (e.g. Pediment height)" class="cf-lbl" style="border:1px solid var(--border);border-radius:var(--r);background:var(--bg);color:var(--text)" value="${esc(label)}" />
-      <input placeholder="Formula (e.g. Width * 0.25)" class="cf-expr" oninput="previewCalcFormula(this,'${pid}')" value="${esc(expr)}" />
+      <div style="display:flex;gap:6px">
+        <input placeholder="Output label (e.g. Pediment height)" class="cf-lbl" style="flex:1;border:1px solid var(--border);border-radius:var(--r);background:var(--bg);color:var(--text);padding:5px 8px;font-size:12px;outline:none" value="${esc(label)}" />
+        <select class="cf-unit fs" style="width:80px;padding:5px 6px;font-size:12px">
+          <option value="in"${unit==='in'?' selected':''}>inches</option>
+          <option value="ftin"${unit==='ftin'?' selected':''}>ft-in</option>
+          <option value="mm"${unit==='mm'?' selected':''}>mm</option>
+          <option value="num"${unit==='num'?' selected':''}>number</option>
+        </select>
+      </div>
+      <input placeholder="Formula using variable names, e.g. Width * 0.25" class="cf-expr" oninput="previewCalcFormula(this,'${pid}')" value="${esc(expr)}" style="font-family:var(--mono);font-size:12px;border:1px solid var(--formula);border-radius:var(--r);background:transparent;color:var(--formula);padding:5px 8px;outline:none" />
       <div class="formula-preview" id="${pid}" style="font-size:10px">${expr?'...':'—'}</div>
     </div>
-    <button class="rm-btn" style="margin-top:1px" onclick="this.parentElement.remove()">×</button>`;
+    <button class="rm-btn" style="margin-top:1px;flex-shrink:0" onclick="this.parentElement.remove()">×</button>`;
   wrap.appendChild(row);
   if(expr)setTimeout(()=>previewCalcFormula(row.querySelector('.cf-expr'),pid),0);
 }
@@ -1093,7 +1116,8 @@ function collectCalcVars(){
 function collectCalcFormulas(){
   return [...document.querySelectorAll('#calc-formula-fields .calc-formula-def')].map(r=>({
     label:r.querySelector('.cf-lbl').value.trim()||'Result',
-    expr:r.querySelector('.cf-expr').value.trim()
+    expr:r.querySelector('.cf-expr').value.trim(),
+    unit:r.querySelector('.cf-unit').value||'in'
   })).filter(f=>f.expr);
 }
 
@@ -1135,51 +1159,69 @@ function renderRunnerBody(){
   const body=document.getElementById('runner-body');
   const varHtml=runnerEntry.vars.map((v,vi)=>{
     const isImperial=v.unit==='in'||v.unit==='ft';
+    const unitHint=v.unit==='num'?'':'<span style="font-size:11px;color:var(--faint);margin-left:4px">'+esc(v.unit)+'</span>';
     return`<div class="calc-input-row">
-      <label>${esc(v.label)}</label>
+      <label style="font-size:13px;flex:1;font-weight:500">${esc(v.label)}${unitHint}</label>
       ${isImperial
-        ?`<div class="ftin-wrap"><div class="ftin-col"><label>ft</label><input type="number" class="cv-in" data-vi="${vi}" data-part="ft" min="0" step="1" oninput="runnerRecalc()" /></div><div class="ftin-col"><label>in</label><input type="number" class="cv-in" data-vi="${vi}" data-part="in" min="0" step="0.125" oninput="runnerRecalc()" /></div></div>`
-        :`<input type="number" class="fi cv-in" data-vi="${vi}" data-part="num" step="any" oninput="runnerRecalc()" style="max-width:140px" />`}
-      <span style="font-size:11px;color:var(--faint);min-width:30px">${v.unit==='num'?'':v.unit}</span>
+        ?`<div class="ftin-wrap" style="flex:1.2"><div class="ftin-col"><label>feet</label><input type="number" class="cv-in" data-vi="${vi}" data-part="ft" min="0" step="1" value="0" oninput="runnerRecalc()" /></div><div class="ftin-col"><label>inches</label><input type="number" class="cv-in" data-vi="${vi}" data-part="in" min="0" max="11.99" step="0.125" value="0" oninput="runnerRecalc()" /></div></div>`
+        :`<input type="number" class="fi cv-in" data-vi="${vi}" data-part="num" step="any" value="0" oninput="runnerRecalc()" style="max-width:130px;font-family:var(--mono)" />`}
     </div>`;
   }).join('');
-  const fmlHtml=runnerEntry.formulas.map(f=>`
+  const fmlHtml=runnerEntry.formulas.map((f,fi)=>`
     <div class="calc-result-row">
       <span class="calc-result-lbl">${esc(f.label)}</span>
-      <span class="calc-result-val" data-expr="${esc(f.expr)}">—</span>
+      <span style="display:flex;align-items:center;gap:6px">
+        <span class="calc-result-val" data-fi="${fi}">—</span>
+        <span style="font-size:10px;color:var(--formula);opacity:.7">${f.unit==='num'?'':esc(f.unit||'in')}</span>
+      </span>
     </div>`).join('');
   body.innerHTML=`
-    <p class="calc-section-title">Inputs</p>${varHtml}
-    <p class="calc-section-title">Results</p>${fmlHtml}
-    ${runnerEntry.notes?`<p style="font-size:11px;color:var(--muted);margin-top:8px;font-style:italic">${esc(runnerEntry.notes)}</p>`:''}`;
+    <p class="calc-section-title" style="font-size:10px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin:0 0 8px">Inputs — enter values below</p>
+    ${varHtml}
+    <p class="calc-section-title" style="font-size:10px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--formula);margin:12px 0 8px">Results</p>
+    ${fmlHtml}
+    ${runnerEntry.notes?`<p style="font-size:11px;color:var(--muted);margin-top:10px;font-style:italic">${esc(runnerEntry.notes)}</p>`:''}`;
+  // Run immediately with zeros so results show from the start
+  runnerRecalc();
 }
 
 function runnerRecalc(){
   if(!runnerEntry)return;
-  // Build value map from inputs
+  // Build value map — imperial values always stored as decimal inches
   const map={};
   runnerEntry.vars.forEach((v,vi)=>{
-    const isImperial=v.unit==='in'||v.unit==='ft';
-    if(isImperial){
+    if(v.unit==='in'||v.unit==='ft'){
       const ftEl=document.querySelector(`.cv-in[data-vi="${vi}"][data-part="ft"]`);
       const inEl=document.querySelector(`.cv-in[data-vi="${vi}"][data-part="in"]`);
-      const totalIn=(parseFloat(ftEl?.value)||0)*12+(parseFloat(inEl?.value)||0);
-      map[v.label]=v.unit==='ft'?totalIn/12:totalIn;
+      map[v.label]=(parseFloat(ftEl?.value)||0)*12+(parseFloat(inEl?.value)||0);
     }else{
       const el=document.querySelector(`.cv-in[data-vi="${vi}"][data-part="num"]`);
       map[v.label]=parseFloat(el?.value)||0;
     }
   });
-  // Evaluate each formula output
-  document.querySelectorAll('.calc-result-val').forEach((el,fi)=>{
+  // Evaluate each formula and display using that formula's own unit setting
+  document.querySelectorAll('.calc-result-val[data-fi]').forEach(el=>{
+    const fi=parseInt(el.dataset.fi);
     const f=runnerEntry.formulas[fi];if(!f)return;
     try{
       const raw=evalExpr(f.expr,map);
-      // Display in current unit
-      const v=runnerEntry.vars[0];
-      if(v&&(v.unit==='in'||v.unit==='ft'))el.textContent=cvt(raw);
-      else el.textContent=isNaN(raw)?'—':(Math.round(raw*1000)/1000)+'';
-    }catch{el.textContent='error';}
+      if(!isFinite(raw)){el.textContent='—';return;}
+      const unit=f.unit||'in';
+      if(unit==='num'){
+        // Plain number — round to 4 sig figs
+        el.textContent=parseFloat(raw.toFixed(4))+'';
+      }else if(unit==='ftin'){
+        el.textContent=inToFtIn(raw);
+      }else if(unit==='mm'){
+        el.textContent=Math.round(raw*25.4)+' mm';
+      }else{
+        // 'in' — show in current active display unit
+        el.textContent=cvt(raw);
+      }
+    }catch(e){
+      el.textContent='error';
+      console.warn('Formula eval error:',f.expr,map,e.message);
+    }
   });
 }
 
@@ -1188,7 +1230,7 @@ function copyRunnerResults(btn){
   const lines=[runnerEntry.name,''];
   runnerEntry.vars.forEach((v,vi)=>{
     const isImperial=v.unit==='in'||v.unit==='ft';
-    let val='?';
+    let val;
     if(isImperial){
       const ft=parseFloat(document.querySelector(`.cv-in[data-vi="${vi}"][data-part="ft"]`)?.value)||0;
       const ins=parseFloat(document.querySelector(`.cv-in[data-vi="${vi}"][data-part="in"]`)?.value)||0;
@@ -1199,7 +1241,8 @@ function copyRunnerResults(btn){
     lines.push(v.label+': '+val);
   });
   lines.push('');
-  document.querySelectorAll('.calc-result-val').forEach((el,fi)=>{
+  document.querySelectorAll('.calc-result-val[data-fi]').forEach(el=>{
+    const fi=parseInt(el.dataset.fi);
     lines.push((runnerEntry.formulas[fi]?.label||'Result')+': '+el.textContent);
   });
   navigator.clipboard.writeText(lines.join('\n')).then(()=>{
