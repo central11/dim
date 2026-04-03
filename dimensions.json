@@ -7,6 +7,16 @@
     "category": "architectural",
     "subcat": "architectural-traditional-features",
     "software": "Both",
+    "btypes": [
+      "residential",
+      "commercial",
+      "mixed-use",
+      "industrial",
+      "hospitality",
+      "healthcare",
+      "education",
+      "civic"
+    ],
     "vars": [
       {
         "label": "Pediment Width",
@@ -20,10 +30,11 @@
     "formulas": [
       {
         "label": "Pediment Height",
-        "expr": "(4 * Pediment Width)/(14 + Number of Columns)"
+        "expr": "(4 * Pediment Width)/(14 + Number of Columns)",
+        "unit": "in"
       }
     ],
-    "updated": 1775169794278
+    "updated": 1775186659745
   },
   {
     "id": "mni11nk76nr1h737bcr",
