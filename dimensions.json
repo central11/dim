@@ -645,7 +645,11 @@
     "name": "Bathroom vanity",
     "feature": "Vanity base cabinet",
     "category": "furniture",
+    "subcat": "furniture-bathroom",
     "software": "Both",
+    "btypes": [
+      "residential"
+    ],
     "notes": "",
     "dims": [
       {
@@ -673,7 +677,7 @@
         "unit": "in"
       }
     ],
-    "updated": 1775187399005
+    "updated": 1775187411843
   },
   {
     "id": "f12",
