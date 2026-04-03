@@ -291,36 +291,45 @@
     "name": "Kitchen counter — base cabinet",
     "feature": "Standard kitchen",
     "category": "furniture",
+    "subcat": "furn-kitchen",
     "software": "Both",
+    "btypes": [
+      "residential"
+    ],
     "notes": "NKBA standard. ±1\" for ergonomic custom.",
     "dims": [
       {
         "label": "Counter height",
         "value": 36,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Counter depth",
         "value": 25,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Cabinet depth (base)",
         "value": 23,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Toe kick height",
         "value": 3.5,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Toe kick depth",
         "value": 3,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       }
     ],
-    "updated": 0
+    "updated": 1775187347337
   },
   {
     "id": "f02",
