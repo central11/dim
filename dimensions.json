@@ -259,32 +259,6 @@
     "updated": 1775187013188
   },
   {
-    "id": "a09",
-    "name": "Ceiling height — residential",
-    "feature": "Floor-to-ceiling",
-    "category": "architectural",
-    "software": "Both",
-    "notes": "8'-0\" standard, 9'-0\" premium.",
-    "dims": [
-      {
-        "label": "Standard",
-        "value": 96,
-        "type": "dim"
-      },
-      {
-        "label": "Premium",
-        "value": 108,
-        "type": "dim"
-      },
-      {
-        "label": "Basement min (IRC)",
-        "value": 84,
-        "type": "dim"
-      }
-    ],
-    "updated": 0
-  },
-  {
     "id": "a10",
     "name": "Ceiling height — commercial",
     "feature": "Floor-to-ceiling / slab soffit",
