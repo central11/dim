@@ -573,31 +573,39 @@
     "name": "Sofa — 3 seat",
     "feature": "Residential seating",
     "category": "furniture",
+    "subcat": "furn-seating",
     "software": "SketchUp",
+    "btypes": [
+      "residential"
+    ],
     "notes": "",
     "dims": [
       {
         "label": "Length",
         "value": 84,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Depth",
         "value": 36,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Seat height",
         "value": 16,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Back height",
         "value": 36,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       }
     ],
-    "updated": 0
+    "updated": 1775187386523
   },
   {
     "id": "f10",
