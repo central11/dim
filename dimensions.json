@@ -1223,25 +1223,35 @@
     "feature": "Street edge",
     "category": "site",
     "software": "Rhino",
+    "btypes": [
+      "residential",
+      "commercial",
+      "mixed-use",
+      "industrial",
+      "civic"
+    ],
     "notes": "",
     "dims": [
       {
         "label": "Curb height",
         "value": 6,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Gutter width",
         "value": 12,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Back of curb to ROW",
         "value": 48,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       }
     ],
-    "updated": 0
+    "updated": 1775187535995
   },
   {
     "id": "fx1",
