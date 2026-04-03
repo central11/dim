@@ -777,31 +777,39 @@
     "name": "Bookshelf / shelving",
     "feature": "Built-in shelving",
     "category": "furniture",
+    "subcat": "furn-bedroom",
     "software": "Both",
+    "btypes": [
+      "residential"
+    ],
     "notes": "",
     "dims": [
       {
         "label": "Shelf depth (books)",
         "value": 12,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Shelf depth (deep)",
         "value": 16,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Shelf spacing (std)",
         "value": 12,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Max span unsupported",
         "value": 36,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       }
     ],
-    "updated": 0
+    "updated": 1775187435453
   },
   {
     "id": "s01",
