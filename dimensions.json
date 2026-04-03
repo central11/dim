@@ -162,20 +162,25 @@
     "feature": "Exterior glazed door",
     "category": "architectural",
     "software": "Both",
+    "btypes": [
+      "residential"
+    ],
     "notes": "",
     "dims": [
       {
         "label": "Width (common)",
         "value": 72,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Height",
         "value": 80,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       }
     ],
-    "updated": 0
+    "updated": 1775186904768
   },
   {
     "id": "a06",
