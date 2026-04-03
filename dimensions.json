@@ -64,28 +64,28 @@
         "label": "Tuscan",
         "value": 0,
         "type": "dim",
-        "unit": "num"
+        "unit": "ratio"
       },
       {
         "label": "Doric",
         "value": 0,
         "type": "dim",
-        "unit": "num"
+        "unit": "ratio"
       },
       {
         "label": "Ionic",
         "value": 0,
         "type": "dim",
-        "unit": "num"
+        "unit": "ratio"
       },
       {
         "label": "Corinthian/Composite",
         "value": 0,
         "type": "dim",
-        "unit": "num"
+        "unit": "ratio"
       }
     ],
-    "updated": 1775188564377
+    "updated": 1775189071688
   },
   {
     "id": "mnickn4iydky2ibu26p",
