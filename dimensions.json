@@ -19,15 +19,9 @@
         "label": "Tuscan Diameter",
         "value": "",
         "type": "formula"
-      },
-      {
-        "label": "Height",
-        "value": 0,
-        "type": "dim",
-        "unit": "in"
       }
     ],
-    "updated": 1775188688496
+    "updated": 1775188714873
   },
   {
     "id": "mnidfcp4ob6dyktrqt",
