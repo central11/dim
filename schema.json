@@ -6,17 +6,17 @@
     "subcats": [
       {
         "id": "arch-envelope",
-        "label": "Envelope & openings",
+        "label": "Doors",
         "color": "#ffffff"
       },
       {
         "id": "arch-interior",
-        "label": "Interior & egress",
+        "label": "Windows",
         "color": "#ffffff"
       },
       {
         "id": "arch-vertical",
-        "label": "Vertical circulation",
+        "label": "Up Down",
         "color": "#ffffff"
       },
       {
