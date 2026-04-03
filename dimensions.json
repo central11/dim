@@ -188,40 +188,49 @@
     "feature": "Rise / run",
     "category": "architectural",
     "software": "Both",
+    "btypes": [
+      "residential"
+    ],
     "notes": "Max riser 7-3/4\", min tread 10\". Common comfortable combo: 7+11.",
     "dims": [
       {
         "label": "Riser height",
         "value": 7,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Tread depth (going)",
         "value": 11,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Min headroom",
         "value": 80,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Min width",
         "value": 36,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Handrail height",
         "value": 38,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Nosing",
         "value": 1.25,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       }
     ],
-    "updated": 0
+    "updated": 1775186917683
   },
   {
     "id": "a07",
