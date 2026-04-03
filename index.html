@@ -33,19 +33,8 @@
   --site-bg:#2A2000;--site-fg:#E0B040;
 }}
 body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.5}
-#setup-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
-.setup-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:2.5rem;width:100%;max-width:480px}
-.setup-logo{font-family:var(--mono);font-size:22px;font-weight:600;color:var(--accent);margin-bottom:.25rem;letter-spacing:-1px}
-.setup-sub{font-size:13px;color:var(--muted);margin-bottom:2rem}
-.setup-field{margin-bottom:1rem}
-.setup-label{display:block;font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
-.setup-input{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:var(--r);background:var(--bg);color:var(--text);font-family:var(--mono);font-size:13px;outline:none;transition:border-color .15s}
-.setup-input:focus{border-color:var(--accent)}
-.setup-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.setup-btn{width:100%;padding:11px;background:var(--accent);border:none;border-radius:var(--r);color:#fff;font-family:var(--sans);font-size:14px;font-weight:600;cursor:pointer;transition:opacity .15s}
-.setup-btn:hover{opacity:.88}.setup-btn:disabled{opacity:.5;cursor:default}
-.setup-error{font-size:12px;color:#C0392B;margin-top:10px;text-align:center;min-height:18px}
-#app{display:none}
+#setup-screen{display:none}
+#app{display:block}
 header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 1.25rem;height:52px;display:flex;align-items:center;gap:1rem;position:sticky;top:0;z-index:100}
 .logo{font-family:var(--mono);font-size:17px;font-weight:600;color:var(--accent);letter-spacing:-1px;flex-shrink:0}
 .sync-status{font-family:var(--mono);font-size:11px;color:var(--faint);display:flex;align-items:center;gap:5px}
@@ -226,19 +215,6 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
 </head>
 <body>
 
-<div id="setup-screen">
-  <div class="setup-card">
-    <div class="setup-logo">dim</div>
-    <div class="setup-sub">Enter your GitHub repo to load your dimensions. No login required to browse.</div>
-    <div class="setup-row">
-      <div class="setup-field"><label class="setup-label">GitHub username</label><input class="setup-input" id="s-owner" placeholder="octocat" autocomplete="off" /></div>
-      <div class="setup-field"><label class="setup-label">Repository name</label><input class="setup-input" id="s-repo" placeholder="my-dimensions" autocomplete="off" /></div>
-    </div>
-    <div class="setup-field"><label class="setup-label">Branch</label><input class="setup-input" id="s-branch" value="main" autocomplete="off" /></div>
-    <button class="setup-btn" id="connect-btn" onclick="connectGitHub()">Open repository</button>
-    <div class="setup-error" id="setup-error"></div>
-  </div>
-</div>
 
 <div id="app">
   <header>
@@ -272,7 +248,10 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
       <div class="sb-section">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
           <span class="sb-label" style="margin-bottom:0">Building type</span>
-          <button class="clear-filters-btn" id="clear-btype-btn" onclick="clearBtypes()">Clear</button>
+          <div style="display:flex;gap:6px;align-items:center">
+            <button class="clear-filters-btn" id="clear-btype-btn" onclick="clearBtypes()">Clear</button>
+            <button class="clear-filters-btn" style="display:block" onclick="openTagManager()">Edit</button>
+          </div>
         </div>
         <div class="btype-wrap" id="btype-nav"></div>
       </div>
@@ -287,6 +266,10 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
           <button class="pill" id="p-SketchUp" onclick="setSoft('SketchUp')">SketchUp</button>
           <button class="pill" id="p-Both" onclick="setSoft('Both')">Both</button>
         </div>
+      </div>
+      <div id="no-repo-banner" style="display:none;background:var(--accent-lt);border:1px solid var(--accent-md);border-radius:var(--r-lg);padding:14px 16px;margin-bottom:1rem;display:flex;align-items:center;gap:12px">
+        <span style="font-size:13px;color:var(--accent);flex:1">No repository connected. Connect a GitHub repo to save and sync your dimensions.</span>
+        <button class="mbtn mbtn-p" onclick="openSettings()" style="white-space:nowrap;font-size:12px;padding:5px 12px">Connect repo</button>
       </div>
       <div class="filter-chips" id="filter-chips" style="display:none"></div>
       <div class="grid" id="grid"></div>
@@ -341,12 +324,13 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
 <div class="overlay" id="settings-overlay" onclick="if(event.target===this)closeSettings()">
   <div class="modal" style="max-width:420px">
     <div class="modal-title">Repository settings</div>
-    <div class="fg"><label class="fl">GitHub username</label><input class="fi" id="ss-owner" /></div>
-    <div class="fg"><label class="fl">Repository name</label><input class="fi" id="ss-repo" /></div>
+    <div id="ss-status" style="font-size:12px;padding:8px 10px;border-radius:var(--r);margin-bottom:12px;display:none"></div>
+    <div class="fg"><label class="fl">GitHub username</label><input class="fi" id="ss-owner" placeholder="octocat" autocomplete="off" /></div>
+    <div class="fg"><label class="fl">Repository name</label><input class="fi" id="ss-repo" placeholder="my-dimensions" autocomplete="off" /></div>
     <div class="fg"><label class="fl">Branch</label><input class="fi" id="ss-branch" /></div>
     <div class="modal-foot">
       <button class="mbtn" onclick="closeSettings()">Cancel</button>
-      <button class="mbtn mbtn-p" onclick="saveSettings()">Save &amp; reload</button>
+      <button class="mbtn mbtn-p" id="ss-save-btn" onclick="saveSettings()">Connect &amp; load</button>
     </div>
   </div>
 </div>
@@ -382,6 +366,11 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
       <div><label class="fl">Subcategory</label><select class="fs" id="calc-subcat"></select></div>
     </div>
     <div class="fg"><label class="fl">Notes</label><input class="fi" id="calc-notes" placeholder="What does this calculate?" /></div>
+
+    <div class="fg">
+      <label class="fl">Building types</label>
+      <div class="btype-selector" id="calc-btypes"></div>
+    </div>
 
     <div class="fg">
       <label class="fl">Input variables <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--faint)">— values you enter when calculating</span></label>
@@ -422,6 +411,21 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
   </div>
 </div>
 
+<!-- Tag manager modal -->
+<div class="overlay" id="tagmgr-overlay" onclick="if(event.target===this)closeTagManager()">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-title">Manage building type tags</div>
+    <div id="tagmgr-body"></div>
+    <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap">
+      <button class="mbtn" onclick="tmAddTag()" style="border-style:dashed">+ Add tag</button>
+      <div style="margin-left:auto;display:flex;gap:8px">
+        <button class="mbtn" onclick="closeTagManager()">Cancel</button>
+        <button class="mbtn mbtn-p" onclick="saveTagManager()">Save &amp; push</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Category manager modal -->
 <div class="overlay" id="catmgr-overlay" onclick="if(event.target===this)closeCatManager()">
   <div class="modal" style="max-width:580px">
@@ -440,19 +444,23 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
 <div class="toast" id="toast"></div>
 
 <script>
-const FILE_PATH='dimensions.json',SCHEMA_PATH='schema.json',CFG_KEY='dim_cfg_v5';
+const FILE_PATH='dimensions.json',SCHEMA_PATH='schema.json',TAGS_PATH='tags.json',CFG_KEY='dim_cfg_v5';
 
-const BTYPES=[
-  {id:'residential', label:'Residential', bg:'#E8F4FF',fg:'#1A4A80',dbg:'#0A1E38',dfg:'#7AB8FF'},
-  {id:'commercial',  label:'Commercial',  bg:'#FFF0E8',fg:'#7A3A10',dbg:'#381A06',dfg:'#FFB07A'},
-  {id:'mixed-use',   label:'Mixed-use',   bg:'#F0EDFF',fg:'#3A1A80',dbg:'#180A38',dfg:'#B07AFF'},
-  {id:'industrial',  label:'Industrial',  bg:'#F0F0EB',fg:'#3A3A20',dbg:'#1A1A0A',dfg:'#C8C8A0'},
-  {id:'hospitality', label:'Hospitality', bg:'#FFF0F4',fg:'#801A3A',dbg:'#380A1A',dfg:'#FF7AAA'},
-  {id:'healthcare',  label:'Healthcare',  bg:'#E8FFF0',fg:'#1A6A3A',dbg:'#083018',dfg:'#7AFFB0'},
-  {id:'education',   label:'Education',   bg:'#FFFDE8',fg:'#6A5A10',dbg:'#302800',dfg:'#FFE87A'},
-  {id:'civic',       label:'Civic',       bg:'#EFF8FF',fg:'#1A5870',dbg:'#082030',dfg:'#7AD8FF'},
+const DEFAULT_BTYPES=[
+  {id:'residential', label:'Residential', bg:'#E8F4FF',fg:'#1A4A80'},
+  {id:'commercial',  label:'Commercial',  bg:'#FFF0E8',fg:'#7A3A10'},
+  {id:'mixed-use',   label:'Mixed-use',   bg:'#F0EDFF',fg:'#3A1A80'},
+  {id:'industrial',  label:'Industrial',  bg:'#F0F0EB',fg:'#3A3A20'},
+  {id:'hospitality', label:'Hospitality', bg:'#FFF0F4',fg:'#801A3A'},
+  {id:'healthcare',  label:'Healthcare',  bg:'#E8FFF0',fg:'#1A6A3A'},
+  {id:'education',   label:'Education',   bg:'#FFFDE8',fg:'#6A5A10'},
+  {id:'civic',       label:'Civic',       bg:'#EFF8FF',fg:'#1A5870'},
 ];
-const BM=Object.fromEntries(BTYPES.map(b=>[b.id,b]));
+let BTYPES=JSON.parse(JSON.stringify(DEFAULT_BTYPES));
+let BM=Object.fromEntries(BTYPES.map(b=>[b.id,b]));
+let tagsSha=null;
+
+function rebuildBM(){BM=Object.fromEntries(BTYPES.map(b=>[b.id,b]));}
 
 // Default schema — array of {id, label, color, subcats:[{id,label}]}
 const DEFAULT_SCHEMA=[
@@ -615,13 +623,16 @@ function resolveForDisplay(d,allDims){
 // github
 const apiUrl      =()=>`https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${FILE_PATH}`;
 const schemaApiUrl=()=>`https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${SCHEMA_PATH}`;
+const tagsApiUrl  =()=>`https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${TAGS_PATH}`;
 const rawUrl      =()=>`https://raw.githubusercontent.com/${cfg.owner}/${cfg.repo}/${cfg.branch}/${FILE_PATH}`;
 const schemaRawUrl=()=>`https://raw.githubusercontent.com/${cfg.owner}/${cfg.repo}/${cfg.branch}/${SCHEMA_PATH}`;
+const tagsRawUrl  =()=>`https://raw.githubusercontent.com/${cfg.owner}/${cfg.repo}/${cfg.branch}/${TAGS_PATH}`;
 
 async function loadFromGitHub(){
   setSyncState('saving','Loading…');
-  // Load schema — never let this block entry loading
+  // Load schema and tags — never let these block entry loading
   try{ await loadSchemaFromGitHub(); }catch{ schema=JSON.parse(JSON.stringify(DEFAULT_SCHEMA));rebuildDerived(); }
+  try{ await loadTagsFromGitHub(); }catch{}
   try{
     const res=await fetch(rawUrl()+'?t='+Date.now());
     if(res.status===200){
@@ -672,6 +683,30 @@ async function loadSchemaFromGitHub(){
 
 async function fetchSha(){try{const res=await fetch(apiUrl()+'?ref='+cfg.branch);if(res.ok){const d=await res.json();fileSha=d.sha||null;}}catch{}}
 async function fetchSchemaSha(){try{const res=await fetch(schemaApiUrl()+'?ref='+cfg.branch);if(res.ok){const d=await res.json();schemaSha=d.sha||null;}}catch{}}
+async function fetchTagsSha(){try{const res=await fetch(tagsApiUrl()+'?ref='+cfg.branch);if(res.ok){const d=await res.json();tagsSha=d.sha||null;}}catch{}}
+
+async function loadTagsFromGitHub(){
+  try{
+    const res=await fetch(tagsRawUrl()+'?t='+Date.now());
+    if(res.status===200){
+      const loaded=await res.json();
+      if(Array.isArray(loaded)&&loaded.length>0){BTYPES=loaded;rebuildBM();fetchTagsSha();}
+    }
+    // 404 = no tags file yet, stay with defaults
+  }catch{}
+}
+
+async function pushTagsToGitHub(token){
+  const content=btoa(unescape(encodeURIComponent(JSON.stringify(BTYPES,null,2))));
+  const body={message:'Update tags',content,branch:cfg.branch};
+  if(tagsSha)body.sha=tagsSha;
+  try{
+    const res=await fetch(tagsApiUrl(),{method:'PUT',headers:{'Authorization':'Bearer '+token,'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json'},body:JSON.stringify(body)});
+    const data=await res.json();
+    if(!res.ok){toast('Tags push failed: '+(data.message||res.status),true);return false;}
+    tagsSha=data.content.sha;return true;
+  }catch{toast('Could not push tags',true);return false;}
+}
 
 async function pushToGitHub(msg){if(saving)return;if(!sessionToken){openPat(msg);return;}await doPush(msg,sessionToken);}
 
@@ -702,47 +737,51 @@ async function pushSchemaToGitHub(token){
 
 function setSyncState(s,l){document.getElementById('sync-dot').className='sync-dot '+s;document.getElementById('sync-label').textContent=l;}
 
-// setup/settings
-async function connectGitHub(){
-  const btn=document.getElementById('connect-btn'),err=document.getElementById('setup-error');
-  const owner=document.getElementById('s-owner').value.trim(),repo=document.getElementById('s-repo').value.trim(),branch=document.getElementById('s-branch').value.trim()||'main';
-  if(!owner||!repo){err.textContent='Please enter a username and repo name.';return;}
-  err.textContent='';btn.disabled=true;btn.textContent='Loading…';
-  cfg={owner,repo,branch};
+function openSettings(){
+  const el=document.getElementById('ss-owner');
+  if(el)el.value=cfg.owner||'';
+  const re=document.getElementById('ss-repo');if(re)re.value=cfg.repo||'';
+  const br=document.getElementById('ss-branch');if(br)br.value=cfg.branch||'main';
+  const st=document.getElementById('ss-status');if(st)st.style.display='none';
+  const btn=document.getElementById('ss-save-btn');if(btn)btn.textContent='Connect & load';
+  document.getElementById('settings-overlay').classList.add('open');
+}
+function closeSettings(){document.getElementById('settings-overlay').classList.remove('open');}
 
-  // First verify the repo exists at all using the GitHub API (no auth needed for public repos)
+async function saveSettings(){
+  const owner=document.getElementById('ss-owner').value.trim();
+  const repo=document.getElementById('ss-repo').value.trim();
+  const branch=document.getElementById('ss-branch').value.trim()||'main';
+  const errEl=document.getElementById('ss-status');
+  const btn=document.getElementById('ss-save-btn');
+  if(!owner||!repo){
+    if(errEl){errEl.textContent='Please enter a username and repo name.';errEl.style.cssText='display:block;background:var(--red-bg,#FDEDEC);color:#C0392B;font-size:12px;padding:8px 10px;border-radius:var(--r);margin-bottom:12px';}
+    return;
+  }
+  if(errEl)errEl.style.display='none';
+  if(btn){btn.disabled=true;btn.textContent='Connecting…';}
+  // Verify repo exists first
   try{
     const check=await fetch(`https://api.github.com/repos/${owner}/${repo}`,{headers:{'Accept':'application/vnd.github+json'}});
     if(!check.ok){
       const d=await check.json().catch(()=>({}));
-      err.textContent=check.status===404
-        ?`Repo "${owner}/${repo}" not found. Check the name and make sure it's public.`
-        :`GitHub error ${check.status}: ${d.message||'unknown'}`;
-      btn.disabled=false;btn.textContent='Open repository';
+      const msg=check.status===404?`Repo "${owner}/${repo}" not found — make sure it's public.`:`GitHub error ${check.status}: ${d.message||'unknown'}`;
+      if(errEl){errEl.textContent=msg;errEl.style.cssText='display:block;background:var(--red-bg,#FDEDEC);color:#C0392B;font-size:12px;padding:8px 10px;border-radius:var(--r);margin-bottom:12px';}
+      if(btn){btn.disabled=false;btn.textContent='Connect & load';}
       return;
     }
   }catch{
-    err.textContent='Network error — check your connection and try again.';
-    btn.disabled=false;btn.textContent='Open repository';
+    if(errEl){errEl.textContent='Network error — check your connection.';errEl.style.cssText='display:block;background:var(--red-bg,#FDEDEC);color:#C0392B;font-size:12px;padding:8px 10px;border-radius:var(--r);margin-bottom:12px';}
+    if(btn){btn.disabled=false;btn.textContent='Connect & load';}
     return;
   }
-
-  const ok=await loadFromGitHub();
-  if(ok){
-    localStorage.setItem(CFG_KEY,JSON.stringify(cfg));
-    document.getElementById('setup-screen').style.display='none';
-    document.getElementById('app').style.display='block';
-  } else {
-    err.textContent='Repo found but could not load dimensions.json. Check the browser console for details.';
-  }
-  btn.disabled=false;btn.textContent='Open repository';
-}
-function openSettings(){['owner','repo','branch'].forEach(k=>document.getElementById('ss-'+k).value=cfg[k]||'');document.getElementById('settings-overlay').classList.add('open');}
-function closeSettings(){document.getElementById('settings-overlay').classList.remove('open');}
-async function saveSettings(){
-  const owner=document.getElementById('ss-owner').value.trim(),repo=document.getElementById('ss-repo').value.trim(),branch=document.getElementById('ss-branch').value.trim()||'main';
-  if(!owner||!repo)return;cfg={owner,repo,branch};localStorage.setItem(CFG_KEY,JSON.stringify(cfg));
-  fileSha=null;schemaSha=null;entries=[];sessionToken=null;closeSettings();await loadFromGitHub();
+  cfg={owner,repo,branch};
+  localStorage.setItem(CFG_KEY,JSON.stringify(cfg));
+  fileSha=null;schemaSha=null;tagsSha=null;entries=[];sessionToken=null;
+  closeSettings();
+  updateRepoBanner();
+  await loadFromGitHub();
+  if(btn){btn.disabled=false;btn.textContent='Connect & load';}
 }
 
 // PAT
@@ -761,6 +800,9 @@ async function confirmPat(){
   if(pendingMsg==='__schema__'){
     const ok=await pushSchemaToGitHub(token);
     if(ok)toast('Schema saved to repo');
+  } else if(pendingMsg==='__tags__'){
+    const ok=await pushTagsToGitHub(token);
+    if(ok)toast('Tags saved to repo');
   } else {
     await doPush(pendingMsg||'Update dimensions',token);
   }
@@ -813,7 +855,7 @@ function getCatColor(catId,subcatId){
 function getCatMeta(catId){
   const c=schema.find(x=>x.id===catId);
   if(!c)return{label:catId,pillBg:'var(--surface2)',pillFg:'var(--muted)'};
-  return{label:c.label.slice(0,7),pillBg:c.color+'22',pillFg:c.color};
+  return{label:c.label,pillBg:c.color+'22',pillFg:c.color};
 }
 
 function renderAll(){renderBtypeNav();renderCatNav();renderGrid();updateCounts();updateChips();}
@@ -869,9 +911,11 @@ function renderCalcCard(e){
   const m=getCatMeta(e.category);
   const subLabel=e.subcat&&SL[e.subcat]?` · ${SL[e.subcat]}`:'';
   const varRows=(e.vars||[]).map(v=>`<div class="calc-var-row"><span class="calc-var-lbl">${esc(v.label)}</span><span class="calc-var-type">${v.unit}</span></div>`).join('');
-  const fmlRows=(e.formulas||[]).map(f=>`<div class="dim-row fr"><span class="dim-lbl">${esc(f.label)}</span><span class="ftag-badge">f(x)</span><span class="dim-val" style="color:var(--formula);font-size:10px">${esc(f.expr.length>22?f.expr.slice(0,22)+'…':f.expr)}</span></div>`).join('');
+  const fmlRows=(e.formulas||[]).map(f=>`<div class="dim-row fr" style="height:auto;flex-wrap:wrap"><span class="dim-lbl">${esc(f.label)}</span><span class="ftag-badge">f(x)</span><span class="dim-val" style="color:var(--formula);font-size:10px;white-space:normal;word-break:break-all;flex-basis:100%;margin-top:3px;padding-left:2px">${esc(f.expr)}</span></div>`).join('');
+  const tagHtml=(e.btypes||[]).map(id=>{const b=BM[id];if(!b)return'';return`<span class="btag" style="background:${b.bg};color:${b.fg};border-color:${b.fg}40" onclick="toggleBtype('${id}')" title="Filter by ${b.label}">${esc(b.label)}</span>`;}).join('');
   return`<div class="card calc-card">
     <div class="card-head"><div class="card-titles"><div class="card-name">${esc(e.name)}</div><div class="card-sub">Calculator${subLabel}</div></div><span class="cat-pill" style="background:${m.pillBg};color:${m.pillFg}">${m.label}</span></div>
+    ${tagHtml?`<div class="card-tags">${tagHtml}</div>`:''}
     <div style="font-size:10px;color:var(--muted);margin-bottom:4px;font-weight:600;letter-spacing:.5px">INPUTS</div>
     <div class="calc-vars">${varRows}</div>
     <div style="font-size:10px;color:var(--muted);margin-bottom:4px;font-weight:600;letter-spacing:.5px">OUTPUTS</div>
@@ -909,21 +953,23 @@ function updateSubcatOptions(selected){
   if(selected!=null)sel.value=selected;
 }
 
-function renderBtypeToggles(selected){
-  document.getElementById('f-btypes').innerHTML=BTYPES.map(b=>{
+function renderBtypeToggles(selected,containerId='f-btypes'){
+  document.getElementById(containerId).innerHTML=BTYPES.map(b=>{
     const on=(selected||[]).includes(b.id);
-    return `<button type="button" class="btype-toggle${on?' selected':''}" id="bt-${b.id}" onclick="toggleBtypeModal('${b.id}')"
+    return `<button type="button" class="btype-toggle${on?' selected':''}" id="bt-${containerId}-${b.id}" onclick="toggleBtypeModal('${b.id}','${containerId}')"
       style="${on?`border-color:${b.fg};background:${b.bg};color:${b.fg}`:''}">
       <span class="dot" style="background:${b.fg}"></span>${esc(b.label)}
     </button>`;
   }).join('');
 }
-function toggleBtypeModal(id){
-  const btn=document.getElementById('bt-'+id),b=BM[id];if(!btn||!b)return;
+function toggleBtypeModal(id,containerId='f-btypes'){
+  const btn=document.getElementById('bt-'+containerId+'-'+id),b=BM[id];if(!btn||!b)return;
   const on=btn.classList.toggle('selected');
   btn.style.borderColor=on?b.fg:'';btn.style.background=on?b.bg:'';btn.style.color=on?b.fg:'';
 }
-function getSelectedBtypes(){return BTYPES.filter(b=>document.getElementById('bt-'+b.id)?.classList.contains('selected')).map(b=>b.id);}
+function getSelectedBtypes(containerId='f-btypes'){
+  return BTYPES.filter(b=>document.getElementById('bt-'+containerId+'-'+b.id)?.classList.contains('selected')).map(b=>b.id);
+}
 
 function openAdd(){
   editingId=null;setFormulaHelp(false);
@@ -932,7 +978,7 @@ function openAdd(){
   populateCatSelect(schema[0]?.id||'');
   updateSubcatOptions('');
   document.getElementById('f-soft').value='Rhino';
-  renderBtypeToggles([]);
+  renderBtypeToggles([],'f-btypes');
   document.getElementById('dim-fields').innerHTML='';
   makeDimRow('Width','');makeDimRow('Height','');makeDimRow('Depth','');
   document.getElementById('modal-overlay').classList.add('open');
@@ -947,7 +993,7 @@ function editCard(id){
   updateSubcatOptions(e.subcat||'');
   document.getElementById('f-soft').value=e.software;
   document.getElementById('f-notes').value=e.notes||'';
-  renderBtypeToggles(e.btypes||[]);
+  renderBtypeToggles(e.btypes||[],'f-btypes');
   document.getElementById('dim-fields').innerHTML='';
   (e.dims||[]).forEach(d=>{if(d.type==='formula')makeFormulaRow(d.label,d.value);else makeDimRow(d.label,d.value,d.unit||'in');});
   checkFormulas();document.getElementById('modal-overlay').classList.add('open');
@@ -1218,7 +1264,8 @@ function openCalcBuilder(id){
   const subcatSel=document.getElementById('calc-subcat');
   const cat=catSel.value;
   subcatSel.innerHTML=(SOPTS[cat]||[{v:'',l:'(none)'}]).map(o=>`<option value="${o.v}"${o.v===(calc?.subcat||'')?'selected':''}>${esc(o.l)}</option>`).join('');
-  // populate var fields
+  // populate building type toggles
+  renderBtypeToggles(calc?.btypes||[],'calc-btypes');
   const varWrap=document.getElementById('calc-var-fields');
   varWrap.innerHTML='';
   (calc?.vars||[{label:'Width',unit:'in'},{label:'Height',unit:'in'}]).forEach(v=>addCalcVar(v.label,v.unit));
@@ -1319,12 +1366,14 @@ async function saveCalc(){
   if(!formulas.length){toast('Add at least one formula output');return;}
   const cat=document.getElementById('calc-cat').value;
   const subcat=document.getElementById('calc-subcat').value||undefined;
+  const btypes=getSelectedBtypes('calc-btypes');
   const entry={
     id:editingCalcId||(Date.now().toString(36)+Math.random().toString(36).slice(2)),
     type:'calc',name,
     notes:document.getElementById('calc-notes').value.trim(),
     category:cat,...(subcat?{subcat}:{}),
-    software:'Both',vars,formulas,updated:Date.now()
+    software:'Both',...(btypes.length?{btypes}:{}),
+    vars,formulas,updated:Date.now()
   };
   if(editingCalcId)entries=entries.map(e=>e.id===editingCalcId?entry:e);
   else entries.unshift(entry);
@@ -1529,7 +1578,78 @@ function saveCatManager(){
     });
   }
 }
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeSettings();closePat();closeCatManager();closeCalcBuilder();closeRunner();}});
+// ── TAG MANAGER ───────────────────────────────────────────────────────────────
+let tmTags=[];// working copy
+
+function openTagManager(){
+  tmTags=JSON.parse(JSON.stringify(BTYPES));
+  renderTagMgrBody();
+  document.getElementById('tagmgr-overlay').classList.add('open');
+}
+function closeTagManager(){document.getElementById('tagmgr-overlay').classList.remove('open');}
+
+function renderTagMgrBody(){
+  const body=document.getElementById('tagmgr-body');
+  body.innerHTML=`
+    <div style="display:flex;flex-direction:column;gap:6px">
+      ${tmTags.map((t,ti)=>`
+        <div class="cm-cat" style="display:flex;align-items:center;gap:8px;padding:8px 10px" id="tmt-${ti}">
+          <div class="cm-color-swatch" style="background:${t.fg};flex-shrink:0" title="Tag text/accent color">
+            <input type="color" value="${t.fg}" oninput="tmSetColor(${ti},'fg',this.value)" />
+          </div>
+          <div class="cm-color-swatch" style="background:${t.bg};flex-shrink:0;width:18px;height:18px;border-radius:3px" title="Tag background color">
+            <input type="color" value="${t.bg}" oninput="tmSetColor(${ti},'bg',this.value)" />
+          </div>
+          <input style="flex:1;padding:5px 8px;font-size:13px;border:1px solid var(--border);border-radius:var(--r);background:var(--bg);color:var(--text);font-family:var(--sans);outline:none"
+            value="${esc(t.label)}" placeholder="Tag name" oninput="tmTags[${ti}].label=this.value" />
+          <span style="font-size:11px;font-family:var(--mono);color:var(--faint);flex-shrink:0">#${t.id}</span>
+          <button class="cm-del" onclick="tmDelTag(${ti})">×</button>
+        </div>`).join('')}
+    </div>
+    <p style="font-size:11px;color:var(--faint);margin-top:8px;line-height:1.5">
+      Left swatch = accent/text color. Right swatch = background color.<br>
+      Tag IDs are fixed and used in saved data — only the label and colors can be changed.
+    </p>`;
+}
+
+function tmSetColor(ti,prop,val){
+  tmTags[ti][prop]=val;
+  const swatch=document.querySelector(`#tmt-${ti} .cm-color-swatch${prop==='fg'?':first-of-type':':nth-of-type(2)'}`);
+  if(swatch)swatch.style.background=val;
+}
+function tmDelTag(ti){
+  if(!confirm('Remove this tag? Entries tagged with it will keep the ID but it won\'t appear in filters.'))return;
+  tmTags.splice(ti,1);renderTagMgrBody();
+}
+function tmAddTag(){
+  const label=prompt('New tag name:');
+  if(!label||!label.trim())return;
+  const id=label.trim().toLowerCase().replace(/[^a-z0-9]+/g,'-');
+  if(tmTags.find(t=>t.id===id)){toast('A tag with that ID already exists');return;}
+  tmTags.push({id,label:label.trim(),bg:'#F0F0F0',fg:'#444444'});
+  renderTagMgrBody();
+}
+async function saveTagManager(){
+  BTYPES=JSON.parse(JSON.stringify(tmTags));
+  rebuildBM();
+  closeTagManager();
+  renderAll();
+  if(!sessionToken){
+    openPat('Update tags');
+    pendingMsg='__tags__';
+  } else {
+    const ok=await pushTagsToGitHub(sessionToken);
+    if(ok)toast('Tags saved to repo');
+  }
+}
+
+function updateRepoBanner(){
+  const banner=document.getElementById('no-repo-banner');
+  if(!banner)return;
+  banner.style.display=(cfg.owner&&cfg.repo)?'none':'flex';
+}
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeSettings();closePat();closeCatManager();closeCalcBuilder();closeRunner();closeTagManager();}});
 loadSchema();
 rebuildDerived();
 populateCatSelect('');
@@ -1537,11 +1657,14 @@ updateSubcatOptions('');
 (async function boot(){
   let saved;try{saved=JSON.parse(localStorage.getItem(CFG_KEY));}catch{}
   if(saved&&saved.owner&&saved.repo){
-    cfg=saved;document.getElementById('setup-screen').style.display='none';document.getElementById('app').style.display='block';
+    cfg=saved;
     await loadFromGitHub();
   } else {
+    // No repo configured yet — show defaults so app is usable, prompt to connect
+    entries=getDefaults();
     renderAll();
   }
+  updateRepoBanner();
 })();
 </script>
 </body>
