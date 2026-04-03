@@ -259,32 +259,6 @@
     "updated": 1775187013188
   },
   {
-    "id": "a10",
-    "name": "Ceiling height — commercial",
-    "feature": "Floor-to-ceiling / slab soffit",
-    "category": "architectural",
-    "software": "Both",
-    "notes": "",
-    "dims": [
-      {
-        "label": "Office (finished)",
-        "value": 108,
-        "type": "dim"
-      },
-      {
-        "label": "Retail",
-        "value": 120,
-        "type": "dim"
-      },
-      {
-        "label": "Warehouse",
-        "value": 288,
-        "type": "dim"
-      }
-    ],
-    "updated": 0
-  },
-  {
     "id": "a11",
     "name": "ADA door clearance",
     "feature": "Accessible maneuvering",
