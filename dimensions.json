@@ -37,35 +37,6 @@
     "updated": 1775186659745
   },
   {
-    "id": "mni11nk76nr1h737bcr",
-    "name": "test",
-    "feature": "test",
-    "category": "architectural",
-    "software": "Rhino",
-    "btypes": [
-      "residential"
-    ],
-    "notes": "",
-    "dims": [
-      {
-        "label": "Width",
-        "value": 0,
-        "type": "dim"
-      },
-      {
-        "label": "Height",
-        "value": 0,
-        "type": "dim"
-      },
-      {
-        "label": "Depth",
-        "value": 0,
-        "type": "dim"
-      }
-    ],
-    "updated": 1775167751815
-  },
-  {
     "id": "a01",
     "name": "Exterior wall — 2×6 framed",
     "feature": "Wood-frame exterior",
