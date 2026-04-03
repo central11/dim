@@ -711,21 +711,27 @@
     "name": "Bed — king",
     "feature": "Bedroom",
     "category": "furniture",
+    "subcat": "furn-bedroom",
     "software": "SketchUp",
+    "btypes": [
+      "residential"
+    ],
     "notes": "",
     "dims": [
       {
         "label": "Length",
         "value": 80,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Width",
         "value": 76,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       }
     ],
-    "updated": 0
+    "updated": 1775187419381
   },
   {
     "id": "f14",
