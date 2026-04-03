@@ -480,31 +480,39 @@
     "name": "Dining chair",
     "feature": "Residential / restaurant",
     "category": "furniture",
+    "subcat": "furn-seating",
     "software": "SketchUp",
+    "btypes": [
+      "residential"
+    ],
     "notes": "",
     "dims": [
       {
         "label": "Seat height",
         "value": 18,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Seat width",
         "value": 19,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Seat depth",
         "value": 17,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Overall height",
         "value": 33,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       }
     ],
-    "updated": 0
+    "updated": 1775187372809
   },
   {
     "id": "f07",
