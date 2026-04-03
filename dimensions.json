@@ -738,31 +738,39 @@
     "name": "Closet — walk-in clearances",
     "feature": "Walk-in closet",
     "category": "furniture",
+    "subcat": "furn-bedroom",
     "software": "Both",
+    "btypes": [
+      "residential"
+    ],
     "notes": "Min 24\" hanging depth + 36\" center aisle.",
     "dims": [
       {
         "label": "Hanging rod depth",
         "value": 24,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Shelf depth",
         "value": 16,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Aisle (min)",
         "value": 36,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Room width (min)",
         "value": 84,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       }
     ],
-    "updated": 0
+    "updated": 1775187429660
   },
   {
     "id": "f15",
