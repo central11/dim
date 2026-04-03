@@ -336,31 +336,39 @@
     "name": "Upper cabinet — kitchen",
     "feature": "Wall-mounted cabinet",
     "category": "furniture",
+    "subcat": "furn-kitchen",
     "software": "Both",
+    "btypes": [
+      "residential"
+    ],
     "notes": "",
     "dims": [
       {
         "label": "Height",
         "value": 18,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Depth",
         "value": 12,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Bottom AFF",
         "value": 54,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Top AFF",
         "value": 72,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       }
     ],
-    "updated": 0
+    "updated": 1775187352308
   },
   {
     "id": "f03",
