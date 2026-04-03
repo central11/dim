@@ -68,32 +68,6 @@
     "updated": 0
   },
   {
-    "id": "a02",
-    "name": "Interior partition — 2×4",
-    "feature": "Non-structural wall",
-    "category": "architectural",
-    "software": "Both",
-    "notes": "3-1/2\" stud + 5/8\" GWB each side.",
-    "dims": [
-      {
-        "label": "Total thickness",
-        "value": 4.75,
-        "type": "dim"
-      },
-      {
-        "label": "Stud depth",
-        "value": 3.5,
-        "type": "dim"
-      },
-      {
-        "label": "GWB",
-        "value": 0.625,
-        "type": "dim"
-      }
-    ],
-    "updated": 0
-  },
-  {
     "id": "a03",
     "name": "Interior door — standard",
     "feature": "Door opening (residential)",
