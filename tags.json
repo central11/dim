@@ -1,0 +1,32 @@
+[
+  {
+    "id": "residential",
+    "label": "Residential",
+    "bg": "#E8F4FF",
+    "fg": "#ffff80"
+  },
+  {
+    "id": "commercial",
+    "label": "Commercial",
+    "bg": "#FFF0E8",
+    "fg": "#ff8080"
+  },
+  {
+    "id": "mixed-use",
+    "label": "Mixed-use",
+    "bg": "#F0EDFF",
+    "fg": "#0080ff"
+  },
+  {
+    "id": "industrial",
+    "label": "Industrial",
+    "bg": "#F0F0EB",
+    "fg": "#8080ff"
+  },
+  {
+    "id": "civic",
+    "label": "Civic",
+    "bg": "#EFF8FF",
+    "fg": "#1a5870"
+  }
+]
