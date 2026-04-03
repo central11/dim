@@ -129,6 +129,7 @@
     "name": "Exterior door — entry",
     "feature": "Residential front door",
     "category": "architectural",
+    "subcat": "arch-envelope",
     "software": "Both",
     "btypes": [
       "residential"
@@ -154,7 +155,7 @@
         "unit": "in"
       }
     ],
-    "updated": 1775186893795
+    "updated": 1775186947204
   },
   {
     "id": "a05",
