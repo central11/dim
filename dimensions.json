@@ -375,31 +375,39 @@
     "name": "Kitchen island / breakfast bar",
     "feature": "Island seating",
     "category": "furniture",
+    "subcat": "furn-kitchen",
     "software": "SketchUp",
+    "btypes": [
+      "residential"
+    ],
     "notes": "",
     "dims": [
       {
         "label": "Bar height",
         "value": 42,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Counter height",
         "value": 36,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Overhang for seating",
         "value": 12,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Min width",
         "value": 48,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       }
     ],
-    "updated": 0
+    "updated": 1775187355727
   },
   {
     "id": "f04",
