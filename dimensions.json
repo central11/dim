@@ -546,21 +546,27 @@
     "name": "Bar stool",
     "feature": "Bar-height seating",
     "category": "furniture",
+    "subcat": "furn-seating",
     "software": "SketchUp",
+    "btypes": [
+      "residential"
+    ],
     "notes": "",
     "dims": [
       {
         "label": "Seat height",
         "value": 30,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Bar top height",
         "value": 42,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       }
     ],
-    "updated": 0
+    "updated": 1775187382887
   },
   {
     "id": "f09",
