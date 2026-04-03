@@ -1,5 +1,33 @@
 [
   {
+    "id": "mnickn4iydky2ibu26p",
+    "name": "Story Height",
+    "feature": "",
+    "category": "architectural",
+    "software": "Rhino",
+    "btypes": [
+      "residential",
+      "commercial",
+      "mixed-use"
+    ],
+    "notes": "",
+    "dims": [
+      {
+        "label": "Commercial",
+        "value": 180,
+        "type": "dim",
+        "unit": "in"
+      },
+      {
+        "label": "Residential",
+        "value": 144,
+        "type": "dim",
+        "unit": "in"
+      }
+    ],
+    "updated": 1775187113491
+  },
+  {
     "id": "mni24jfuxgom7xoy4ga",
     "type": "calc",
     "name": "Pediment Height Calculator",
