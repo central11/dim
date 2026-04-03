@@ -102,6 +102,7 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
 .dim-row.fr{background:var(--formula-bg)}
 .dim-lbl{font-size:11px;color:var(--muted);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .dim-val{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--accent);white-space:nowrap}
+.dim-row.fr .dim-val{white-space:normal;word-break:break-all;font-size:10px}
 .fr .dim-val{color:var(--formula)}
 .ftag-badge{font-size:9px;background:var(--formula-bg);color:var(--formula);border-radius:3px;padding:1px 4px;border:1px solid var(--formula);flex-shrink:0;font-family:var(--mono)}
 .card-notes{font-size:11px;color:var(--muted);margin-top:8px;font-style:italic;line-height:1.4}
@@ -911,7 +912,14 @@ function renderCalcCard(e){
   const m=getCatMeta(e.category);
   const subLabel=e.subcat&&SL[e.subcat]?` · ${SL[e.subcat]}`:'';
   const varRows=(e.vars||[]).map(v=>`<div class="calc-var-row"><span class="calc-var-lbl">${esc(v.label)}</span><span class="calc-var-type">${v.unit}</span></div>`).join('');
-  const fmlRows=(e.formulas||[]).map(f=>`<div class="dim-row fr" style="height:auto;flex-wrap:wrap"><span class="dim-lbl">${esc(f.label)}</span><span class="ftag-badge">f(x)</span><span class="dim-val" style="color:var(--formula);font-size:10px;white-space:normal;word-break:break-all;flex-basis:100%;margin-top:3px;padding-left:2px">${esc(f.expr)}</span></div>`).join('');
+  const fmlRows=(e.formulas||[]).map(f=>`
+    <div class="dim-row fr" style="flex-direction:column;align-items:flex-start;gap:3px">
+      <div style="display:flex;align-items:center;gap:6px;width:100%">
+        <span class="dim-lbl" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(f.label)}</span>
+        <span class="ftag-badge" style="flex-shrink:0">f(x)</span>
+      </div>
+      <span style="font-family:var(--mono);font-size:10px;color:var(--formula);word-break:break-all;width:100%;line-height:1.4">${esc(f.expr)}</span>
+    </div>`).join('');
   const tagHtml=(e.btypes||[]).map(id=>{const b=BM[id];if(!b)return'';return`<span class="btag" style="background:${b.bg};color:${b.fg};border-color:${b.fg}40" onclick="toggleBtype('${id}')" title="Filter by ${b.label}">${esc(b.label)}</span>`;}).join('');
   return`<div class="card calc-card">
     <div class="card-head"><div class="card-titles"><div class="card-name">${esc(e.name)}</div><div class="card-sub">Calculator${subLabel}</div></div><span class="cat-pill" style="background:${m.pillBg};color:${m.pillFg}">${m.label}</span></div>
