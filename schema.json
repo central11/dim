@@ -2,27 +2,32 @@
   {
     "id": "architectural",
     "label": "Architectural",
-    "color": "#800040",
+    "color": "#ff8000",
     "subcats": [
       {
         "id": "arch-envelope",
         "label": "Doors",
-        "color": "#ffffff"
+        "color": "#ff8000"
       },
       {
         "id": "arch-interior",
         "label": "Windows",
-        "color": "#ffffff"
+        "color": "#ff8000"
       },
       {
         "id": "arch-vertical",
         "label": "Up Down",
-        "color": "#ffffff"
+        "color": "#ff8000"
       },
       {
         "id": "architectural-traditional-features",
         "label": "Traditional Features",
         "color": "#800040"
+      },
+      {
+        "id": "architectural-massing",
+        "label": "Massing",
+        "color": "#ff8040"
       }
     ]
   },
