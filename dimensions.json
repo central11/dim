@@ -1,5 +1,48 @@
 [
   {
+    "id": "mnidfcp4ob6dyktrqt",
+    "name": "Classical Order Diameter vs. Height",
+    "feature": "",
+    "category": "architectural",
+    "subcat": "architectural-traditional-features",
+    "software": "Both",
+    "btypes": [
+      "residential",
+      "commercial",
+      "mixed-use",
+      "industrial",
+      "civic"
+    ],
+    "notes": "",
+    "dims": [
+      {
+        "label": "Tuscan",
+        "value": 0,
+        "type": "dim",
+        "unit": "num"
+      },
+      {
+        "label": "Doric",
+        "value": 0,
+        "type": "dim",
+        "unit": "num"
+      },
+      {
+        "label": "Ionic",
+        "value": 0,
+        "type": "dim",
+        "unit": "num"
+      },
+      {
+        "label": "Corinthian/Composite",
+        "value": 0,
+        "type": "dim",
+        "unit": "num"
+      }
+    ],
+    "updated": 1775188546313
+  },
+  {
     "id": "mnickn4iydky2ibu26p",
     "name": "Story Height",
     "feature": "",
