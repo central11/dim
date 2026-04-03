@@ -240,31 +240,40 @@
     "name": "Stair — commercial egress (IBC)",
     "feature": "Egress stair",
     "category": "architectural",
+    "subcat": "arch-vertical",
     "software": "Both",
+    "btypes": [
+      "commercial",
+      "mixed-use"
+    ],
     "notes": "IBC occupancy-dependent. Egress min 44\" wide.",
     "dims": [
       {
         "label": "Max riser",
         "value": 7,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Min tread",
         "value": 11,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Min width",
         "value": 44,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Headroom",
         "value": 80,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       }
     ],
-    "updated": 0
+    "updated": 1775186995786
   },
   {
     "id": "a08",
