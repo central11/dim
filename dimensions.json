@@ -1202,30 +1202,41 @@
     "feature": "Accessible ramp",
     "category": "site",
     "software": "Both",
+    "btypes": [
+      "residential",
+      "commercial",
+      "mixed-use",
+      "industrial",
+      "civic"
+    ],
     "notes": "Max slope 1:12. Max 30' run before level landing.",
     "dims": [
       {
         "label": "Min width",
         "value": 36,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Max rise per run",
         "value": 30,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Landing (top/bottom)",
         "value": 60,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Handrail height",
         "value": 36,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       }
     ],
-    "updated": 0
+    "updated": 1775187552648
   },
   {
     "id": "t04",
