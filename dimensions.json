@@ -37,37 +37,6 @@
     "updated": 1775186659745
   },
   {
-    "id": "a01",
-    "name": "Exterior wall — 2×6 framed",
-    "feature": "Wood-frame exterior",
-    "category": "architectural",
-    "software": "Both",
-    "notes": "2×6 studs + 1/2\" sheathing + 5/8\" GWB each side. Energy-code standard.",
-    "dims": [
-      {
-        "label": "Total thickness",
-        "value": 7.625,
-        "type": "dim"
-      },
-      {
-        "label": "Stud depth",
-        "value": 5.5,
-        "type": "dim"
-      },
-      {
-        "label": "Sheathing",
-        "value": 0.5,
-        "type": "dim"
-      },
-      {
-        "label": "GWB",
-        "value": 0.625,
-        "type": "dim"
-      }
-    ],
-    "updated": 0
-  },
-  {
     "id": "a03",
     "name": "Interior door — standard",
     "feature": "Door opening (residential)",
