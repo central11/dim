@@ -612,26 +612,33 @@
     "name": "Office desk — standard",
     "feature": "Workstation",
     "category": "furniture",
+    "subcat": "furn-office",
     "software": "Both",
+    "btypes": [
+      "residential"
+    ],
     "notes": "",
     "dims": [
       {
         "label": "Width",
         "value": 60,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Depth",
         "value": 24,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Height",
         "value": 29,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       }
     ],
-    "updated": 0
+    "updated": 1775187392881
   },
   {
     "id": "f11",
