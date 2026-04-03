@@ -1166,25 +1166,35 @@
     "feature": "Public walk",
     "category": "site",
     "software": "Both",
+    "btypes": [
+      "residential",
+      "commercial",
+      "mixed-use",
+      "industrial",
+      "civic"
+    ],
     "notes": "ADA: 5'-0\" continuous clear. Wider always better.",
     "dims": [
       {
         "label": "ADA min",
         "value": 60,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Residential",
         "value": 48,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Commercial / urban",
         "value": 96,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       }
     ],
-    "updated": 0
+    "updated": 1775187545427
   },
   {
     "id": "t03",
