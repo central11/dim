@@ -287,32 +287,6 @@
     "updated": 1775187013188
   },
   {
-    "id": "a11",
-    "name": "ADA door clearance",
-    "feature": "Accessible maneuvering",
-    "category": "architectural",
-    "software": "Both",
-    "notes": "ADA 2010 §404. 32\" min clear in leaf.",
-    "dims": [
-      {
-        "label": "Min clear width",
-        "value": 32,
-        "type": "dim"
-      },
-      {
-        "label": "Preferred clear",
-        "value": 36,
-        "type": "dim"
-      },
-      {
-        "label": "Latch-side clearance",
-        "value": 18,
-        "type": "dim"
-      }
-    ],
-    "updated": 0
-  },
-  {
     "id": "a12",
     "name": "Corridor width",
     "feature": "Egress / accessible",
