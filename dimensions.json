@@ -519,21 +519,27 @@
     "name": "Counter stool",
     "feature": "Counter-height seating",
     "category": "furniture",
+    "subcat": "furn-seating",
     "software": "SketchUp",
+    "btypes": [
+      "residential"
+    ],
     "notes": "",
     "dims": [
       {
         "label": "Seat height",
         "value": 21,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Under-counter clearance",
         "value": 10,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       }
     ],
-    "updated": 0
+    "updated": 1775187379683
   },
   {
     "id": "f08",
