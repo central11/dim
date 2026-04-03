@@ -162,6 +162,7 @@
     "name": "Sliding patio door",
     "feature": "Exterior glazed door",
     "category": "architectural",
+    "subcat": "arch-envelope",
     "software": "Both",
     "btypes": [
       "residential"
@@ -181,7 +182,7 @@
         "unit": "in"
       }
     ],
-    "updated": 1775186904768
+    "updated": 1775186976734
   },
   {
     "id": "a06",
