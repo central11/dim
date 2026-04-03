@@ -130,25 +130,31 @@
     "feature": "Residential front door",
     "category": "architectural",
     "software": "Both",
+    "btypes": [
+      "residential"
+    ],
     "notes": "",
     "dims": [
       {
         "label": "Width",
         "value": 36,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Height",
         "value": 80,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Rough opening W",
         "value": 38,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       }
     ],
-    "updated": 0
+    "updated": 1775186893795
   },
   {
     "id": "a05",
