@@ -447,26 +447,33 @@
     "name": "Dining table — 6–8 seat",
     "feature": "Residential / restaurant",
     "category": "furniture",
+    "subcat": "furn-seating",
     "software": "SketchUp",
+    "btypes": [
+      "residential"
+    ],
     "notes": "",
     "dims": [
       {
         "label": "Length",
         "value": 72,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Width",
         "value": 36,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Height",
         "value": 30,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       }
     ],
-    "updated": 0
+    "updated": 1775187368497
   },
   {
     "id": "f06",
