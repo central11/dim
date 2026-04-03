@@ -1,5 +1,50 @@
 [
   {
+    "id": "mnidkrs2293j8dx2r5i",
+    "type": "calc",
+    "name": "Order Diameter if Height",
+    "notes": "",
+    "category": "architectural",
+    "subcat": "architectural-traditional-features",
+    "software": "Both",
+    "btypes": [
+      "residential",
+      "commercial",
+      "mixed-use",
+      "industrial",
+      "civic"
+    ],
+    "vars": [
+      {
+        "label": "Height",
+        "unit": "in"
+      }
+    ],
+    "formulas": [
+      {
+        "label": "Tuscan Diameter",
+        "expr": "Height / 7",
+        "unit": "in"
+      },
+      {
+        "label": "Doric Diameter",
+        "expr": "Height / 8",
+        "unit": "in"
+      },
+      {
+        "label": "Ionic Diameter",
+        "expr": "Height / 9",
+        "unit": "in"
+      },
+      {
+        "label": "Corinthian/Composite Diameter",
+        "expr": "Height / 10",
+        "unit": "in"
+      }
+    ],
+    "updated": 1775188799138
+  },
+  {
     "id": "mnidfcp4ob6dyktrqt",
     "name": "Classical Order Diameter vs. Height",
     "feature": "",
