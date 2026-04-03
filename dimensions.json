@@ -1,34 +1,5 @@
 [
   {
-    "id": "mnide2lghqtfndl79j",
-    "name": "test",
-    "feature": "test",
-    "category": "architectural",
-    "software": "Rhino",
-    "notes": "",
-    "dims": [
-      {
-        "label": "Width",
-        "value": 0,
-        "type": "dim",
-        "unit": "in"
-      },
-      {
-        "label": "Height",
-        "value": 0,
-        "type": "dim",
-        "unit": "in"
-      },
-      {
-        "label": "Depth",
-        "value": 0,
-        "type": "dim",
-        "unit": "in"
-      }
-    ],
-    "updated": 1775188486564
-  },
-  {
     "id": "mnickn4iydky2ibu26p",
     "name": "Story Height",
     "feature": "",
