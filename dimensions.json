@@ -287,94 +287,6 @@
     "updated": 1775187013188
   },
   {
-    "id": "a12",
-    "name": "Corridor width",
-    "feature": "Egress / accessible",
-    "category": "architectural",
-    "software": "Both",
-    "notes": "ADA: 36\" min, 60\" at turns. IBC egress: 44\" min.",
-    "dims": [
-      {
-        "label": "ADA min",
-        "value": 36,
-        "type": "dim"
-      },
-      {
-        "label": "IBC egress min",
-        "value": 44,
-        "type": "dim"
-      },
-      {
-        "label": "Preferred (commercial)",
-        "value": 60,
-        "type": "dim"
-      }
-    ],
-    "updated": 0
-  },
-  {
-    "id": "a13",
-    "name": "Floor assembly — wood frame",
-    "feature": "Floor-to-floor thickness",
-    "category": "architectural",
-    "software": "Rhino",
-    "notes": "",
-    "dims": [
-      {
-        "label": "Floor-to-floor",
-        "value": 120,
-        "type": "dim"
-      },
-      {
-        "label": "TJI joist (11-7/8\")",
-        "value": 11.875,
-        "type": "dim"
-      },
-      {
-        "label": "3/4\" subfloor",
-        "value": 0.75,
-        "type": "dim"
-      },
-      {
-        "label": "Finish floor (hardwood)",
-        "value": 0.75,
-        "type": "dim"
-      }
-    ],
-    "updated": 0
-  },
-  {
-    "id": "a14",
-    "name": "Bathroom — minimum residential",
-    "feature": "3-fixture bath",
-    "category": "architectural",
-    "software": "Both",
-    "notes": "Toilet CL min 15\" from wall, 18\" preferred.",
-    "dims": [
-      {
-        "label": "Min width",
-        "value": 60,
-        "type": "dim"
-      },
-      {
-        "label": "Min length",
-        "value": 96,
-        "type": "dim"
-      },
-      {
-        "label": "Toilet CL from wall",
-        "value": 15,
-        "type": "dim"
-      },
-      {
-        "label": "Lavatory min width",
-        "value": 18,
-        "type": "dim"
-      }
-    ],
-    "updated": 0
-  },
-  {
     "id": "f01",
     "name": "Kitchen counter — base cabinet",
     "feature": "Standard kitchen",
@@ -1215,18 +1127,28 @@
     "name": "Room area calculator",
     "feature": "Formula example",
     "category": "architectural",
+    "subcat": "architectural-massing",
     "software": "Both",
+    "btypes": [
+      "residential",
+      "commercial",
+      "mixed-use",
+      "industrial",
+      "civic"
+    ],
     "notes": "Edit Width and Length — Area updates automatically.",
     "dims": [
       {
         "label": "Width",
         "value": 144,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Length",
         "value": 192,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Area (sqft)",
@@ -1234,25 +1156,33 @@
         "type": "formula"
       }
     ],
-    "updated": 0
+    "updated": 1775187322493
   },
   {
     "id": "fx2",
     "name": "Stair total rise calculator",
     "feature": "Formula example — stairs",
     "category": "architectural",
+    "subcat": "arch-vertical",
     "software": "Both",
+    "btypes": [
+      "residential",
+      "commercial",
+      "mixed-use"
+    ],
     "notes": "Set Riser Height and Number of Risers; totals auto-calculate.",
     "dims": [
       {
         "label": "Riser height",
         "value": 7,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Number of risers",
         "value": 14,
-        "type": "dim"
+        "type": "dim",
+        "unit": "num"
       },
       {
         "label": "Total rise",
@@ -1265,6 +1195,6 @@
         "type": "formula"
       }
     ],
-    "updated": 0
+    "updated": 1775187307872
   }
 ]
