@@ -1,5 +1,35 @@
 [
   {
+    "id": "mnidieeoc4blwxcsl8b",
+    "name": "Order Diameter if Height",
+    "feature": "",
+    "category": "architectural",
+    "subcat": "architectural-traditional-features",
+    "software": "Both",
+    "btypes": [
+      "residential",
+      "commercial",
+      "mixed-use",
+      "industrial",
+      "civic"
+    ],
+    "notes": "",
+    "dims": [
+      {
+        "label": "Tuscan Diameter",
+        "value": "",
+        "type": "formula"
+      },
+      {
+        "label": "Height",
+        "value": 0,
+        "type": "dim",
+        "unit": "in"
+      }
+    ],
+    "updated": 1775188688496
+  },
+  {
     "id": "mnidfcp4ob6dyktrqt",
     "name": "Classical Order Diameter vs. Height",
     "feature": "",
