@@ -280,31 +280,40 @@
     "name": "Window — double-hung residential",
     "feature": "Window opening",
     "category": "architectural",
+    "subcat": "arch-interior",
     "software": "Both",
+    "btypes": [
+      "residential",
+      "mixed-use"
+    ],
     "notes": "",
     "dims": [
       {
         "label": "Width",
         "value": 36,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Height",
         "value": 48,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Sill height AFF",
         "value": 30,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Head height AFF",
         "value": 80,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       }
     ],
-    "updated": 0
+    "updated": 1775187013188
   },
   {
     "id": "a09",
