@@ -221,6 +221,10 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
   <header>
     <span class="logo">dim</span>
     <div class="sync-status"><div class="sync-dot" id="sync-dot"></div><span id="sync-label">—</span></div>
+    <div id="retry-banner" style="display:none;align-items:center;gap:8px;background:#FDEDEC;border:1px solid #E74C3C;border-radius:6px;padding:4px 10px;font-size:12px;color:#C0392B">
+      <span>Unsaved changes</span>
+      <button onclick="retryPush()" style="padding:3px 10px;border-radius:5px;border:1px solid #C0392B;background:transparent;color:#C0392B;font-family:var(--sans);font-size:11px;font-weight:600;cursor:pointer">Push now</button>
+    </div>
     <div class="header-right">
       <button class="hbtn" onclick="openSettings()">Settings</button>
       <button class="hbtn" onclick="openCalcBuilder(null)" style="color:var(--formula);border-color:var(--formula)">∑ Calculator</button>
@@ -549,6 +553,7 @@ let cfg={},entries=[],fileSha=null,schemaSha=null;
 let activeCat='all',activeSoft='all',activeUnit='ftin';
 let activeBtypes=new Set();
 let editingId=null,saving=false,sessionToken=null,pendingMsg=null;
+let pendingRetryMsg=null; // set when a push was deferred (PAT cancelled or push failed)
 
 function i(ft,ins=0){return ft*12+ins;}
 
@@ -567,7 +572,7 @@ function displayDim(d){
   const u=d.unit||'in';
   if(u==='deg')    return(Math.round(v*1000)/1000)+'°';
   if(u==='rad')    return(Math.round(v*100000)/100000)+' rad';
-  if(u==='num')    return String(Math.round(v*10000)/10000);
+  if(u==='num'||u==='ratio') return String(Math.round(v*10000)/10000);
   if(u==='ftdec')  return(Math.round(v/12*10000)/10000)+"'";  // stored as inches, display as decimal feet
   if(u==='mm')     return Math.round(v*25.4)+' mm';
   // Imperial (in / ft / legacy no-unit) — use cvt
@@ -709,7 +714,15 @@ async function pushTagsToGitHub(token){
   }catch{toast('Could not push tags',true);return false;}
 }
 
-async function pushToGitHub(msg){if(saving)return;if(!sessionToken){openPat(msg);return;}await doPush(msg,sessionToken);}
+async function pushToGitHub(msg){
+  if(saving)return;
+  if(!sessionToken){
+    pendingRetryMsg=msg; // remember the message so we can retry
+    openPat(msg);
+    return;
+  }
+  await doPush(msg,sessionToken);
+}
 
 async function doPush(msg,token){
   saving=true;setSyncState('saving','Saving…');
@@ -718,9 +731,24 @@ async function doPush(msg,token){
   try{
     const res=await fetch(apiUrl(),{method:'PUT',headers:{'Authorization':'Bearer '+token,'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json'},body:JSON.stringify(body)});
     const data=await res.json();
-    if(!res.ok){setSyncState('err','Push failed');toast('GitHub: '+(data.message||res.status),true);}
-    else{fileSha=data.content.sha;setSyncState('ok','Saved to repo');toast('Saved to '+cfg.owner+'/'+cfg.repo);}
-  }catch{setSyncState('err','Network error');toast('Could not push',true);}
+    if(!res.ok){
+      setSyncState('err','Push failed');
+      toast('Push failed: '+(data.message||res.status)+' — click Retry in the header',true);
+      pendingRetryMsg=msg; // keep for retry
+      updateRetryBanner();
+    } else {
+      fileSha=data.content.sha;
+      setSyncState('ok','Saved to repo');
+      toast('Saved to '+cfg.owner+'/'+cfg.repo);
+      pendingRetryMsg=null;
+      updateRetryBanner();
+    }
+  }catch{
+    setSyncState('err','Network error');
+    toast('Network error — click Retry in the header',true);
+    pendingRetryMsg=msg;
+    updateRetryBanner();
+  }
   saving=false;
 }
 
@@ -734,6 +762,18 @@ async function pushSchemaToGitHub(token){
     if(!res.ok){toast('Schema push failed: '+(data.message||res.status),true);return false;}
     schemaSha=data.content.sha;return true;
   }catch{toast('Could not push schema',true);return false;}
+}
+
+function updateRetryBanner(){
+  const b=document.getElementById('retry-banner');
+  if(!b)return;
+  b.style.display=pendingRetryMsg?'flex':'none';
+}
+function retryPush(){
+  if(!pendingRetryMsg)return;
+  const msg=pendingRetryMsg;
+  if(!sessionToken){openPat(msg);return;}
+  doPush(msg,sessionToken);
 }
 
 function setSyncState(s,l){document.getElementById('sync-dot').className='sync-dot '+s;document.getElementById('sync-label').textContent=l;}
@@ -791,7 +831,15 @@ function openPat(msg){
   document.getElementById('pat-input').value='';document.getElementById('pat-error').textContent='';document.getElementById('pat-remember').checked=false;
   document.getElementById('pat-overlay').classList.add('open');setTimeout(()=>document.getElementById('pat-input').focus(),80);
 }
-function closePat(){document.getElementById('pat-overlay').classList.remove('open');pendingMsg=null;}
+function closePat(){
+  document.getElementById('pat-overlay').classList.remove('open');
+  // Don't clear pendingRetryMsg — if user cancelled, show retry banner so they can push later
+  if(pendingRetryMsg){
+    setSyncState('err','Not saved');
+    updateRetryBanner();
+  }
+  pendingMsg=null;
+}
 async function confirmPat(){
   const token=document.getElementById('pat-input').value.trim(),errEl=document.getElementById('pat-error');
   if(!token){errEl.textContent='Please enter a token.';return;}
@@ -807,6 +855,8 @@ async function confirmPat(){
   } else {
     await doPush(pendingMsg||'Update dimensions',token);
   }
+  pendingRetryMsg=null;
+  updateRetryBanner();
   pendingMsg=null;btn.disabled=false;btn.textContent='Save & push';
 }
 
@@ -1033,6 +1083,7 @@ function makeDimRow(label='', rawValue='', unit='in'){
         <option value="deg"${unit==='deg'?' selected':''}>°deg</option>
         <option value="rad"${unit==='rad'?' selected':''}>rad</option>
         <option value="num"${unit==='num'?' selected':''}>num</option>
+        <option value="ratio"${unit==='ratio'?' selected':''}>ratio</option>
       </select>
       <button class="rm-btn" onclick="this.closest('.dim-fr').remove();checkFormulas()">×</button>
     </div>
@@ -1309,6 +1360,7 @@ function addCalcVar(label='',unit='in'){
       <option value="deg"${unit==='deg'?' selected':''}>° deg</option>
       <option value="rad"${unit==='rad'?' selected':''}>rad</option>
       <option value="num"${unit==='num'?' selected':''}>number</option>
+      <option value="ratio"${unit==='ratio'?' selected':''}>ratio</option>
     </select>
     <button class="rm-btn" onclick="this.parentElement.remove()">×</button>`;
   wrap.appendChild(row);
@@ -1330,6 +1382,7 @@ function addCalcFormula(label='',expr='',unit='in'){
           <option value="deg"${unit==='deg'?' selected':''}>° deg</option>
           <option value="rad"${unit==='rad'?' selected':''}>rad</option>
           <option value="num"${unit==='num'?' selected':''}>number</option>
+          <option value="ratio"${unit==='ratio'?' selected':''}>ratio</option>
         </select>
       </div>
       <input placeholder="Formula using variable names, e.g. Width * 0.25" class="cf-expr" oninput="previewCalcFormula(this,'${pid}')" value="${esc(expr)}" style="font-family:var(--mono);font-size:12px;border:1px solid var(--formula);border-radius:var(--r);background:transparent;color:var(--formula);padding:5px 8px;outline:none" />
@@ -1405,10 +1458,10 @@ function renderRunnerBody(){
   const body=document.getElementById('runner-body');
   const varHtml=runnerEntry.vars.map((v,vi)=>{
     const isImperial=v.unit==='in'||v.unit==='ft';
-    const unitLabel={'in':'in','ft':'ft','ftdec':"ft'",'mm':'mm','deg':'°','rad':'rad','num':''}[v.unit]||v.unit;
-    const unitHint=v.unit==='num'?'':` <span style="font-size:11px;color:var(--faint)">${esc(unitLabel)}</span>`;
+    const unitLabel={'in':'in','ft':'ft','ftdec':"ft'",'mm':'mm','deg':'°','rad':'rad','num':'','ratio':''}[v.unit]||v.unit;
+    const unitHint=(v.unit==='num'||v.unit==='ratio')?'':` <span style="font-size:11px;color:var(--faint)">${esc(unitLabel)}</span>`;
     const step=v.unit==='deg'?'0.1':v.unit==='rad'?'0.001':v.unit==='ftdec'?'0.001':'any';
-    const placeholder=v.unit==='deg'?'e.g. 45':v.unit==='rad'?'e.g. 0.785':'0';
+    const placeholder=v.unit==='deg'?'e.g. 45':v.unit==='rad'?'e.g. 0.785':v.unit==='ratio'?'e.g. 1.5':'0';
     return`<div class="calc-input-row">
       <label style="font-size:13px;flex:1;font-weight:500">${esc(v.label)}${unitHint}</label>
       ${isImperial
@@ -1421,7 +1474,7 @@ function renderRunnerBody(){
       <span class="calc-result-lbl">${esc(f.label)}</span>
       <span style="display:flex;align-items:center;gap:6px">
         <span class="calc-result-val" data-fi="${fi}">—</span>
-        <span style="font-size:10px;color:var(--formula);opacity:.7">${{'deg':'°','rad':'rad','ftin':'ft-in','ftdec':"ft'",'mm':'mm','in':'in','num':''}[f.unit||'in']||''}</span>
+        <span style="font-size:10px;color:var(--formula);opacity:.7">${{'deg':'°','rad':'rad','ftin':'ft-in','ftdec':"ft'",'mm':'mm','in':'in','num':'','ratio':''}[f.unit||'in']||''}</span>
       </span>
     </div>`).join('');
   body.innerHTML=`
@@ -1460,7 +1513,7 @@ function runnerRecalc(){
       const raw=evalExpr(f.expr,map);
       if(!isFinite(raw)){el.textContent='—';return;}
       const unit=f.unit||'in';
-      if(unit==='num'){
+      if(unit==='num'||unit==='ratio'){
         el.textContent=parseFloat(raw.toFixed(4))+'';
       }else if(unit==='deg'){
         el.textContent=(Math.round(raw*10000)/10000)+'°';
