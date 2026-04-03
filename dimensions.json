@@ -651,25 +651,29 @@
       {
         "label": "Height",
         "value": 35,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Depth",
         "value": 21,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Width (single)",
         "value": 30,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Width (double)",
         "value": 60,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       }
     ],
-    "updated": 0
+    "updated": 1775187399005
   },
   {
     "id": "f12",
