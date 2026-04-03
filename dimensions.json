@@ -1124,30 +1124,41 @@
     "feature": "Surface parking",
     "category": "site",
     "software": "Both",
+    "btypes": [
+      "residential",
+      "commercial",
+      "mixed-use",
+      "industrial",
+      "civic"
+    ],
     "notes": "90° stall. ADA = 8'-0\" + 5'-0\" access aisle.",
     "dims": [
       {
         "label": "Width (standard)",
         "value": 102,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Width (ADA)",
         "value": 96,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Length",
         "value": 216,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       },
       {
         "label": "Drive aisle (2-way)",
         "value": 288,
-        "type": "dim"
+        "type": "dim",
+        "unit": "in"
       }
     ],
-    "updated": 0
+    "updated": 1775187523077
   },
   {
     "id": "t02",
